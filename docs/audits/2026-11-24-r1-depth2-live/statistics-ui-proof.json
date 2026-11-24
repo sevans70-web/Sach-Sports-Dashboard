@@ -1,0 +1,241 @@
+{
+  "scope": "Actual production desktop Chromium; TLS verification enabled; real clock; no mocked responses",
+  "checks": [
+    {
+      "period": "Month",
+      "seconds": 0.379,
+      "limit": 15,
+      "selectedRecords": 204,
+      "overall": {
+        "total": 1914,
+        "hits": 751,
+        "misses": 668,
+        "pushes": 43,
+        "completed": 1462,
+        "awaitingResult": 452,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": 52.9,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "stale",
+        "protectedCheckedAt": "2026-11-24T15:25:42.570Z",
+        "archiveCheckedAt": "2026-11-24T15:26:30.507Z",
+        "lastError": "job_source_timeout",
+        "revision": 0
+      },
+      "sourceFreshness": {
+        "latestSavedAt": "2026-11-15T11:01:17.233Z",
+        "latestGradedAt": "2026-11-15T15:55:37.546001+00:00"
+      }
+    },
+    {
+      "period": "Yesterday",
+      "seconds": 0.184,
+      "limit": 5,
+      "selectedRecords": 0,
+      "overall": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "stale",
+        "protectedCheckedAt": "2026-11-24T15:25:42.570Z",
+        "archiveCheckedAt": "2026-11-24T15:26:30.507Z",
+        "lastError": "job_source_timeout",
+        "revision": 0
+      },
+      "sourceFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      }
+    },
+    {
+      "period": "Month",
+      "seconds": 0.245,
+      "limit": 5,
+      "selectedRecords": 204,
+      "overall": {
+        "total": 1914,
+        "hits": 751,
+        "misses": 668,
+        "pushes": 43,
+        "completed": 1462,
+        "awaitingResult": 452,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": 52.9,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "stale",
+        "protectedCheckedAt": "2026-11-24T15:25:42.570Z",
+        "archiveCheckedAt": "2026-11-24T15:26:30.507Z",
+        "lastError": "job_source_timeout",
+        "revision": 0
+      },
+      "sourceFreshness": {
+        "latestSavedAt": "2026-11-15T11:01:17.233Z",
+        "latestGradedAt": "2026-11-15T15:55:37.546001+00:00"
+      }
+    },
+    {
+      "period": "Today",
+      "seconds": 0.147,
+      "limit": 5,
+      "selectedRecords": 0,
+      "overall": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "stale",
+        "protectedCheckedAt": "2026-11-24T15:25:42.570Z",
+        "archiveCheckedAt": "2026-11-24T15:26:30.507Z",
+        "lastError": "job_source_timeout",
+        "revision": 0
+      },
+      "sourceFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      }
+    },
+    {
+      "period": "Week",
+      "seconds": 0.179,
+      "limit": 5,
+      "selectedRecords": 0,
+      "overall": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "stale",
+        "protectedCheckedAt": "2026-11-24T15:25:42.570Z",
+        "archiveCheckedAt": "2026-11-24T15:26:30.507Z",
+        "lastError": "job_source_timeout",
+        "revision": 0
+      },
+      "sourceFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      }
+    },
+    {
+      "period": "Season",
+      "seconds": 0.333,
+      "limit": 5,
+      "selectedRecords": 204,
+      "overall": {
+        "total": 1914,
+        "hits": 751,
+        "misses": 668,
+        "pushes": 43,
+        "completed": 1462,
+        "awaitingResult": 452,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": 52.9,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "stale",
+        "protectedCheckedAt": "2026-11-24T15:25:42.570Z",
+        "archiveCheckedAt": "2026-11-24T15:26:30.507Z",
+        "lastError": "job_source_timeout",
+        "revision": 0
+      },
+      "sourceFreshness": {
+        "latestSavedAt": "2026-11-15T11:01:17.233Z",
+        "latestGradedAt": "2026-11-15T15:55:37.546001+00:00"
+      }
+    }
+  ],
+  "responses": [
+    {
+      "at": 1795534014.4630466,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Today&market=points",
+      "status": 200
+    },
+    {
+      "at": 1795534015.1485167,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Month&market=points",
+      "status": 200
+    },
+    {
+      "at": 1795534015.4297397,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Yesterday&market=points",
+      "status": 200
+    },
+    {
+      "at": 1795534015.6073735,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Month&market=points",
+      "status": 200
+    },
+    {
+      "at": 1795534015.8246028,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Today&market=points",
+      "status": 200
+    },
+    {
+      "at": 1795534015.9933183,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Week&market=points",
+      "status": 200
+    },
+    {
+      "at": 1795534016.2939565,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Season&market=points",
+      "status": 200
+    },
+    {
+      "at": 1795534076.6000338,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Season&market=points",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "shellSeconds": 0.655,
+  "autoRefreshStart": 1795534016.978885,
+  "firstChecked": "Statistics last checked: 2026-11-24, 10:26:30 a.m. Toronto.",
+  "autoRefreshObservations": [
+    {
+      "at": 1795534076.6000338,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Season&market=points",
+      "status": 200
+    }
+  ],
+  "autoRefreshSucceeded": true,
+  "checkedAfter": "Statistics last checked: 2026-11-24, 10:27:29 a.m. Toronto.",
+  "success": true
+}

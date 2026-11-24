@@ -1,0 +1,168 @@
+[
+  {
+    "name": "dashboardHold",
+    "events": [
+      {
+        "at": 1795534976559,
+        "message": "[dashboard-release-hold] {\"kind\":\"scheduled\",\"cron\":\"*/2 * * * *\",\"reason\":\"fallback_verified_before_capture_activation\"}",
+        "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "type": "scheduled",
+        "cron": "*/2 * * * *"
+      },
+      {
+        "at": 1795534965839,
+        "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}",
+        "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "type": "alarm"
+      },
+      {
+        "at": 1795534905839,
+        "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}",
+        "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "type": "alarm"
+      },
+      {
+        "at": 1795534856906,
+        "message": "[dashboard-release-hold] {\"kind\":\"scheduled\",\"cron\":\"*/2 * * * *\",\"reason\":\"fallback_verified_before_capture_activation\"}",
+        "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "type": "scheduled",
+        "cron": "*/2 * * * *"
+      },
+      {
+        "at": 1795534845838,
+        "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}",
+        "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "type": "alarm"
+      },
+      {
+        "at": 1795534785837,
+        "message": "[dashboard-release-hold] {\"kind\":\"alarm\",\"reason\":\"fallback_verified_before_capture_activation\"}",
+        "version": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "type": "alarm"
+      }
+    ]
+  },
+  {
+    "name": "CW08",
+    "events": [
+      {
+        "at": 1795534421108,
+        "message": "Tue Nov 24 2026 15:33:37 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534417415,
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm"
+      },
+      {
+        "at": 1795534417245,
+        "message": "Tue Nov 24 2026 15:33:35 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534415269,
+        "message": "Tue Nov 24 2026 15:33:34 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534414503,
+        "message": "Tue Nov 24 2026 15:33:33 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534413565,
+        "message": "Tue Nov 24 2026 15:33:32 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534412030,
+        "message": "Tue Nov 24 2026 15:33:31 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534410958,
+        "message": "Tue Nov 24 2026 15:33:29 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534409437,
+        "message": "Tue Nov 24 2026 15:33:27 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534407616,
+        "message": "Tue Nov 24 2026 15:33:26 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534406067,
+        "message": "Tue Nov 24 2026 15:33:24 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534404790,
+        "message": "Tue Nov 24 2026 15:33:23 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534403272,
+        "message": "Tue Nov 24 2026 15:33:21 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534401587,
+        "message": "Tue Nov 24 2026 15:33:20 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534400033,
+        "message": "Tue Nov 24 2026 15:33:19 GMT+0000 (Coordinated Universal Time)",
+        "version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "type": "alarm",
+        "outcome": "ok"
+      },
+      {
+        "at": 1795534399250
+      },
+      {
+        "at": 1795534399250
+      },
+      {
+        "at": 1795534399250
+      },
+      {
+        "at": 1795534399250
+      },
+      {
+        "at": 1795534399250
+      }
+    ]
+  }
+]

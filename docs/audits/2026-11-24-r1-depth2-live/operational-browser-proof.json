@@ -1,0 +1,332 @@
+{
+  "scope": "Actual production browser; TLS verified; real clock; no response substitution",
+  "sports": {
+    "nba": {
+      "shellSeconds": 0.942,
+      "summary": {
+        "status": 200,
+        "seconds": 0.76,
+        "success": true,
+        "keys": [
+          "success",
+          "sport",
+          "league",
+          "market",
+          "slateDay",
+          "scope",
+          "games",
+          "live",
+          "finals",
+          "lineups",
+          "confirmedLineups",
+          "pendingLineups",
+          "rankedPlayers",
+          "playerProps",
+          "predictions",
+          "estimatedPicks",
+          "modelPickRows",
+          "verifiedRows",
+          "marketCounts",
+          "coverageComplete",
+          "rankingsAvailable",
+          "marketsCounted",
+          "coverageAudit",
+          "previewGames",
+          "scheduleAvailable",
+          "weekNumber",
+          "warning",
+          "updatedAt"
+        ],
+        "games": 12,
+        "live": 0,
+        "finals": 0,
+        "scheduleAvailable": true,
+        "rankingsAvailable": true,
+        "slateDay": "2026-11-24",
+        "estimatedPicks": 153
+      },
+      "schedule": {
+        "status": 200,
+        "seconds": 0.752,
+        "success": true,
+        "keys": [
+          "success",
+          "sport",
+          "league",
+          "weekNumber",
+          "scope",
+          "games",
+          "updatedAt"
+        ],
+        "games": 12
+      },
+      "featured": {
+        "status": 200,
+        "seconds": 0.599,
+        "success": null,
+        "keys": [
+          "slateDay",
+          "plays",
+          "marketsChecked",
+          "verifiedQuoteCount",
+          "state",
+          "updatedAt"
+        ],
+        "populated": 2,
+        "slateDay": "2026-11-24",
+        "picks": [
+          {
+            "playerId": "4065648",
+            "playerName": "Jayson Tatum",
+            "market": "q1_points",
+            "selection": "UNDER",
+            "line": 8.5,
+            "gameTime": "2026-11-25T01:00Z",
+            "savedAt": null,
+            "modelProjection": null
+          },
+          {
+            "playerId": "4432166",
+            "playerName": "Cade Cunningham",
+            "market": "q1_points",
+            "selection": "UNDER",
+            "line": 5.5,
+            "gameTime": "2026-11-25T00:00Z",
+            "savedAt": null,
+            "modelProjection": null
+          }
+        ]
+      },
+      "supportingHistory": [
+        {
+          "index": 0,
+          "recentFormVisible": true,
+          "loading": false,
+          "text": "1\nJT\nJayson Tatum\nF \u00b7 BOS \u00b7 Boston Celtics @ Washington Wizards\nTue, Nov 24, 8:00 PM EST\nLineup pending\nEV\n+11.9%\nResearch EV\nPoints\nO/U 26.5\nSach Prediction\nUNDER 26.5\nSach Projection\n24.5\n\nModel confidence: 63.7% UNDER\n\nBook: Pinnacle \u00b7 Over -100 / Under -132\n\nRecent results are unavailable for this market.\n\nPinnacle \u00b7 -132 \u00b7 34 expected minutes \u00b7 range 16\u201335.\n\nView Intelligence\n\u203a\nHide quick analysis\n\u2303\nModel probability\n63.7% UNDER\nPoints\nO/U\n26.5\nSach Projection\nModel projection\n24.5\nProjection vs. Line\nModel minus sportsbook line\n-2\nEV\nExpected return\n+11.9%\nResearch EV\nPLAYER ANALYSIS\n\n\u2713\nRecent results are unavailable for this market.\n\nRECENT FORM\nLast 5\nLast 10\nLast 20\nHead-to-Head\n\nDrafted 2017\n\nG1\nG2\nG3\nG4\nG5\nG6\nG7\nG8\nG9\nG10\n24.5\n\n0 of 10 games with recorded stats\n\nBlank slots have no recorded stat.\n\nMATCHUP\nBoston Celtics @ Washington Wizards\n\n11/24 - 8:00 PM EST\n\nUSAGE\nBooks\n5\nBOOK LINES\n\n5 sportsbook sources\n\nOpen\n\u2014\n\u2192\nRecorded quote\n26.5\nINJURY / STATUS\n\n\u2713\nStarting status is still pending confirmation."
+        },
+        {
+          "index": 24,
+          "recentFormVisible": true,
+          "loading": false,
+          "text": "25\nPP\nPayton Pritchard\nG \u00b7 BOS \u00b7 Boston Celtics @ Washington Wizards\nTue, Nov 24, 8:00 PM EST\nLineup pending\nEV\n-7.0%\nResearch EV\nPoints\nO/U 12.5\nSach Prediction\nOVER 12.5\nSach Projection\n13.5\n\nModel confidence: 53.7% OVER\n\nBook: Pinnacle \u00b7 Over -137 / Under +103\n\nRecent results are unavailable for this market.\n\nModel estimate \u00b7 29.7 expected minutes \u00b7 range 5\u201324.\n\nView Intelligence\n\u203a\nHide quick analysis\n\u2303\nModel probability\n53.7% OVER\nPoints\nO/U\n12.5\nSach Projection\nModel projection\n13.5\nProjection vs. Line\nModel minus sportsbook line\n+1\nEV\nExpected return\n-7.0%\nResearch EV\nPLAYER ANALYSIS\n\n\u2713\nRecent results are unavailable for this market.\n\nRECENT FORM\nLast 5\nLast 10\nLast 20\nHead-to-Head\n\nDrafted 2020\n\nG1\nG2\nG3\nG4\nG5\nG6\nG7\nG8\nG9\nG10\n13.5\n\n0 of 10 games with recorded stats\n\nBlank slots have no recorded stat.\n\nMATCHUP\nBoston Celtics @ Washington Wizards\n\n11/24 - 8:00 PM EST\n\nUSAGE\nBooks\n3\nBOOK LINES\n\n3 sportsbook sources\n\nOpen\n\u2014\n\u2192\nRecorded quote\n12.5\nINJURY / STATUS\n\n\u2713\nStarting status is still pending confirmation."
+        }
+      ]
+    },
+    "nfl": {
+      "shellSeconds": 0.612,
+      "summary": {
+        "status": 200,
+        "seconds": 0.706,
+        "success": true,
+        "keys": [
+          "success",
+          "sport",
+          "league",
+          "market",
+          "slateDay",
+          "scope",
+          "games",
+          "live",
+          "finals",
+          "lineups",
+          "confirmedLineups",
+          "pendingLineups",
+          "rankedPlayers",
+          "playerProps",
+          "predictions",
+          "estimatedPicks",
+          "modelPickRows",
+          "verifiedRows",
+          "marketCounts",
+          "coverageComplete",
+          "rankingsAvailable",
+          "marketsCounted",
+          "coverageAudit",
+          "previewGames",
+          "scheduleAvailable",
+          "weekNumber",
+          "warning",
+          "updatedAt"
+        ],
+        "games": 15,
+        "live": 0,
+        "finals": 0,
+        "scheduleAvailable": true,
+        "rankingsAvailable": false,
+        "slateDay": "2026-11-24",
+        "estimatedPicks": null
+      },
+      "schedule": {
+        "status": 200,
+        "seconds": 0.144,
+        "success": true,
+        "keys": [
+          "success",
+          "sport",
+          "league",
+          "weekNumber",
+          "scope",
+          "games",
+          "updatedAt"
+        ],
+        "games": 15
+      },
+      "featured": {
+        "status": 200,
+        "seconds": 1.518,
+        "success": null,
+        "keys": [
+          "slateDay",
+          "plays",
+          "marketsChecked",
+          "verifiedQuoteCount",
+          "state",
+          "updatedAt"
+        ],
+        "populated": 2,
+        "slateDay": "2026-11-26",
+        "picks": [
+          {
+            "playerId": "4429795",
+            "playerName": "Jahmyr Gibbs",
+            "market": "first_td",
+            "selection": "YES",
+            "line": 0.5,
+            "gameTime": "2026-11-26T18:00:00Z",
+            "savedAt": null,
+            "modelProjection": null
+          },
+          {
+            "playerId": "4361579",
+            "playerName": "Javonte Williams",
+            "market": "first_td",
+            "selection": "YES",
+            "line": 0.5,
+            "gameTime": "2026-11-26T21:30:00Z",
+            "savedAt": null,
+            "modelProjection": null
+          }
+        ]
+      }
+    },
+    "nhl": {
+      "shellSeconds": 0.604,
+      "summary": {
+        "status": 200,
+        "seconds": 0.851,
+        "success": true,
+        "keys": [
+          "success",
+          "sport",
+          "league",
+          "market",
+          "slateDay",
+          "scope",
+          "games",
+          "live",
+          "finals",
+          "lineups",
+          "confirmedLineups",
+          "pendingLineups",
+          "rankedPlayers",
+          "playerProps",
+          "predictions",
+          "estimatedPicks",
+          "modelPickRows",
+          "verifiedRows",
+          "marketCounts",
+          "coverageComplete",
+          "rankingsAvailable",
+          "marketsCounted",
+          "coverageAudit",
+          "previewGames",
+          "scheduleAvailable",
+          "weekNumber",
+          "warning",
+          "updatedAt"
+        ],
+        "games": 15,
+        "live": 0,
+        "finals": 0,
+        "scheduleAvailable": true,
+        "rankingsAvailable": true,
+        "slateDay": "2026-11-24",
+        "estimatedPicks": 7
+      },
+      "schedule": {
+        "status": 200,
+        "seconds": 0.414,
+        "success": true,
+        "keys": [
+          "success",
+          "sport",
+          "league",
+          "weekNumber",
+          "scope",
+          "games",
+          "updatedAt"
+        ],
+        "games": 15
+      },
+      "featured": {
+        "status": 200,
+        "seconds": 0.313,
+        "success": null,
+        "keys": [
+          "slateDay",
+          "plays",
+          "marketsChecked",
+          "verifiedQuoteCount",
+          "state",
+          "updatedAt"
+        ],
+        "populated": 4,
+        "slateDay": "2026-11-24",
+        "picks": [
+          {
+            "playerId": 8478402,
+            "playerName": "Connor McDavid",
+            "market": "points",
+            "selection": "UNDER",
+            "line": 1.5,
+            "gameTime": "2026-11-25T01:00:00Z",
+            "savedAt": "2026-11-24T15:30:12.183Z",
+            "modelProjection": 2.230769230769231
+          },
+          {
+            "playerId": 8477934,
+            "playerName": "Leon Draisaitl",
+            "market": "points",
+            "selection": "UNDER",
+            "line": 1.5,
+            "gameTime": "2026-11-25T01:00:00Z",
+            "savedAt": "2026-11-24T15:30:12.183Z",
+            "modelProjection": 1.8076923076923077
+          },
+          {
+            "playerId": 8475913,
+            "playerName": "Mark Stone",
+            "market": "first_goal",
+            "selection": "YES",
+            "line": null,
+            "gameTime": "2026-11-25T01:00:00Z",
+            "savedAt": null,
+            "modelProjection": null
+          },
+          {
+            "playerId": 8478403,
+            "playerName": "Jack Eichel",
+            "market": "first_goal",
+            "selection": "YES",
+            "line": null,
+            "gameTime": "2026-11-25T01:00:00Z",
+            "savedAt": null,
+            "modelProjection": null
+          }
+        ]
+      }
+    }
+  },
+  "errors": [],
+  "success": true
+}

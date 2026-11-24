@@ -1,0 +1,24 @@
+{
+  "scope": "Actual production desktop Chromium; TLS verification enabled; real clock; no mocked responses",
+  "checks": [],
+  "responses": [
+    {
+      "at": 1795533942.799667,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Today&market=points",
+      "status": 200
+    },
+    {
+      "at": 1795533947.9290102,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Today&market=points",
+      "status": 200
+    },
+    {
+      "at": 1795533953.0179336,
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Today&market=points",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "shellSeconds": 1.286,
+  "criticalFailure": "Timeout 15000ms exceeded while waiting for event \"response\""
+}

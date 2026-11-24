@@ -1,0 +1,1034 @@
+{
+  "scope": "Actual production browsers; no replay/mock/clock changes/TLS exceptions",
+  "sessions": [
+    {
+      "view": "desktop",
+      "errors": [],
+      "hydrationErrors": [],
+      "selectedDay": null,
+      "markets": {
+        "nba": {
+          "points": {
+            "cards": 25,
+            "seconds": 12.224,
+            "coverage": null,
+            "explanationVisible": false,
+            "evLabelsPresent": true
+          },
+          "rebounds": {
+            "cards": 25,
+            "seconds": 2.492,
+            "coverage": null,
+            "explanationVisible": false,
+            "evLabelsPresent": true
+          },
+          "assists": {
+            "cards": 5,
+            "seconds": 5.656,
+            "coverage": null,
+            "explanationVisible": false,
+            "evLabelsPresent": true
+          },
+          "threes_made": {
+            "cards": 25,
+            "seconds": 2.919,
+            "coverage": null,
+            "explanationVisible": false,
+            "evLabelsPresent": true
+          },
+          "pts_rebs_asts": {
+            "cards": 25,
+            "seconds": 6.049,
+            "coverage": null,
+            "explanationVisible": false,
+            "evLabelsPresent": true
+          },
+          "pts_rebs": {
+            "cards": 25,
+            "seconds": 3.055,
+            "coverage": null,
+            "explanationVisible": false,
+            "evLabelsPresent": true
+          },
+          "pts_asts": {
+            "cards": 25,
+            "seconds": 3.361,
+            "coverage": null,
+            "explanationVisible": false,
+            "evLabelsPresent": true
+          }
+        },
+        "nfl": {
+          "passing_yards": {
+            "cards": 0,
+            "seconds": 1.343,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "passing_tds": {
+            "cards": 0,
+            "seconds": 0.119,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "passing_interceptions": {
+            "cards": 0,
+            "seconds": 0.342,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "qb_rushing_yards": {
+            "cards": 0,
+            "seconds": 0.637,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "passing_rushing_yards": {
+            "cards": 0,
+            "seconds": 0.069,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "anytime_td": {
+            "cards": 0,
+            "seconds": 0.625,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "first_td": {
+            "cards": 0,
+            "seconds": 0.057,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "receiving_yards": {
+            "cards": 0,
+            "seconds": 0.635,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "receptions": {
+            "cards": 0,
+            "seconds": 0.072,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "rushing_yards": {
+            "cards": 0,
+            "seconds": 1.204,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "rushing_receiving_yards": {
+            "cards": 0,
+            "seconds": 0.085,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "sacks": {
+            "cards": 0,
+            "seconds": 0.351,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "tackles": {
+            "cards": 0,
+            "seconds": 0.083,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "tackles_assists": {
+            "cards": 0,
+            "seconds": 0.364,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "q1_passing_yards": {
+            "cards": 0,
+            "seconds": 0.068,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "q1_receiving_yards": {
+            "cards": 0,
+            "seconds": 0.345,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "q1_rushing_yards": {
+            "cards": 0,
+            "seconds": 0.931,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          }
+        },
+        "nhl": {
+          "shots_on_goal": {
+            "cards": 8,
+            "seconds": 3.154,
+            "coverage": null,
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "points": {
+            "cards": 8,
+            "seconds": 2.899,
+            "coverage": null,
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "assists": {
+            "cards": 0,
+            "seconds": 1.812,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "goals": {
+            "cards": 0,
+            "seconds": 0.097,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "blocked_shots": {
+            "cards": 0,
+            "seconds": 0.09,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "goalie_saves": {
+            "cards": 0,
+            "seconds": 0.666,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          }
+        }
+      },
+      "nhlReloadSeconds": [
+        1.093,
+        0.67
+      ],
+      "notes": "Initial desktop Assists5 became25 after warm-up in the mobile session; current raw API publicRankingCount25. Card counts are displayed cards, not all validated betting selections."
+    },
+    {
+      "view": "mobile",
+      "errors": [],
+      "hydrationErrors": [],
+      "selectedDay": null,
+      "markets": {
+        "nba": {
+          "points": {
+            "cards": 25,
+            "seconds": 4.092,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": true
+          },
+          "rebounds": {
+            "cards": 25,
+            "seconds": 3.23,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": true
+          },
+          "assists": {
+            "cards": 25,
+            "seconds": 2.382,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": true
+          },
+          "threes_made": {
+            "cards": 25,
+            "seconds": 2.059,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": true
+          },
+          "pts_rebs_asts": {
+            "cards": 25,
+            "seconds": 3.999,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": true
+          },
+          "pts_rebs": {
+            "cards": 25,
+            "seconds": 2.351,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": true
+          },
+          "pts_asts": {
+            "cards": 25,
+            "seconds": 3.127,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": true
+          }
+        },
+        "nfl": {
+          "passing_yards": {
+            "cards": 0,
+            "seconds": 1.192,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "passing_tds": {
+            "cards": 0,
+            "seconds": 0.087,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "passing_interceptions": {
+            "cards": 0,
+            "seconds": 1.173,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "qb_rushing_yards": {
+            "cards": 0,
+            "seconds": 0.122,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "passing_rushing_yards": {
+            "cards": 0,
+            "seconds": 0.348,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "anytime_td": {
+            "cards": 0,
+            "seconds": 0.905,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "first_td": {
+            "cards": 0,
+            "seconds": 0.631,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "receiving_yards": {
+            "cards": 0,
+            "seconds": 0.347,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "receptions": {
+            "cards": 0,
+            "seconds": 1.168,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "rushing_yards": {
+            "cards": 0,
+            "seconds": 0.068,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "rushing_receiving_yards": {
+            "cards": 0,
+            "seconds": 0.35,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "sacks": {
+            "cards": 0,
+            "seconds": 0.653,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "tackles": {
+            "cards": 0,
+            "seconds": 0.915,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "tackles_assists": {
+            "cards": 0,
+            "seconds": 0.076,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "q1_passing_yards": {
+            "cards": 0,
+            "seconds": 1.158,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "q1_receiving_yards": {
+            "cards": 0,
+            "seconds": 0.328,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "q1_rushing_yards": {
+            "cards": 0,
+            "seconds": 0.325,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          }
+        },
+        "nhl": {
+          "shots_on_goal": {
+            "cards": 8,
+            "seconds": 2.734,
+            "coverage": null,
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "points": {
+            "cards": 8,
+            "seconds": 1.563,
+            "coverage": null,
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "assists": {
+            "cards": 0,
+            "seconds": 1.025,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "goals": {
+            "cards": 0,
+            "seconds": 0.097,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "blocked_shots": {
+            "cards": 0,
+            "seconds": 0.089,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "goalie_saves": {
+            "cards": 0,
+            "seconds": 0.625,
+            "coverage": null,
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          }
+        }
+      },
+      "nhlReloadSeconds": [
+        0.68,
+        1.198
+      ],
+      "notes": "Initial desktop Assists5 became25 after warm-up in the mobile session; current raw API publicRankingCount25. Card counts are displayed cards, not all validated betting selections."
+    },
+    {
+      "view": "nfl-next-desktop",
+      "errors": [],
+      "hydrationErrors": [],
+      "selectedDay": "Thu, Nov 26",
+      "markets": {
+        "nba": {},
+        "nfl": {
+          "passing_yards": {
+            "cards": 6,
+            "seconds": 5.462,
+            "coverage": {
+              "sourceRows": 6,
+              "displayableRows": 6,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {
+                "Official player history is unavailable; no new confidence or EV can be calculated": 6
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "passing_tds": {
+            "cards": 6,
+            "seconds": 2.11,
+            "coverage": {
+              "sourceRows": 6,
+              "displayableRows": 6,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {
+                "Official player history is unavailable; no new confidence or EV can be calculated": 6
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "passing_interceptions": {
+            "cards": 5,
+            "seconds": 1.666,
+            "coverage": {
+              "sourceRows": 5,
+              "displayableRows": 5,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {
+                "Official player history is unavailable; no new confidence or EV can be calculated": 5
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "qb_rushing_yards": {
+            "cards": 6,
+            "seconds": 2.015,
+            "coverage": {
+              "sourceRows": 6,
+              "displayableRows": 6,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {
+                "Official player history is unavailable; no new confidence or EV can be calculated": 6
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "passing_rushing_yards": {
+            "cards": 6,
+            "seconds": 2.299,
+            "coverage": {
+              "sourceRows": 6,
+              "displayableRows": 6,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {
+                "Official player history is unavailable; no new confidence or EV can be calculated": 6
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "anytime_td": {
+            "cards": 75,
+            "seconds": 5.59,
+            "coverage": {
+              "sourceRows": 75,
+              "displayableRows": 75,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {
+                "Official player history is unavailable; no new confidence or EV can be calculated": 75
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "first_td": {
+            "cards": 74,
+            "seconds": 2.936,
+            "coverage": {
+              "sourceRows": 74,
+              "displayableRows": 74,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {
+                "A fitted forecast is not available for this market": 74
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "receiving_yards": {
+            "cards": 37,
+            "seconds": 2.715,
+            "coverage": {
+              "sourceRows": 37,
+              "displayableRows": 37,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {
+                "Official player history is unavailable; no new confidence or EV can be calculated": 37
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "receptions": {
+            "cards": 37,
+            "seconds": 3.25,
+            "coverage": {
+              "sourceRows": 37,
+              "displayableRows": 37,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {
+                "Official player history is unavailable; no new confidence or EV can be calculated": 37
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "rushing_yards": {
+            "cards": 10,
+            "seconds": 2.799,
+            "coverage": {
+              "sourceRows": 10,
+              "displayableRows": 10,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {
+                "Official player history is unavailable; no new confidence or EV can be calculated": 10
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "rushing_receiving_yards": {
+            "cards": 10,
+            "seconds": 2.805,
+            "coverage": {
+              "sourceRows": 10,
+              "displayableRows": 10,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {
+                "Official player history is unavailable; no new confidence or EV can be calculated": 10
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "sacks": {
+            "cards": 4,
+            "seconds": 1.598,
+            "coverage": {
+              "sourceRows": 4,
+              "displayableRows": 4,
+              "fittedProjections": 3,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 3,
+              "reasons": {
+                "Official player history is unavailable; no new confidence or EV can be calculated": 1
+              }
+            },
+            "explanationVisible": true,
+            "evLabelsPresent": false
+          },
+          "tackles": {
+            "cards": 0,
+            "seconds": 0.299,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "tackles_assists": {
+            "cards": 0,
+            "seconds": 0.736,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "q1_passing_yards": {
+            "cards": 0,
+            "seconds": 0.367,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "q1_receiving_yards": {
+            "cards": 0,
+            "seconds": 0.361,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          },
+          "q1_rushing_yards": {
+            "cards": 0,
+            "seconds": 0.154,
+            "coverage": {
+              "sourceRows": 0,
+              "displayableRows": 0,
+              "fittedProjections": 0,
+              "baselineOnly": 0,
+              "savedQuoteRows": 0,
+              "evAvailable": 0,
+              "reasons": {}
+            },
+            "explanationVisible": false,
+            "evLabelsPresent": false
+          }
+        },
+        "nhl": {}
+      },
+      "nhlReloadSeconds": null,
+      "notes": "Initial desktop Assists5 became25 after warm-up in the mobile session; current raw API publicRankingCount25. Card counts are displayed cards, not all validated betting selections."
+    }
+  ],
+  "invalidComparisons": [
+    {
+      "view": "nfl-next-mobile",
+      "reason": "Late prefetched Today boardDay2026-11-24 overwrote test recorder entry while UI correctly displayed six future Nov26 quote cards. Expected/actual compared different dates. This is an invalid audit comparison, not a confirmed product defect, and not an all17future-mobile pass. Future recorder must key by sport/market/day."
+    }
+  ]
+}

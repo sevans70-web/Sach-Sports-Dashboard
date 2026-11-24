@@ -1,0 +1,99 @@
+{
+  "from": 1795533884261,
+  "to": 1795534760002,
+  "calculations": [
+    {
+      "alias": "events",
+      "aggregates": [
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "ok"
+            }
+          ],
+          "groupKey": "ok",
+          "value": 1866,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 1866
+        },
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "canceled"
+            }
+          ],
+          "groupKey": "canceled",
+          "value": 12,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 12
+        }
+      ]
+    },
+    {
+      "alias": "maxCpuMs",
+      "aggregates": [
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "ok"
+            }
+          ],
+          "groupKey": "ok",
+          "value": 5130,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 1866
+        },
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "canceled"
+            }
+          ],
+          "groupKey": "canceled",
+          "value": 422,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 12
+        }
+      ]
+    },
+    {
+      "alias": "maxWallMs",
+      "aggregates": [
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "ok"
+            }
+          ],
+          "groupKey": "ok",
+          "value": 22963,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 1866
+        },
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "canceled"
+            }
+          ],
+          "groupKey": "canceled",
+          "value": 11646,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 12
+        }
+      ]
+    }
+  ]
+}

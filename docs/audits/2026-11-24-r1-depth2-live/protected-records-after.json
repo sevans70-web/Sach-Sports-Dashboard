@@ -1,0 +1,26 @@
+[
+  {
+    "dataset": "history_documents",
+    "total": 11615,
+    "protected_rows": 11615,
+    "protected_inventory": "6e7f1c27dddcbabe945d374b6efd2e4f"
+  },
+  {
+    "dataset": "worker_pregame_originals",
+    "total": 6368,
+    "protected_rows": 6116,
+    "protected_inventory": "23e388533aa4a7d395a34890b603b2b2"
+  },
+  {
+    "dataset": "worker_pregame_picks",
+    "total": 1616,
+    "protected_rows": 1478,
+    "protected_inventory": "56e9ef51bbfdbac767d6fcec9df5db19"
+  },
+  {
+    "dataset": "worker_pregame_grades",
+    "total": 1305,
+    "protected_rows": 1269,
+    "protected_inventory": "0e21950e276648be18bce04e2c468e33"
+  }
+]

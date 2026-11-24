@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/nba/player/4065648/history?market=points&before=2026-11-25T01%3A00Z",
+    "status": 200,
+    "success": true,
+    "supported": true,
+    "points": 0,
+    "message": "No verified game-by-game history was returned."
+  },
+  {
+    "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/nba/player/4066354/history?market=points&before=2026-11-25T01%3A00Z",
+    "status": 200,
+    "success": true,
+    "supported": true,
+    "points": 0,
+    "message": "No verified game-by-game history was returned."
+  }
+]

@@ -1,0 +1,204 @@
+[
+  {
+    "name": "capture:nba",
+    "jobs": [
+      {
+        "id": "capture:nba:rebs_asts:14962789",
+        "state": "done",
+        "touched": 1795534749746
+      },
+      {
+        "id": "capture:nba:pts_asts:14962789",
+        "state": "done",
+        "touched": 1795534748678
+      },
+      {
+        "id": "capture:nba:pts_rebs_asts:14962788",
+        "state": "done",
+        "touched": 1795534631522
+      },
+      {
+        "id": "capture:nba:pts_rebs:14962788",
+        "state": "done",
+        "touched": 1795534630468
+      },
+      {
+        "id": "capture:nba:steals:14962787",
+        "state": "done",
+        "touched": 1795534510881
+      },
+      {
+        "id": "capture:nba:blocks:14962787",
+        "state": "done",
+        "touched": 1795534509823
+      },
+      {
+        "id": "capture:nba:threes_made:14962786",
+        "state": "done",
+        "touched": 1795534389737
+      },
+      {
+        "id": "capture:nba:assists:14962786",
+        "state": "done",
+        "touched": 1795534388677
+      },
+      {
+        "id": "capture:nba:rebounds:14962785",
+        "state": "done",
+        "touched": 1795534281769
+      },
+      {
+        "id": "capture:nba:points:14962785",
+        "state": "done",
+        "touched": 1795534280706
+      }
+    ],
+    "columns": [
+      "phases",
+      "jobs",
+      "maxUsed",
+      "maxActive",
+      "sourceCheckpoints"
+    ],
+    "usage": [
+      40,
+      10,
+      206,
+      4,
+      95
+    ],
+    "readOnly": true
+  },
+  {
+    "name": "capture:nfl",
+    "jobs": [],
+    "columns": [
+      "phases",
+      "jobs",
+      "maxUsed",
+      "maxActive",
+      "sourceCheckpoints"
+    ],
+    "usage": [
+      0,
+      0,
+      null,
+      null,
+      null
+    ],
+    "readOnly": true
+  },
+  {
+    "name": "capture:nhl",
+    "jobs": [
+      {
+        "id": "capture:nhl:goalie_saves:14962784",
+        "state": "done",
+        "touched": 1795534148036
+      },
+      {
+        "id": "capture:nhl:first_goal:14962784",
+        "state": "done",
+        "touched": 1795534146759
+      },
+      {
+        "id": "capture:nhl:blocked_shots:14962783",
+        "state": "done",
+        "touched": 1795534028328
+      },
+      {
+        "id": "capture:nhl:assists:14962783",
+        "state": "done",
+        "touched": 1795534027010
+      },
+      {
+        "id": "capture:nhl:points:14962782",
+        "state": "done",
+        "touched": 1795533914618
+      },
+      {
+        "id": "capture:nhl:goals:14962782",
+        "state": "done",
+        "touched": 1795533913278
+      }
+    ],
+    "columns": [
+      "phases",
+      "jobs",
+      "maxUsed",
+      "maxActive",
+      "sourceCheckpoints"
+    ],
+    "usage": [
+      24,
+      6,
+      54,
+      4,
+      17
+    ],
+    "readOnly": true
+  },
+  {
+    "name": "grade:nba",
+    "jobs": [],
+    "columns": [
+      "phases",
+      "jobs",
+      "maxUsed",
+      "maxActive",
+      "sourceCheckpoints"
+    ],
+    "usage": [
+      0,
+      0,
+      null,
+      null,
+      null
+    ],
+    "readOnly": true
+  },
+  {
+    "name": "grade:nfl",
+    "jobs": [],
+    "columns": [
+      "phases",
+      "jobs",
+      "maxUsed",
+      "maxActive",
+      "sourceCheckpoints"
+    ],
+    "usage": [
+      0,
+      0,
+      null,
+      null,
+      null
+    ],
+    "readOnly": true
+  },
+  {
+    "name": "grade:nhl",
+    "jobs": [
+      {
+        "id": "grade:nhl:14962785",
+        "state": "done",
+        "touched": 1795534289000
+      }
+    ],
+    "columns": [
+      "phases",
+      "jobs",
+      "maxUsed",
+      "maxActive",
+      "sourceCheckpoints"
+    ],
+    "usage": [
+      24,
+      1,
+      6,
+      2,
+      0
+    ],
+    "readOnly": true
+  }
+]

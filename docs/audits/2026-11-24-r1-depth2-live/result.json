@@ -1,0 +1,161 @@
+{
+  "schema": "r1-depth2-live-release/v1",
+  "artifact": "R1-2026-11-23-b8d05e3-c8428f1ae381",
+  "pinnedCommit": "d6b249decdb4b19049efb20c42c9ec0b70d604dc",
+  "manualBuild": "b7b20f61-a27e-4bac-b439-b97146005e8f",
+  "buildSucceeded": true,
+  "originalAncestryAndChecksumGuardsPassed": true,
+  "workerUploads": 1,
+  "candidateDeployment": "9831ba89-9c17-48e8-a6b7-4eed4e44e7bc",
+  "candidateVersion": "ca4880bf-58b0-4dd3-a613-0c4736320d73",
+  "candidateCreatedAt": "2026-11-24T15:24:44.261325Z",
+  "commandsRestoredAt": "2026-11-24T15:25:27.163Z",
+  "commandsRestoredReadback": [
+    {
+      "build_command": "cd frontend && npm ci && npm run build:vinext",
+      "deploy_command": "cd frontend && npm run deploy:vinext",
+      "branch_includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "branch_excludes": []
+    }
+  ],
+  "rollBackDeployment": "72ab06fe-229a-4ece-a5d8-96eb1da50f6e",
+  "activeVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "rolledBackAt": "2026-11-24T15:39:20.002328Z",
+  "decision": "NO-GO for R1 completion; candidate withdrawn after mandatory functional acceptance failed",
+  "blockers": [
+    "NBA supporting history HTTP200/success with empty points arrays for top and bottom ranking cards;0 of10games rendered",
+    "NFL upcoming quote cards recovered but independent model projections/confidence/EV unavailable; no predictions invented"
+  ],
+  "partialAcceptance": {
+    "nbaMobileMarketCounts": [
+      25,
+      25,
+      25,
+      25,
+      25,
+      25,
+      25
+    ],
+    "nhlCurrentMarketCounts": {
+      "shots_on_goal": 8,
+      "points": 8,
+      "assists": 0,
+      "goals": 0,
+      "blocked_shots": 0,
+      "goalie_saves": 0
+    },
+    "nflFutureQuarterbackQuoteCards": 6,
+    "nflFutureIndependentModelProjections": 0,
+    "statisticsPeriodUiSeconds": [
+      0.379,
+      0.184,
+      0.245,
+      0.147,
+      0.179,
+      0.333
+    ],
+    "statisticsColdServerMs": 1675,
+    "sportPeriodApiChecks": 15,
+    "automaticStatisticsRefreshObserved": true,
+    "archivesComplete": false,
+    "captureMarketsObservedDone": 16,
+    "captureMarketsRequired": 38,
+    "gradingRotationsObservedDone": 1,
+    "gradingRotationsRequired": 3
+  },
+  "recordIntegrity": [
+    {
+      "dataset": "history_documents",
+      "total": 11615,
+      "protected_rows": 11615,
+      "protected_inventory": "6e7f1c27dddcbabe945d374b6efd2e4f"
+    },
+    {
+      "dataset": "worker_pregame_originals",
+      "total": 6368,
+      "protected_rows": 6116,
+      "protected_inventory": "23e388533aa4a7d395a34890b603b2b2"
+    },
+    {
+      "dataset": "worker_pregame_picks",
+      "total": 1616,
+      "protected_rows": 1478,
+      "protected_inventory": "56e9ef51bbfdbac767d6fcec9df5db19"
+    },
+    {
+      "dataset": "worker_pregame_grades",
+      "total": 1305,
+      "protected_rows": 1269,
+      "protected_inventory": "0e21950e276648be18bce04e2c468e33"
+    }
+  ],
+  "all20478BaselineHashesMatch": true,
+  "currentTotal": 20904,
+  "newRows": {
+    "originalReceipts": 252,
+    "savedPicks": 138,
+    "grades": 36
+  },
+  "newCaptureChecks": [
+    {
+      "dataset": "originals",
+      "added": 252,
+      "captured_after_start": 0,
+      "future_quote": 0
+    },
+    {
+      "dataset": "picks",
+      "added": 138,
+      "captured_after_start": 0,
+      "future_quote": 0
+    }
+  ],
+  "newGradeChecks": [
+    {
+      "new_grades": 36,
+      "mismatches": 0
+    }
+  ],
+  "newGradeSummary": [
+    {
+      "sport": "nhl",
+      "result_source": "official_final_boxscore",
+      "result_status": "hit",
+      "grades": 19,
+      "original_204_cohort": 16
+    },
+    {
+      "sport": "nhl",
+      "result_source": "official_final_boxscore",
+      "result_status": "miss",
+      "grades": 17,
+      "original_204_cohort": 15
+    }
+  ],
+  "original204Graded": 31,
+  "original204Remaining": [
+    {
+      "sport": "nba",
+      "remaining": 56
+    },
+    {
+      "sport": "nfl",
+      "remaining": 114
+    },
+    {
+      "sport": "nhl",
+      "remaining": 3
+    }
+  ],
+  "manualSourceDataWrites": 0,
+  "existingBackupReExported": false,
+  "existingBackupCovers": 20478,
+  "new426RowsExportedToBackup": false,
+  "automaticBuildsPaused": true,
+  "CW08Changed": false,
+  "allHistoricalReceiptsAndOldGradesPreserved": true,
+  "fullR1LiveAcceptancePassed": false,
+  "completedRowsMoved": 0
+}
