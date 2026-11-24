@@ -73,11 +73,11 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  const availableDates=new Set<string>(),observationTimes=new Map<string,number>();
  if(sport==='mlb'&&root===historyRoot()){const legacy=await readBundledMlbHistory(days);rows.push(...legacy.rows);legacy.dates.forEach(day=>availableDates.add(day));errors.push(...legacy.errors);}
  const remember=(payload:any,observedAt?:string)=>{const key=String(payload.gameId),at=Date.parse(observedAt||payload.updatedAt||'')||0;if(!observations.has(key)||at>(observationTimes.get(key)||0)){observations.set(key,payload);observationTimes.set(key,at);}};
- const consume=(payload:any,stream:string,date:string)=>{
+ const consume=(payload:any,stream:string,date:string,verifiedDocument=false)=>{
   if(stream.startsWith('archive_records_')){if(!Array.isArray(payload))throw Error('Invalid recovered archive');for(const row of payload){const item=row?.archiveFinal;if(item){if(['mlb','soccer'].includes(sport))item.boxscore=rawFinalPerformance(sport,String(item.gameId),item.boxscore,item.observedAt)||item.boxscore;if(item.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt);}else addRows([row]);}return;}
   if(stream.startsWith('protected_final_')){if(!Array.isArray(payload))throw Error('Invalid final receipt');for(const receipt of payload){const item=receipt?.payload;if(item&&['mlb','soccer'].includes(sport))item.boxscore=rawFinalPerformance(sport,String(item.gameId),item.boxscore,item.observedAt)||item.boxscore;if(item?.kind==='official_final_checkpoint'&&item.source==='official_final_boxscore'&&isOfficialFinal(item.boxscore,String(item.gameId)))remember(item.boxscore,item.observedAt||receipt.savedAt);}return;}
   if(stream.startsWith('protected_pregame_')){if(!Array.isArray(payload))throw Error('Invalid pregame receipt');for(const receipt of payload){const item=receipt?.payload;if(item?.kind==='pregame_checkpoint')addRows(savedResearchDecisions([{...item,capturedAt:item.checkpointAt}]).map(r=>({...r,performanceSource:'checkpoint'})));}return;}
-  if(stream.startsWith('official_final_')){const p=cachedOfficialResult(payload);if(!p)throw Error('Invalid official result cache');remember(p,payload.savedAt);return;}
+  if(stream.startsWith('official_final_')){const p=cachedOfficialResult(payload,verifiedDocument);if(!p)throw Error('Invalid official result cache');remember(p,payload.savedAt);return;}
   if(/^(slate_locked_|slate_board_|restored_slate_board_|locked_research_|featured_)/.test(stream)){
    addRows(savedResearchDecisions(Array.isArray(payload)?payload:[]).map(r=>({...r,performanceSource:/^(slate_locked_|locked_research_)/.test(stream)?'locked':'board'})));return;
   }
@@ -91,7 +91,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  const protectedWork=cloudOnly&&['nba','nfl','nhl','cfb','cbb'].includes(sport)
   ?readImmutableModelHistory(sport,[...days].sort()[0]).then(value=>({...value,failed:false})).catch(()=>({rows:[],invalid:0,failed:true}))
   :null;
- const cloudWork=cloudBatch?visitCloudPerformanceDocuments(sport,firstDay,doc=>consume(doc.payload,doc.stream,doc.game_date)):null;
+ const cloudWork=cloudBatch?visitCloudPerformanceDocuments(sport,firstDay,doc=>consume(doc.payload,doc.stream,doc.game_date,true)):null;
  // MLB performance snapshots live in a child directory; protected receipts and
  // newly captured boards use the shared sport root like every other sport.
  if(sport==='mlb'&&!cloudOnly){
@@ -115,7 +115,7 @@ export async function readSavedPerformance(sport:string,period:string,now=new Da
  errors.push(...(cloud?.errors??[]).map((x:string)=>'cloud:'+x));
  errors.push(...remote.errors.map((x:string)=>(drive?'drive:':'cloud:')+x));
  for(const date of cloud?.dates??[])availableDates.add(date);
- for(const doc of remote.rows)try{consume(doc.payload,doc.stream,doc.game_date);}catch{errors.push((drive?'drive:':'cloud:')+doc.stream+'|'+doc.game_date);}
+ for(const doc of remote.rows)try{consume(doc.payload,doc.stream,doc.game_date,true);}catch{errors.push((drive?'drive:':'cloud:')+doc.stream+'|'+doc.game_date);}
  if(cloudOnly&&recent){
   try{
    const {env}=await import('cloudflare:workers');

@@ -27,3 +27,11 @@ test('old grading backlog skips100settled originals and resumes the101st after a
 });
 
 test('full1079-record protected duplicate reconciliation stays bounded and preserves all original rows',{skip:!file},async()=>{const t=install();try{const h=await readImmutableModelHistory('nba','2026-10-24'),existing=h.rows.map(r=>({...r,status:'pending',actual:null,gradedAt:null,verifiedResult:false})),bytes=JSON.stringify(existing),start=performance.now(),merged=appendMissingImmutableModelPicks(existing,h.rows);assert.ok(performance.now()-start<2000,'large duplicate recovery exceeded its targeted merge budget');assert.equal(merged.added,0);assert.equal(merged.alreadyPresent,1079);assert.deepEqual(merged.records.map(r=>r.status),h.rows.map(r=>r.status));assert.equal(JSON.stringify(existing),bytes);}finally{t.restore()}});
+
+test('JSONB official-final recovery requires an independently verified complete source; protected grades stay original',{skip:!file},async()=>{
+ const db=new DatabaseSync(file,{readOnly:true});const envelope=JSON.parse(db.prepare("SELECT row_json FROM records WHERE table_name='history_documents' AND json_extract(row_json,'$.stream')='official_final_401909938'").get().row_json);db.close();
+ const {checksum}=await import('../scripts/history-cloud.mjs');const {cachedOfficialResult}=await loadTs(new URL('../lib/official-result-cache.ts',import.meta.url));
+ assert.equal(checksum(envelope.payload),envelope.checksum);assert.equal(cachedOfficialResult(envelope.payload),null);const before=JSON.stringify(envelope);assert.deepEqual(cachedOfficialResult(envelope.payload,true),envelope.payload.payload);assert.equal(JSON.stringify(envelope),before);assert.equal(cachedOfficialResult({...envelope.payload,version:9},true),null);
+ const {observeSavedResearch}=await loadTs(new URL('../lib/saved-research-performance.ts',import.meta.url));
+ const t=install();try{const h=await readImmutableModelHistory('nba','2026-10-24'),row=h.rows.find(r=>r.verifiedResult),bad={success:true,gameId:row.gameId,state:'post',rows:[{playerId:row.playerId,stats:{[row.market]:999}}]};assert.deepEqual((await observeSavedResearch([row],'nba',{cachedOnly:true,observations:new Map([[row.gameId,bad]])}))[0],row);}finally{t.restore();}
+});
