@@ -1,0 +1,108 @@
+{
+  "at": "2026-11-24T03:45:15.080Z",
+  "dashboardDeployment": {
+    "id": "d86b1e4d-6b43-4b47-b44e-4fbdd5330b08",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Approved immediate R1 fallback: repeated Prediction Dashboard Month 47s exceeds acceptance; preserve records and CW08",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-24T02:43:33.309664Z"
+  },
+  "settings": {
+    "compatibility_date": "2026-11-06",
+    "compatibility_flags": [
+      "nodejs_compat"
+    ],
+    "limits": {
+      "subrequests": 350
+    },
+    "bindings": [
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "name": "BACKUP_DRIVE_FOLDER_ID",
+        "type": "secret_text"
+      },
+      {
+        "name": "DASHBOARD_JOBS",
+        "type": "durable_object_namespace",
+        "namespace_id": "fc70a55e49c84d28bacc562a8d5cfb62",
+        "class_name": "DashboardJobQueue"
+      },
+      {
+        "name": "GOOGLE_OAUTH_CLIENT_ID",
+        "type": "secret_text"
+      },
+      {
+        "name": "GOOGLE_OAUTH_CLIENT_SECRET",
+        "type": "secret_text"
+      },
+      {
+        "name": "GOOGLE_OAUTH_REFRESH_TOKEN",
+        "type": "secret_text"
+      },
+      {
+        "name": "OWLS_INSIGHT_API_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SPORTSGAMEODDS_API_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SUPABASE_SECRET_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "SUPABASE_URL",
+        "type": "secret_text"
+      },
+      {
+        "name": "VINEXT_KV_CACHE",
+        "type": "kv_namespace",
+        "namespace_id": "644df6a469e84dba90c8f7dac410f895"
+      }
+    ]
+  },
+  "automaticBuilds": {
+    "branch_includes": [
+      "__cw08_manual_release_only__"
+    ],
+    "branch_excludes": []
+  },
+  "cw08Deployment": {
+    "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Approved CW08 transport-only update; frozen mod...",
+      "workers/triggered_by": "upload"
+    },
+    "versions": [
+      {
+        "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-14T19:54:01.859122Z"
+  },
+  "cw08Schedules": [
+    {
+      "cron": "*/15 * * * *",
+      "created_on": "2026-11-14T05:24:15.908994Z",
+      "modified_on": "2026-11-14T05:24:15.908994Z"
+    }
+  ]
+}

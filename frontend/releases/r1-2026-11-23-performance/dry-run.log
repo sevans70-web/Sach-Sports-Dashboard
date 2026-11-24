@@ -1,0 +1,11 @@
+[r1-performance-frozen-artifact] {"digest":"c8428f1ae3815140ff3ca117bceca7c13cf230ac7a22721590e5e13761067597","files":430,"worker":"sach-sports-cloudflare-test","sourceCommit":"b8d05e3b6335233f7a9bd4ce4fc456db492dd552","archiveSha256":"1d6f37445e1fcee881908e713c64d85a24f46a58c7ccf34decfeec26d2600e62","approvalRequired":true,"productionDeployed":false,"rehearsal":"rehearsal_passed_awaiting_approval"}
+├  Deploy
+│  ✨ Read 78 files from the assets directory /workspace/Sach-Sports-Dashboard/frontend/.cloudflare/output/v0/workers/default/assets
+│  Total Upload: 14324.55 KiB / gzip: 7586.51 KiB
+│  Your Worker has access to the following bindings:
+│  Binding                                                                              Resource            
+│  env.DASHBOARD_JOBS (DashboardJobQueue, defined in sach-sports-cloudflare-test)       Durable Object      
+│  env.VINEXT_KV_CACHE (644df6a469e84dba90c8f7dac410f895)                               KV Namespace        
+│  env.ASSETS                                                                           Assets              
+│
+│  --dry-run: exiting now.

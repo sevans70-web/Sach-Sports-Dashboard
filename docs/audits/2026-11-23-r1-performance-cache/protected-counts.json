@@ -1,0 +1,11 @@
+{
+  "readOnly": true,
+  "at": "2026-11-24",
+  "history_documents": 11615,
+  "worker_pregame_originals": 6116,
+  "worker_pregame_picks": 1478,
+  "worker_pregame_grades": 1269,
+  "total": 20478,
+  "productionWritesInThisTask": 0,
+  "note": "Fresh aggregate inventory only; previous full-row hash comparison and verified 20,468-record backup reused, not rerun or re-exported. Ten legitimate records added in the previous approved attempt remain included. CW08 tables not accessed."
+}

@@ -1,0 +1,97 @@
+{
+  "schema": "r1-dashboard-release/v1",
+  "artifact": "R1-2026-11-23-b8d05e3-c8428f1ae381",
+  "status": "rehearsal_passed_awaiting_approval",
+  "worker": "sach-sports-cloudflare-test",
+  "sourceCommit": "b8d05e3b6335233f7a9bd4ce4fc456db492dd552",
+  "sourceFrontendTree": "9c5b70eb204a134cd29b761695c2e1e50e941a83",
+  "applicationRepairCommit": "b8d05e3b6335233f7a9bd4ce4fc456db492dd552",
+  "includedVerifiedCommits": [
+    "b8d05e3b6335233f7a9bd4ce4fc456db492dd552",
+    "eb7bcf7",
+    "58829c2",
+    "d605e1a",
+    "6d98710",
+    "600bd5d",
+    "1167c46",
+    "6f8980b"
+  ],
+  "bundleDigest": "c8428f1ae3815140ff3ca117bceca7c13cf230ac7a22721590e5e13761067597",
+  "files": 430,
+  "allFileChecksums": "files.json",
+  "allFileChecksumsSha256": "3f1e0ee4854a4ea5473d459a4da4985ba450fe3da90f48c72b03faef8d74b8b3",
+  "archive": {
+    "file": "candidate.tar.gz",
+    "bytes": 13261177,
+    "sha256": "1d6f37445e1fcee881908e713c64d85a24f46a58c7ccf34decfeec26d2600e62"
+  },
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "immediatePriorVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "immediatePriorDeployment": "d86b1e4d-6b43-4b47-b44e-4fbdd5330b08",
+  "productionDeployed": false,
+  "approvalRequired": true,
+  "createdAt": "2026-11-24T03:47:26.333Z",
+  "execution": "Prepare/dry-run only. New artifact requires separate exact authorization; no deployment or production initialization in this task.",
+  "startup": "Bounded native capture alarm refreshes current official inputs into existing operational evidence tables. No historical import/restamp. Original101 evidence pointers preserved in rehearsal. Stop on failed acceptance.",
+  "runtime": {
+    "compatibilityDate": "2026-11-06",
+    "compatibilityFlags": [
+      "nodejs_compat"
+    ],
+    "subrequests": 350,
+    "foregroundNbaSourceOperations": 256,
+    "jobSubrequests": 220,
+    "jobSourceConcurrency": 4,
+    "jobDeadlineMs": 25000,
+    "jobSourceTimeoutMs": 10000,
+    "namespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+    "kv": "644df6a469e84dba90c8f7dac410f895",
+    "newNamespaces": 0,
+    "newMigrations": 0,
+    "performanceSourceConcurrency": 2,
+    "performanceDeadlineMs": 20000,
+    "performanceSourceTimeoutMs": 5000,
+    "performanceJobRequestLimit": 220,
+    "performanceViewDecodedBytes": 16777216,
+    "performanceSourceDecodedBytes": 1048576,
+    "performanceCacheStoredBytes": 33554432,
+    "performanceSerializedMemoBytes": 16777216,
+    "performanceSerializedMemoEntries": 8
+  },
+  "scope": [
+    "NBA redirect/cache/EV/PR memory repairs; stored-input durable cold recovery and exact ID/team quote matching",
+    "NFL selected-day schedule,17-tab visibility and bounded checkpoint/capture recovery",
+    "NHL loading/rankings/evidence recovery; unchanged frozen model safeguards",
+    "Independent bounded capture/grading and compatible held rollback"
+  ],
+  "protectedBackupRecords": 20468,
+  "cw08Changes": false,
+  "automaticBuildsRemainPaused": true,
+  "fullR1LiveAcceptancePassed": false,
+  "supersedesArtifact": "R1-2026-11-23-eb7bcf7-db22520f39e6",
+  "previousAuthorizationApplies": false,
+  "additionalScope": [
+    "Prediction history includes live immutable picks/grades for all five periods and retains archival data",
+    "Bounded older grading backlog recovery, settled-record skipping and stable pagination",
+    "Original-side/daily summaries, source timestamps, automatic featured refresh, retained results after failed refresh",
+    "Bounded current-first archive fetching and compact streamed history reconciliation",
+    "Home aggregate includes authenticated model-pick grades without double counting legacy identities",
+    "Three isolated per-sport derived performance objects in existing namespace/tables; coalesced protected reads and durable validated archive checkpoints",
+    "Combined main/featured API view; bounded serialized response memo; post-readback pick/grade invalidation; honest partial/stale/failure coverage"
+  ],
+  "rehearsalNote": "Targeted cache/response tests, recorded-data compiled Worker and local desktop/mobile UI checks only. Prior actual NBA recovery/EV evidence reused; no new production pass or upload.",
+  "implementationCommits": [
+    "b8d05e3b6335233f7a9bd4ce4fc456db492dd552"
+  ],
+  "protectedProductionRecords": 20478,
+  "outstandingAcceptance": [
+    "NFL missing eligible rankings, projections and featured picks",
+    "NHL incomplete market coverage",
+    "NBA supporting player history",
+    "Full operational initialization",
+    "All 38 capture markets",
+    "All three grading rotations",
+    "204 previously ungraded predictions where official evidence permits",
+    "Actual production Prediction Dashboard performance and all five period reconciliation"
+  ]
+}

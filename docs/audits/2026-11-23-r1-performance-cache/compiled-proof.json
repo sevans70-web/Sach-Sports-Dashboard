@@ -1,0 +1,728 @@
+{
+  "scope": "Exact compiled Worker with real read-only isolated-restore records, locally constructed verified Drive wrappers (96 source files/sport,350ms media). No production/provider calls. Controlled Nov24 clock for dormant native alarms; elapsed timings real.",
+  "checks": [
+    {
+      "sport": "nba",
+      "stage": "cold-six-concurrent-main-featured",
+      "ms": [
+        4433,
+        4385,
+        4441,
+        4386,
+        4453,
+        4387
+      ],
+      "records": 1078,
+      "sourceRequests": 12,
+      "archiveRequests": 0
+    },
+    {
+      "sport": "nba",
+      "stage": "repeated",
+      "ms": 89,
+      "records": 1078
+    },
+    {
+      "sport": "nfl",
+      "stage": "cold-six-concurrent-main-featured",
+      "ms": [
+        136,
+        134,
+        137,
+        134,
+        138,
+        134
+      ],
+      "records": 149,
+      "sourceRequests": 2,
+      "archiveRequests": 0
+    },
+    {
+      "sport": "nfl",
+      "stage": "repeated",
+      "ms": 8,
+      "records": 149
+    },
+    {
+      "sport": "nhl",
+      "stage": "cold-six-concurrent-main-featured",
+      "ms": [
+        246,
+        242,
+        247,
+        243,
+        248,
+        243
+      ],
+      "records": 245,
+      "sourceRequests": 4,
+      "archiveRequests": 0
+    },
+    {
+      "sport": "nhl",
+      "stage": "repeated",
+      "ms": 11,
+      "records": 245
+    },
+    {
+      "stage": "cold-isolate-durable-view",
+      "ms": 2632,
+      "sourceRequests": 0
+    },
+    {
+      "stage": "archive-phase",
+      "phase": 0,
+      "ms": 1234,
+      "interactiveMs": 107,
+      "records": 1078,
+      "state": {
+        "sport": "nba",
+        "revision": 0,
+        "protectedAt": 1795521600648,
+        "archiveAt": 0,
+        "featuredAt": 1795521601273,
+        "stalled": 0,
+        "dirty": false,
+        "usage": {
+          "used": 22,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 11,
+            "history_http": 11
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 11,
+          "maxActive": 1,
+          "maxReserved": 3,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "lastError": null
+      }
+    },
+    {
+      "stage": "archive-phase",
+      "phase": 1,
+      "ms": 8415,
+      "interactiveMs": 148,
+      "records": 2131,
+      "state": {
+        "sport": "nba",
+        "revision": 0,
+        "protectedAt": 1795521600648,
+        "archiveAt": 1795521609641,
+        "featuredAt": 1795521601273,
+        "stalled": 0,
+        "dirty": false,
+        "usage": {
+          "used": 134,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 67,
+            "odds_or_other_http": 25,
+            "history_http": 42
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 66,
+          "maxActive": 2,
+          "maxReserved": 6,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 1,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "lastError": "job_source_timeout",
+        "archivePartial": true,
+        "checking": true,
+        "retryAt": 1795521639486
+      }
+    },
+    {
+      "stage": "archive-phase",
+      "phase": 2,
+      "ms": 8631,
+      "interactiveMs": 213,
+      "records": 2870,
+      "state": {
+        "sport": "nba",
+        "revision": 0,
+        "protectedAt": 1795521600648,
+        "archiveAt": 1795521618213,
+        "featuredAt": 1795521601273,
+        "stalled": 0,
+        "dirty": false,
+        "usage": {
+          "used": 124,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 62,
+            "odds_or_other_http": 25,
+            "history_http": 37
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 62,
+          "maxActive": 2,
+          "maxReserved": 6,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "lastError": null,
+        "archivePartial": true,
+        "checking": true,
+        "retryAt": 1795521639486
+      }
+    },
+    {
+      "stage": "restart-during-archive"
+    },
+    {
+      "stage": "archive-phase",
+      "phase": 3,
+      "ms": 13823,
+      "interactiveMs": 306,
+      "records": 3633,
+      "state": {
+        "sport": "nba",
+        "revision": 0,
+        "protectedAt": 1795521600648,
+        "archiveAt": 1795521608715,
+        "featuredAt": 1795521601273,
+        "stalled": 0,
+        "dirty": false,
+        "usage": {
+          "used": 118,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 59,
+            "odds_or_other_http": 25,
+            "history_http": 34
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 59,
+          "maxActive": 2,
+          "maxReserved": 6,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "lastError": null,
+        "archivePartial": true,
+        "checking": true,
+        "retryAt": 1795521639486
+      }
+    },
+    {
+      "stage": "six-foreground-during-background",
+      "ms": [
+        789,
+        812,
+        845,
+        998,
+        942,
+        896
+      ]
+    },
+    {
+      "stage": "archive-phase",
+      "phase": 4,
+      "ms": 8964,
+      "interactiveMs": 270,
+      "records": 4172,
+      "state": {
+        "sport": "nba",
+        "revision": 0,
+        "protectedAt": 1795521600648,
+        "archiveAt": 1795521617731,
+        "featuredAt": 1795521601273,
+        "stalled": 0,
+        "dirty": false,
+        "usage": {
+          "used": 108,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 54,
+            "odds_or_other_http": 25,
+            "history_http": 29
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 54,
+          "maxActive": 2,
+          "maxReserved": 6,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "lastError": null,
+        "archivePartial": true,
+        "checking": true,
+        "retryAt": 1795521639486
+      }
+    },
+    {
+      "stage": "archive-phase",
+      "phase": 5,
+      "ms": 9217,
+      "interactiveMs": 348,
+      "records": 5058,
+      "state": {
+        "sport": "nba",
+        "revision": 0,
+        "protectedAt": 1795521600648,
+        "archiveAt": 1795521626865,
+        "featuredAt": 1795521601273,
+        "stalled": 0,
+        "dirty": false,
+        "usage": {
+          "used": 112,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 56,
+            "odds_or_other_http": 21,
+            "history_http": 35
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 56,
+          "maxActive": 2,
+          "maxReserved": 6,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "lastError": null,
+        "archivePartial": true,
+        "checking": true,
+        "retryAt": 1795521639486
+      }
+    },
+    {
+      "stage": "archive-phase",
+      "phase": 6,
+      "ms": 9334,
+      "interactiveMs": 412,
+      "records": 5873,
+      "state": {
+        "sport": "nba",
+        "revision": 0,
+        "protectedAt": 1795521600648,
+        "archiveAt": 1795521636141,
+        "featuredAt": 1795521601273,
+        "stalled": 0,
+        "dirty": false,
+        "usage": {
+          "used": 102,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 51,
+            "odds_or_other_http": 5,
+            "history_http": 46
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 51,
+          "maxActive": 2,
+          "maxReserved": 6,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "lastError": null,
+        "archivePartial": true,
+        "checking": true,
+        "retryAt": 1795521639486
+      }
+    },
+    {
+      "stage": "archive-phase",
+      "phase": 7,
+      "ms": 9664,
+      "interactiveMs": 552,
+      "records": 6832,
+      "state": {
+        "sport": "nba",
+        "revision": 0,
+        "protectedAt": 1795521600648,
+        "archiveAt": 1795521645663,
+        "featuredAt": 1795521601273,
+        "stalled": 0,
+        "dirty": false,
+        "usage": {
+          "used": 104,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 52,
+            "odds_or_other_http": 5,
+            "history_http": 47
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 51,
+          "maxActive": 2,
+          "maxReserved": 6,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 1,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "lastError": "job_source_timeout",
+        "archivePartial": true,
+        "checking": true,
+        "retryAt": 1795521675053
+      }
+    },
+    {
+      "stage": "archive-phase",
+      "phase": 8,
+      "ms": 9921,
+      "interactiveMs": 621,
+      "records": 7633,
+      "state": {
+        "sport": "nba",
+        "revision": 0,
+        "protectedAt": 1795521600648,
+        "archiveAt": 1795521655518,
+        "featuredAt": 1795521601273,
+        "stalled": 0,
+        "dirty": false,
+        "usage": {
+          "used": 90,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 45,
+            "odds_or_other_http": 5,
+            "history_http": 40
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 45,
+          "maxActive": 2,
+          "maxReserved": 6,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "lastError": null,
+        "archivePartial": true,
+        "checking": true,
+        "retryAt": 1795521675053
+      }
+    },
+    {
+      "stage": "archive-phase",
+      "phase": 9,
+      "ms": 10212,
+      "interactiveMs": 662,
+      "records": 7971,
+      "state": {
+        "sport": "nba",
+        "revision": 0,
+        "protectedAt": 1795521600648,
+        "archiveAt": 1795521665683,
+        "featuredAt": 1795521601273,
+        "stalled": 0,
+        "dirty": false,
+        "usage": {
+          "used": 102,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 51,
+            "odds_or_other_http": 5,
+            "history_http": 46
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 50,
+          "maxActive": 2,
+          "maxReserved": 6,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 1,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "lastError": "job_source_timeout",
+        "archivePartial": true,
+        "checking": true,
+        "retryAt": 1795521694777
+      }
+    },
+    {
+      "stage": "archive-phase",
+      "phase": 10,
+      "ms": 6847,
+      "interactiveMs": 567,
+      "records": 7971,
+      "state": {
+        "sport": "nba",
+        "revision": 0,
+        "protectedAt": 1795521667521,
+        "archiveAt": 1795521672632,
+        "featuredAt": 1795521601273,
+        "stalled": 0,
+        "dirty": false,
+        "usage": {
+          "used": 86,
+          "limit": 220,
+          "costs": {
+            "provider_gate": 43,
+            "history_http": 38,
+            "odds_or_other_http": 5
+          },
+          "cacheHits": 0,
+          "cacheWrites": 0,
+          "checkpointBytes": 0,
+          "completedRequests": 43,
+          "maxActive": 2,
+          "maxReserved": 6,
+          "coalesced": 0,
+          "queuedCancelled": 0,
+          "aborted": 0,
+          "sourceDenials": [],
+          "denialHits": 0
+        },
+        "lastError": null,
+        "archivePartial": false,
+        "checking": false,
+        "retryAt": 1795521694777
+      }
+    },
+    {
+      "stage": "six-concurrent-full-archive",
+      "ms": [
+        1122,
+        1198,
+        1248,
+        1289,
+        1330,
+        1395
+      ],
+      "records": 7971
+    },
+    {
+      "stage": "real-stored-pick-grade-release",
+      "ms": 617,
+      "summary": {
+        "total": 7972,
+        "hits": 3862,
+        "misses": 3014,
+        "pushes": 344,
+        "completed": 7220,
+        "awaitingResult": 748,
+        "void": 4,
+        "unknown": 0,
+        "hitRate": 56.2,
+        "lateRecords": 0
+      }
+    },
+    {
+      "sport": "nba",
+      "period": "Today",
+      "stage": "five-period-cached",
+      "ms": 39,
+      "records": 0,
+      "partial": false
+    },
+    {
+      "sport": "nba",
+      "period": "Yesterday",
+      "stage": "five-period-cached",
+      "ms": 43,
+      "records": 0,
+      "partial": false
+    },
+    {
+      "sport": "nba",
+      "period": "Week",
+      "stage": "five-period-cached",
+      "ms": 40,
+      "records": 0,
+      "partial": false
+    },
+    {
+      "sport": "nba",
+      "period": "Month",
+      "stage": "five-period-cached",
+      "ms": 374,
+      "records": 7972,
+      "partial": false
+    },
+    {
+      "sport": "nba",
+      "period": "Season",
+      "stage": "five-period-cached",
+      "ms": 649,
+      "records": 8718,
+      "partial": false
+    },
+    {
+      "sport": "nfl",
+      "period": "Today",
+      "stage": "five-period-cached",
+      "ms": 11,
+      "records": 0,
+      "partial": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Yesterday",
+      "stage": "five-period-cached",
+      "ms": 5,
+      "records": 0,
+      "partial": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Week",
+      "stage": "five-period-cached",
+      "ms": 5,
+      "records": 0,
+      "partial": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Month",
+      "stage": "five-period-cached",
+      "ms": 13,
+      "records": 149,
+      "partial": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Season",
+      "stage": "five-period-cached",
+      "ms": 17,
+      "records": 149,
+      "partial": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Today",
+      "stage": "five-period-cached",
+      "ms": 11,
+      "records": 0,
+      "partial": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Yesterday",
+      "stage": "five-period-cached",
+      "ms": 6,
+      "records": 0,
+      "partial": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Week",
+      "stage": "five-period-cached",
+      "ms": 10,
+      "records": 0,
+      "partial": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Month",
+      "stage": "five-period-cached",
+      "ms": 19,
+      "records": 245,
+      "partial": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Season",
+      "stage": "five-period-cached",
+      "ms": 19,
+      "records": 245,
+      "partial": true
+    }
+  ],
+  "sourceWrites": 0,
+  "finalCache": {
+    "state": {
+      "sport": "nba",
+      "revision": 0,
+      "protectedAt": 1795521667521,
+      "archiveAt": 1795521672632,
+      "featuredAt": 1795521601273,
+      "stalled": 0,
+      "dirty": false,
+      "usage": {
+        "used": 86,
+        "limit": 220,
+        "costs": {
+          "provider_gate": 43,
+          "history_http": 38,
+          "odds_or_other_http": 5
+        },
+        "cacheHits": 0,
+        "cacheWrites": 0,
+        "checkpointBytes": 0,
+        "completedRequests": 43,
+        "maxActive": 2,
+        "maxReserved": 6,
+        "coalesced": 0,
+        "queuedCancelled": 0,
+        "aborted": 0,
+        "sourceDenials": [],
+        "denialHits": 0
+      },
+      "lastError": null,
+      "archivePartial": false,
+      "checking": false,
+      "retryAt": 1795521694777
+    },
+    "documents": [
+      {
+        "n": 3097,
+        "bytes": 7465584
+      }
+    ]
+  },
+  "success": true,
+  "transport": {
+    "calls": 581,
+    "sourceWrites": 0,
+    "media": 96,
+    "lists": 40,
+    "protectedReads": 42,
+    "legacy": 393,
+    "maxActive": 2,
+    "archiveFiles": {
+      "nba": 96,
+      "nfl": 96,
+      "nhl": 96
+    }
+  }
+}

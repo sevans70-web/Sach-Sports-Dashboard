@@ -1,0 +1,84 @@
+{
+  "scope": "Local compiled UI with recorded authentic API evidence and combined-response cache metadata; not production or performance acceptance",
+  "checks": [
+    {
+      "view": "desktop",
+      "sport": "nba",
+      "status": 200,
+      "seconds": 4.08,
+      "automaticRefresh": {
+        "history": 4,
+        "featured": 0
+      },
+      "retainedAfter503": true,
+      "directionAndDateView": true,
+      "overflow": false
+    },
+    {
+      "view": "desktop",
+      "sport": "nfl",
+      "status": 200,
+      "seconds": 3.159,
+      "automaticRefresh": {
+        "history": 4,
+        "featured": 0
+      },
+      "retainedAfter503": true,
+      "directionAndDateView": true,
+      "overflow": false
+    },
+    {
+      "view": "desktop",
+      "sport": "nhl",
+      "status": 200,
+      "seconds": 3.422,
+      "automaticRefresh": {
+        "history": 4,
+        "featured": 0
+      },
+      "retainedAfter503": true,
+      "directionAndDateView": true,
+      "overflow": false
+    },
+    {
+      "view": "mobile",
+      "sport": "nba",
+      "status": 200,
+      "seconds": 2.508,
+      "automaticRefresh": {
+        "history": 4,
+        "featured": 0
+      },
+      "retainedAfter503": true,
+      "directionAndDateView": true,
+      "overflow": false
+    },
+    {
+      "view": "mobile",
+      "sport": "nfl",
+      "status": 200,
+      "seconds": 2.305,
+      "automaticRefresh": {
+        "history": 4,
+        "featured": 0
+      },
+      "retainedAfter503": true,
+      "directionAndDateView": true,
+      "overflow": false
+    },
+    {
+      "view": "mobile",
+      "sport": "nhl",
+      "status": 200,
+      "seconds": 2.2,
+      "automaticRefresh": {
+        "history": 4,
+        "featured": 0
+      },
+      "retainedAfter503": true,
+      "directionAndDateView": true,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}
