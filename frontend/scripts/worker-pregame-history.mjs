@@ -2,7 +2,8 @@ import {cloudRequest} from './history-cloud.mjs';
 import {createHash} from 'node:crypto';
 
 const SPORTS=new Set(['nba','nfl','nhl','cfb','cbb']);
-const dayOf=date=>{const parsed=new Date(date);if(!Number.isFinite(parsed.getTime()))return '';const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(parsed);const p=n=>parts.find(x=>x.type===n)?.value;return [p('year'),p('month'),p('day')].join('-');};
+const dayFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'});
+const dayOf=date=>{const parsed=new Date(date);if(!Number.isFinite(parsed.getTime()))return '';const parts=dayFormatter.formatToParts(parsed);const p=n=>parts.find(x=>x.type===n)?.value;return [p('year'),p('month'),p('day')].join('-');};
 /** The legacy capture hash uses insertion-ordered JSON, while Postgres
  * jsonb reorders object keys. Reconstitute the exact v1 capture field order
  * before checking it; never mark a valid original as corrupted due to jsonb.
@@ -59,15 +60,16 @@ export function immutableModelHistoryRow(pick,grade){
  * history reconciliation, even when that older copy has different lines.
  */
 export function appendMissingImmutableModelPicks(existing,protectedRows){
- const seen=new Set(existing.filter(r=>r?.gameId&&r?.playerId).map(r=>[dayOf(r.gameTime),keyOf(r)].join('|')));
+ const positions=new Map();
+ existing.forEach((r,i)=>{if(r?.gameId&&r?.playerId){const key=[dayOf(r.gameTime),keyOf(r)].join('|');if(!positions.has(key))positions.set(key,i);}});
  const output=[...existing];let added=0,alreadyPresent=0;
  for(const row of protectedRows){
   const key=[dayOf(row.gameTime),keyOf(row)].join('|');
-  if(seen.has(key)){
+  if(positions.has(key)){
    alreadyPresent++;
    // Settle an exact original call in the derived view only. A pending
    // legacy copy must not hide its authenticated official-final grade.
-   const index=output.findIndex(r=>[dayOf(r.gameTime),keyOf(r)].join('|')===key),prior=output[index];
+   const index=positions.get(key),prior=output[index];
    if(prior?.status==='pending'&&row.verifiedResult===true&&row.resultSource==='official_final_boxscore'&&
       prior.sportsbookLine===row.sportsbookLine&&
       String(prior.pickSide||prior.prediction||prior.pick||'').toUpperCase()===row.pickSide)
@@ -75,7 +77,7 @@ export function appendMissingImmutableModelPicks(existing,protectedRows){
      verifiedResult:true,resultSource:row.resultSource};
    continue;
   }
-  seen.add(key);output.push(row);added++;
+  positions.set(key,output.length);output.push(row);added++;
  }
  return {records:output,added,alreadyPresent};
 }
