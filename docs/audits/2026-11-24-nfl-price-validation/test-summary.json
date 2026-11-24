@@ -1,0 +1,24 @@
+{
+  "tests": 36,
+  "passed": 36,
+  "failed": 0,
+  "typescriptExitCode": 0,
+  "typescriptDiagnostics": 0,
+  "previous73RecoveryChecksReused": true,
+  "fullSuiteRun": false,
+  "productionBuildRun": false,
+  "currentLiveQuoteCollection": false,
+  "compiledBaselineComparison": {
+    "commit": "af5f712",
+    "passingTdEligible": 5,
+    "beforeEvAvailable": 4,
+    "afterEvAvailable": 5,
+    "originalModelProbabilityAndQuoteValuesUnchanged": true
+  },
+  "captureGradingArchiveInitializationAcceptanceStillOpen": true,
+  "productionWrites": 0,
+  "productionDeployments": 0,
+  "newBackupExports": 0,
+  "CW08Modified": false,
+  "automaticBuildsPaused": true
+}

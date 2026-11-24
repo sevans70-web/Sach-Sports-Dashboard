@@ -1,0 +1,56 @@
+✔ estimated EV uses selected side, American payout and zero-profit pushes (2.651167ms)
+✔ stale/mismatched quotes, failed validation and book-implied scorer chances cannot create EV (0.592201ms)
+✔ saved pregame EV survives kickoff and final results without using outcomes (1.260963ms)
+✔ shared EV arithmetic applies to all eight sports without a GI dependency (0.51667ms)
+✔ saved probability evidence is deterministic across file order and exact fixture/quote constraints (37.17848ms)
+✔ all eight sports reject failed, retimed and quote-spliced selection evidence (1.112542ms)
+✔ new quote-bound probability evidence remains usable and rejects every altered identity field (1.950803ms)
+✔ NBA comparison EV uses both exact prices without manufacturing a saved selection (3.313863ms)
+✔ one NBA research EV follows displayed projection direction, never the most attractive side (0.757463ms)
+✔ a Worker market without a fitted model retains the sportsbook quote and reports the missing model (4.199936ms)
+✔ unsupported markets cannot trigger unused observation refresh; combinations require every fitted component (0.45915ms)
+✔ fitted workload and rate produce a projection distinct from the unchanged historical mean (5.044105ms)
+✔ target outcomes, book line and archived heuristic scores cannot alter the forecast (2.417958ms)
+✔ missing histories, future snapshots, after-start and unsupported markets abstain (0.508043ms)
+✔ an exact official context supplies a missing season; another fixture cannot do so (24.62271ms)
+✔ WNBA workload models accept playoff fixture identity without borrowing the NBA regular-season context restriction (0.633709ms)
+✔ GI requires exact fresh quote evidence and a prior calibration artifact (3.090015ms)
+✔ a model selection can exist without GI while failed, stale and after-start decisions abstain (1.505224ms)
+✔ combination forecasts sum fitted component expectations without inventing joint probability or GI (2.019429ms)
+[33m[PLUGIN_TIMINGS] [0mJavaScript callbacks ran for 2.9s of this 3.1s build (94%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin sach-worker-model-runtime transform (93%, 2.9s, 53 calls)
+Additional callback time came from callbacks under 1s.
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+
+[33m[PLUGIN_TIMINGS] [0mJavaScript callbacks ran for 3.6s of this 3.7s build (97%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin sach-worker-model-runtime transform (97%, 3.6s, 54 calls)
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+
+{"scope":"Retrospective implementation replay at original quote times; no new current/prospective prediction claim","baselineComparisonEV":4,"fixedComparisonEV":5,"modelAndQuoteValuesUnchanged":true,"markets":[{"market":"passing_tds","rows":6,"projections":5,"ev":5,"holds":{"model_unavailable":1}},{"market":"passing_yards","rows":6,"projections":5,"ev":0,"holds":{"probability_validation_failed":5,"model_unavailable":1}},{"market":"rushing_yards","rows":10,"projections":10,"ev":0,"holds":{"probability_validation_failed":10}},{"market":"receiving_yards","rows":37,"projections":34,"ev":0,"holds":{"probability_validation_failed":34,"model_unavailable":3}},{"market":"receptions","rows":37,"projections":34,"ev":0,"holds":{"probability_validation_failed":34,"model_unavailable":3}}],"firstRotationProviderCalls":58,"staleRefreshProviderCalls":58,"productionWrites":0,"originalFrozenForecastsUnchanged":true}
+✔ compiled comparison against af5f712: actual quotes recover missing NFL comparison EV without waiving probability holds or changing old records (15247.283916ms)
+✔ all six genuine TD quote rows retain exact identity/prices; all five eligible rows have coherent direction, confidence and independently calculated signed EV (4.831721ms)
+✔ the four failed markets remain held for the SAME model artifacts that failed the independent price audit (40.210217ms)
+✔ wrong line, odds, book, quote/player/game IDs, market, period and receipt time cannot acquire confidence or EV (2.235336ms)
+✔ normalization, stale/future quotes, unsupported markets and directionless forecasts return explicit holds (0.543598ms)
+✔ zero and negative research EV stay signed at the authentic quote; synthetic probabilities test arithmetic only and never waive a model hold (0.690879ms)
+✔ recorded live NFL QB disappearance is reproduced and quote-backed coverage restored without manufacturing selections (21.564723ms)
+✔ model validation failures remain unavailable confidence/EV; baselines and unmodelled quarters stay distinct (0.376889ms)
+✔ exact normalized probabilities can price signed NFL research EV without generating a betting selection (0.962187ms)
+✔ wrong sport, invalid quote, after-start recovery, unavailable player and tampered capture remain excluded (0.54244ms)
+✔ negative and zero exact-price NFL comparisons remain signed and never acquire selections (0.647044ms)
+✔ quarter sportsbook category aliases remain exact to period and do not borrow full-game offers (55.452334ms)
+✔ two-sided NFL quarter forecasts retain their projection direction without being promoted to betting picks (0.697075ms)
+✔ nba exact comparison confidence is visible even at negative EV, without becoming a pick (3.823566ms)
+✔ nfl exact comparison confidence is visible even at negative EV, without becoming a pick (1.896745ms)
+✔ nhl exact comparison confidence is visible even at negative EV, without becoming a pick (0.346306ms)
+✔ all seven NBA markets copy exact original probabilities and never infer confidence from averages or book-implied chance (0.94342ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 26262.154291

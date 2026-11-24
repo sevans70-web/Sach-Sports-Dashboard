@@ -1,0 +1,86 @@
+{
+  "scope": "Reuse existing evaluation and model data; no recalibration or deployment",
+  "markets": {
+    "nfl|passing_yards": {
+      "status": "withheld",
+      "reason": "price_validation_failed",
+      "forecasts": 22,
+      "independentGames": 13,
+      "modelBrier": 0.2981731704680575,
+      "constantHalfBrier": 0.25,
+      "hits": 8,
+      "underHits": 4,
+      "underSettled": 12,
+      "evaluation": "Retrospective independent official-final audit of original saved pregame forecasts; not an untouched prospective test",
+      "report": "model-research/2026-10-27/p01-saved-passing-audit/accuracy-audit.json"
+    },
+    "nfl|receiving_yards": {
+      "status": "withheld",
+      "reason": "price_validation_failed",
+      "forecasts": 31,
+      "modelBrier": 0.3110498591462657,
+      "bookBrier": 0.25067068782158913
+    },
+    "nfl|receptions": {
+      "status": "withheld",
+      "reason": "price_validation_failed",
+      "forecasts": 31,
+      "modelBrier": 0.26615640244095395,
+      "bookBrier": 0.24161164685626688
+    },
+    "nfl|rushing_yards": {
+      "status": "withheld",
+      "reason": "price_validation_failed",
+      "forecasts": 32,
+      "modelBrier": 0.31014356096476126,
+      "bookBrier": 0.2510390347264641
+    }
+  },
+  "passingTds": {
+    "status": "research_only",
+    "failedPriceAuditRecorded": false,
+    "bettingValidated": false,
+    "limitation": "Point/distribution fit does not establish prospective exact-price calibration or profitability"
+  },
+  "protectedFiles": [
+    {
+      "path": "frontend/model-runtime/gi-status.json",
+      "sha256": "71ed0bab29fb983dd228a49b8b263355ad148dfb7831d2acb7c4a5cc27369acd",
+      "unchangedSinceAf5f712": true
+    },
+    {
+      "path": "frontend/model-runtime/snapshot.json.gz",
+      "sha256": "b45c4ce8bafb7395c4742c7a58572f1cf51dc137455df9fb16453a3c0fb88080",
+      "unchangedSinceAf5f712": true
+    },
+    {
+      "path": "frontend/model-runtime/nfl-passing-tds.json.gz",
+      "sha256": "5f2c7e8d1c57f54b26b9b487f8a6666b42022f807e1db2d84b586f93140cf83d",
+      "unchangedSinceAf5f712": true
+    },
+    {
+      "path": "frontend/lib/nhl-count-model.ts",
+      "sha256": "72aea5f536d3089f712f0a105e384b5912bf9c8d9f6f04131e22b1af1bc02e92",
+      "unchangedSinceAf5f712": true
+    },
+    {
+      "path": "frontend/lib/nba-supporting-history.ts",
+      "sha256": "65e2ec1e9e9b7825ada851362e7779d9ced7d976d2ad60029a2f3ed804fb9db9",
+      "unchangedSinceAf5f712": true
+    },
+    {
+      "path": "frontend/jobs/performance-cache.mjs",
+      "sha256": "f0e4b10ed5b5eea97a02d0fb068477d0facedc95b2408fa55ab7379818829812",
+      "unchangedSinceAf5f712": true
+    }
+  ],
+  "backup": {
+    "records": 20904,
+    "reused": true,
+    "newExport": false,
+    "proof": "../2026-11-24-r1-supporting-history/backup-proof.json"
+  },
+  "productionWrites": 0,
+  "productionDeployments": 0,
+  "completedMoves": 0
+}

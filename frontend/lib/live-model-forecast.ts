@@ -67,6 +67,7 @@ function bundle(sport:string,market:string):RuntimeBundle|null{
  return cached={...data,models:[...data.models,...combinations.models],digest:manifest.sha256,asOf:manifest.asOf,gi,giStatus};
 }
 const keepNbaOriginal=(r:any,sport:string,market:string,now:number)=>sport==='nba'&&nbaEvMarket(market)&&r.researchForecast&&(r.boardFrozen||r.frozen||r.lockedAtKickoff||Date.parse(r.gameTime)<=now);
+const keepNflOriginal=(r:any,sport:string,now:number)=>sport==='nfl'&&r.researchForecast&&(r.boardFrozen||r.frozen||r.lockedAtKickoff||Date.parse(r.gameTime)<=now);
 const unavailable=(reason:string)=>({status:'unavailable',projection:null,giScore:null,reason,validatedForBetting:false});
 /** Experimental outputs remain separate from the validated recommendation
  * registry and never rewrite historical lines, bets, grades or probabilities. */
@@ -104,10 +105,11 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
  if(countMarket&&(f.projection<0||f.projection>100))return unavailable('invalid_fitted_output');
  const values=countMarket?nhlCountDistribution(f.projection).values:[...f.values].sort((a,b)=>a-b);
  if(!values.length||!values.every(Number.isFinite))return unavailable('invalid_fitted_output');
- let pricing:any=null,gi:any=null;
+ let pricing:any=null,gi:any=null,priceIssue:string|null='verified_quote_unavailable';
  if(verifiedPropQuote(row,now)&&row.lineType==='main'){
   const quote:ExactQuote={sport,market,period:market.startsWith('q1_')?'q1':'game',gameId:target.gameId,playerId:target.playerId,bookmaker:row.sportsbookKey,quoteId:row.quoteId,line:row.sportsbookLine,overPrice:row.overPrice,underPrice:row.underPrice,updatedAt:row.quoteUpdatedAt,capturedAt:row.capturedAt||new Date(now).toISOString(),decisionAt:new Date(now).toISOString(),mainLine:true};
-  if(!quoteProblem(quote,target)){
+  priceIssue=sport==='nfl'&&row.quoteMarket&&row.quoteMarket!==market?'wrong_market':sport==='nfl'&&row.quotePeriod&&row.quotePeriod!==quote.period?'wrong_period':quoteProblem(quote,target);
+  if(!priceIssue){
    pricing=countMarket?evaluateNhlCountPrice(f.projection,quote):evaluatePrice(values,quote);
    // Existing GI artifacts evaluated the old residual likelihood and 55%
    // selection policy. They cannot certify a different count distribution.
@@ -137,6 +139,7 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   ...(countMarket?{countModelValidation:{selectionApproved:false,reason:'nhl_count_revalidation_required',pointModel:'existing_workload_rate',probabilityModel:'poisson',distributionSamples:1001}}:{}),
   trainedThrough:model.trainedThrough,calibratedThrough:model.calibratedThrough,latestHistoryAt:latest.gameTime,calculatedAt:new Date(now).toISOString(),snapshotAsOf:data.asOf,snapshotSha256:data.digest,
   inputReceipt,
+  ...(sport==='nfl'?{priceEvidence:{status:pricing?'available':'unavailable',reason:priceIssue,probabilityValidation:data.giStatus?.[key]?.reason==='price_validation_failed'?'withheld':'research_only'}}:{}),
   ...(sport==='nba'?{supportingHistory:nbaSupportingHistory(row,market,history,inputReceipt)}:{}),
   giScore:gi?.score??null,giEstimatedUnitReturn:gi?.estimatedUnitReturn??null,giReason:countMarket?'price_validation_failed':gi?.reason||data.giStatus?.[key]?.reason||(!pricing?'verified_quote_unavailable':'GI_exact_price_calibration_missing'),
   candidateSide:selectionSide&&gi?.score>0&&gi?.estimatedUnitReturn!=null&&gi.estimatedUnitReturn>=.03?selectionSide:null,
@@ -163,10 +166,10 @@ async function attachForecasts(payload:any,sport:string,now=Date.now(),options:{
  }
  if(!options.offlineOnly)payload=await attachRecordedProgressLines(payload,sport,now);
  if(['nba','nfl'].includes(sport)&&String(payload.market||payload.rows[0]?.market||'').startsWith('q1_'))return attachQuarterForecasts(payload,sport as 'nba'|'nfl',now);
- let data:RuntimeBundle|null;try{data=bundle(sport,String(payload.market||payload.rows[0]?.market||""))}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>((sport==='nhl'&&r.boardFrozen&&r.researchForecast)||keepNbaOriginal(r,sport,String(payload.market||r.market||''),now)?r:{...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
- if(!data)return {...payload,rows:payload.rows.map((r:any)=>((sport==='nhl'&&r.boardFrozen&&r.researchForecast)||keepNbaOriginal(r,sport,String(payload.market||r.market||''),now)?r:{...r,researchForecast:unavailable('market_model_not_fitted')})),
+ let data:RuntimeBundle|null;try{data=bundle(sport,String(payload.market||payload.rows[0]?.market||""))}catch(e){console.error('[forecast runtime]',e instanceof Error?e.message:'unavailable');return {...payload,rows:payload.rows.map((r:any)=>((sport==='nhl'&&r.boardFrozen&&r.researchForecast)||keepNbaOriginal(r,sport,String(payload.market||r.market||''),now)||keepNflOriginal(r,sport,now)?r:{...r,researchForecast:unavailable('model_snapshot_unavailable')}))}}
+ if(!data)return {...payload,rows:payload.rows.map((r:any)=>((sport==='nhl'&&r.boardFrozen&&r.researchForecast)||keepNbaOriginal(r,sport,String(payload.market||r.market||''),now)||keepNflOriginal(r,sport,now)?r:{...r,researchForecast:unavailable('market_model_not_fitted')})),
   forecastBlockers:{market_model_not_fitted:payload.rows.length},fittedResearchForecastCount:0,modelSelectionCount:0};
- // Reuse the same official gamelog URL/cache as the rankings route. Historical
+ // Share the official team/FINAL cache with the rankings route. Historical
  // team IDs come from each event, so a transfer cannot inherit another team's role.
  let hockeyRefreshUnavailable=new Set<string>();
  if(sport==='nhl'&&!options.offlineOnly){
@@ -175,15 +178,17 @@ async function attachForecasts(payload:any,sport:string,now=Date.now(),options:{
   payload={...payload,officialHistoryCoverage:{requested:refresh.requestedPlayers,unavailable:refresh.unavailablePlayers.length,budgetExceeded:refresh.budgetExceeded}};
  }
  let nflRefreshUnavailable=new Set<string>();
+ let nflHistoryRefreshed=new Set<string>();
  if(sport==='nfl'&&payload.market!=='sacks'&&!options.offlineOnly&&runtimeSupportsMarket(data,sport,String(payload.market||''))){
   const pricedGoalies=false;
-  const players=[...new Map<string,any>(payload.rows.filter((r:any)=>(!pricedGoalies||verifiedPropQuote(r,now))&&/^\d+$/.test(String(r.playerId))&&Date.parse(r.gameTime)>now&&!r.frozen&&!r.lockedAtKickoff).map((r:any)=>[String(r.playerId),r])).values()];
+  const players=[...new Map<string,any>(payload.rows.filter((r:any)=>(!pricedGoalies||verifiedPropQuote(r,now))&&/^\d+$/.test(String(r.playerId))&&Date.parse(r.gameTime)>now&&!r.boardFrozen&&!r.frozen&&!r.lockedAtKickoff).map((r:any)=>[String(r.playerId),r])).values()];
   const updates:OpportunityGame[]=[];
   const refreshedScopes=new Set<string>();
   for(let i=0;i<players.length;i+=4)await Promise.all(players.slice(i,i+4).map(async row=>{
    const season=String(row.season);
    try{const payload=await nflOfficialPlayerHistory(String(row.playerId),String(row.teamId),Number(season),now);
     refreshedScopes.add([String(row.playerId),String(row.teamId),season].join('|'));
+    nflHistoryRefreshed.add(String(row.playerId));
     const identity={sport,season,playerId:String(row.playerId),playerName:row.playerName,source:payload.sourcePolicy,retrievedAt:new Date(now).toISOString()};
     updates.push(...espnOpportunityGames(payload,identity).map(g=>({...g,source:payload.events[g.gameId].source,retrievedAt:payload.events[g.gameId].retrievedAt})));
    }catch(error){dashboardJobContext()?.assertActive();if((error as any)?.deferred)throw error;nflRefreshUnavailable.add(String(row.playerId))}
@@ -219,16 +224,19 @@ async function attachForecasts(payload:any,sport:string,now=Date.now(),options:{
  for(const r of payload.rows){
   dashboardJobContext()?.assertActive();if(sport==='nba')assertNbaRankingActive();
   const preserveNba=keepNbaOriginal(r,sport,String(payload.market||r.market||''),now);
-  const row={...r,researchForecast:preserveNba?r.researchForecast:sport==='nhl'&&r.boardFrozen&&r.researchForecast?r.researchForecast:(basketballRefreshUnavailable.has(String(r.playerId))||hockeyRefreshUnavailable.has(String(r.playerId))||nflRefreshUnavailable.has(String(r.playerId)))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
+  const preserveNfl=keepNflOriginal(r,sport,now);
+  const row={...r,...(!preserveNfl&&nflHistoryRefreshed.has(String(r.playerId))?{officialHistoryUnavailable:false,officialHistoryReason:null}:{}),researchForecast:preserveNba||preserveNfl?r.researchForecast:sport==='nhl'&&r.boardFrozen&&r.researchForecast?r.researchForecast:(basketballRefreshUnavailable.has(String(r.playerId))||hockeyRefreshUnavailable.has(String(r.playerId))||nflRefreshUnavailable.has(String(r.playerId)))?unavailable('recent_official_history_unavailable'):fittedResearchForecast(r,sport,String(payload.market||r.market||''),data,now,index)};
   // Record the actual pregame decision/capture time for a fresh selection
-  // or an NBA comparison. A comparison must not inherit an older board
+  // or an NBA/NFL comparison. A comparison must not inherit an older board
   // timestamp merely because it did not qualify as a betting selection.
   // Never stamp a historical, frozen, stale, or model-only candidate.
   const selection=row.researchForecast?.modelSelection;
   const nbaComparisonReceipt=sport==='nba'&&nbaEvMarket(String(payload.market||r.market||''))&&row.researchForecast?.status==='available'&&row.researchForecast?.priceComparison?.quoteEvidence;
-  const decision=Date.parse(selection?.calculatedAt||(nbaComparisonReceipt?row.researchForecast.calculatedAt:''));
+  const nflComparisonReceipt=sport==='nfl'&&['passing_yards','passing_tds','rushing_yards','receiving_yards','receptions'].includes(String(payload.market||r.market||''))&&row.researchForecast?.status==='available'&&row.researchForecast?.giReason!=='price_validation_failed'&&row.researchForecast?.selectionReason!=='price_validation_failed'&&row.researchForecast?.priceComparison?.quoteEvidence;
+  const comparisonReceipt=nbaComparisonReceipt||nflComparisonReceipt;
+  const decision=Date.parse(selection?.calculatedAt||(comparisonReceipt?row.researchForecast.calculatedAt:''));
   const kickoff=Date.parse(row.gameTime||'');
-  const eligibleReceipt=(selection||nbaComparisonReceipt)&&!preserveNba&&Number.isFinite(decision)&&decision<=(nbaComparisonReceipt?now:Date.now())&&
+  const eligibleReceipt=(selection||comparisonReceipt)&&!preserveNba&&!preserveNfl&&Number.isFinite(decision)&&decision<=(comparisonReceipt?now:Date.now())&&
    Number.isFinite(kickoff)&&decision<kickoff&&verifiedPropQuote(row,now)&&
    row.researchForecast?.priceComparison?.quoteEvidence&&
    !row.boardFrozen&&!row.frozen&&!row.lockedAtKickoff;

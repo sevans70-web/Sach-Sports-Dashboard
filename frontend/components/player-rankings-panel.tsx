@@ -1011,10 +1011,11 @@ function PlayerCard({
   const targetPick = quarterTarget ? qualifiedQuarterTarget(card.raw) : null;
   const modelConfidence=rankingModelConfidence(card.raw);
   const nbaDisplayEv=sport==='nba'&&nbaEvMarket(card.market)?nbaRankingEv(card.raw):null;
-  const evPercent=nbaDisplayEv?nbaDisplayEv.percent:complete?.percent??estimatedEv(card.raw).percent;
+  const evPercent=sport==='nfl'?nflEvidence?.ev.percent??null:nbaDisplayEv?nbaDisplayEv.percent:complete?.percent??estimatedEv(card.raw).percent;
   // Display a valid signed expected return independently of betting qualification.
   // Original selections and their saved evidence remain unchanged.
-  const evText=rankingEvText(evPercent,sport,formatEvPercent),evNotice=complete?.comparison?'Research expected return for this projection direction at the exact recorded sportsbook line and odds; not a betting recommendation.':nflEvidence?.reason||estimatedEvNotice(card.raw);
+  const evText=rankingEvText(evPercent,sport,formatEvPercent),comparisonNotice='Research expected return for this projection direction at the exact recorded sportsbook line and odds; not a betting recommendation.';
+  const evNotice=sport==='nfl'?(nflEvidence?.reason||(complete?.comparison?comparisonNotice:estimatedEvNotice(card.raw))):complete?.comparison?comparisonNotice:estimatedEvNotice(card.raw);
   const displayedAverage=sport==='nfl'?(nflEvidence?.projection??nflEvidence?.baseline??null):complete?.projection??(quarterCard ? cardModelProjection(card.raw) : (savedProjectionEvidence(card.raw,card.raw.savedProjectionReceipt)?.projection??cardModelProjection(card.raw)??footballForecast?.projection??null));
   const targetForecast=quarterTarget?quarterTargetDisplay(card.raw):null;
   const edge=displayedAverage!=null&&card.sportsbookLine!=null?displayedAverage-card.sportsbookLine:null;
