@@ -1,0 +1,91 @@
+{
+  "scope": "Independent calculation from actual shipping NBA Tomorrow browser/API responses; no source/model changes",
+  "markets": [
+    {
+      "market": "assists",
+      "eligible": 9,
+      "unavailableWithReasons": 2,
+      "signs": {
+        "positive": 7,
+        "negative": 2,
+        "zero": 0
+      },
+      "exactPlayerGameQuoteLinePeriodMatch": true,
+      "independentlyReconciled": true
+    },
+    {
+      "market": "points",
+      "eligible": 12,
+      "unavailableWithReasons": 0,
+      "signs": {
+        "positive": 9,
+        "negative": 3,
+        "zero": 0
+      },
+      "exactPlayerGameQuoteLinePeriodMatch": true,
+      "independentlyReconciled": true
+    },
+    {
+      "market": "pts_asts",
+      "eligible": 11,
+      "unavailableWithReasons": 0,
+      "signs": {
+        "positive": 9,
+        "negative": 2,
+        "zero": 0
+      },
+      "exactPlayerGameQuoteLinePeriodMatch": true,
+      "independentlyReconciled": true
+    },
+    {
+      "market": "pts_rebs",
+      "eligible": 12,
+      "unavailableWithReasons": 0,
+      "signs": {
+        "positive": 8,
+        "negative": 4,
+        "zero": 0
+      },
+      "exactPlayerGameQuoteLinePeriodMatch": true,
+      "independentlyReconciled": true
+    },
+    {
+      "market": "pts_rebs_asts",
+      "eligible": 11,
+      "unavailableWithReasons": 0,
+      "signs": {
+        "positive": 6,
+        "negative": 5,
+        "zero": 0
+      },
+      "exactPlayerGameQuoteLinePeriodMatch": true,
+      "independentlyReconciled": true
+    },
+    {
+      "market": "rebounds",
+      "eligible": 11,
+      "unavailableWithReasons": 1,
+      "signs": {
+        "positive": 4,
+        "negative": 7,
+        "zero": 0
+      },
+      "exactPlayerGameQuoteLinePeriodMatch": true,
+      "independentlyReconciled": true
+    },
+    {
+      "market": "threes_made",
+      "eligible": 10,
+      "unavailableWithReasons": 0,
+      "signs": {
+        "positive": 6,
+        "negative": 4,
+        "zero": 0
+      },
+      "exactPlayerGameQuoteLinePeriodMatch": true,
+      "independentlyReconciled": true
+    }
+  ],
+  "total": 76,
+  "success": true
+}

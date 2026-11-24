@@ -1,0 +1,35 @@
+{
+  "artifact": "R1-2026-11-23-eb7bcf7-db22520f39e6",
+  "archiveSha256": "3dba5cdc277e920367bc0585d30fe980a703b69b51bf8f5a6ac517ec0a445c7e",
+  "bundleDigest": "db22520f39e641c29b93e26664b957836a2ec3ff334541b396d3a229bebc0cd2",
+  "protected": {
+    "history": 11615,
+    "originals": 6111,
+    "picks": 1473,
+    "grades": 1269,
+    "total": 20468,
+    "allMatchVerifiedBackup": true,
+    "inventoryEncoding": "to_jsonb(t)::text; history sorted sport/game_date/stream, pregame sport/market/game_id/player_id",
+    "inventories": {
+      "history": "6e7f1c27dddcbabe945d374b6efd2e4f",
+      "originals": "33d1173b71b0fe2f35aaf0b314a22836",
+      "picks": "656e60d2cb9dc59db003de6754cf09cb",
+      "grades": "0e21950e276648be18bce04e2c468e33"
+    }
+  },
+  "backupManifest": "1lPS2RRr2hwyrz4s21wZgX8e0hzBRi9KE",
+  "backupManifestBytes": 2692,
+  "backupManifestReadback": "existing verified SHA receipt reused; file metadata accessible",
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "priorDeployment": "907bf0e9-e512-48d6-8629-ab9b33a68710",
+  "automaticBuildsPaused": true,
+  "CW08Unchanged": true,
+  "manualBuild": "0890e226-a399-4ad7-bf82-289c42cc1cfb",
+  "pinnedCommit": "3fb78826fdbfa49f5bed7903d74b1ebba6d6e159",
+  "initialization": {
+    "versions": 101,
+    "pointers": 101,
+    "calendars": 0,
+    "bytes": 764248
+  }
+}

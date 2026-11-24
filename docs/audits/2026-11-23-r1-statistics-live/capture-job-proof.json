@@ -1,0 +1,487 @@
+{
+  "at": "2026-11-24T02:46:08.088Z",
+  "lanes": [
+    {
+      "name": "capture:nba",
+      "result": {
+        "results": [
+          {
+            "columns": [
+              "id",
+              "state",
+              "touched"
+            ],
+            "rows": [
+              [
+                "capture:nba:blocks:14957961",
+                "done",
+                1795487639729
+              ],
+              [
+                "capture:nba:steals:14957961",
+                "done",
+                1795487640776
+              ]
+            ],
+            "meta": {
+              "rows_read": 64,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "phases",
+              "jobs",
+              "maxUsed",
+              "maxActive",
+              "maxReserved",
+              "sourceCheckpoints"
+            ],
+            "rows": [
+              [
+                8,
+                2,
+                20,
+                4,
+                12,
+                0
+              ]
+            ],
+            "meta": {
+              "rows_read": 284,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "job",
+              "at",
+              "phase",
+              "outcome",
+              "detail"
+            ],
+            "rows": [
+              [
+                "capture:nba:steals:14957961",
+                1795487640776,
+                "publish",
+                "done",
+                "{\"reason\":null,\"retryAt\":null,\"usage\":{\"used\":2,\"limit\":220,\"costs\":{\"kv\":2},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":0,\"maxActive\":0,\"maxReserved\":0,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"failureDetails\":null,\"eligible\":0,\"expired\":0,\"progress\":{\"sourceCheckpoints\":0,\"checkpointBytes\":0,\"lastCheckpointAt\":1795487640776,\"stalledAttempts\":0,\"needsAttention\":false}}"
+              ],
+              [
+                "capture:nba:blocks:14957961",
+                1795487639729,
+                "publish",
+                "done",
+                "{\"reason\":null,\"retryAt\":null,\"usage\":{\"used\":2,\"limit\":220,\"costs\":{\"kv\":2},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":0,\"maxActive\":0,\"maxReserved\":0,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"failureDetails\":null,\"eligible\":0,\"expired\":0,\"progress\":{\"sourceCheckpoints\":0,\"checkpointBytes\":0,\"lastCheckpointAt\":1795487639729,\"stalledAttempts\":0,\"needsAttention\":false}}"
+              ]
+            ],
+            "meta": {
+              "rows_read": 2,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "versions",
+              "bytes"
+            ],
+            "rows": [
+              [
+                101,
+                764248
+              ]
+            ],
+            "meta": {
+              "rows_read": 101,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "pointers",
+              "calendars"
+            ],
+            "rows": [
+              [
+                101,
+                0
+              ]
+            ],
+            "meta": {
+              "rows_read": 101,
+              "rows_written": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "capture:nfl",
+      "result": {
+        "results": [
+          {
+            "columns": [
+              "id",
+              "state",
+              "touched"
+            ],
+            "rows": [
+              [
+                "capture:nfl:passing_interceptions:14962398",
+                "done",
+                1795487828267
+              ],
+              [
+                "capture:nfl:passing_rushing_yards:14962397",
+                "done",
+                1795487711491
+              ],
+              [
+                "capture:nfl:q1_passing_yards:14962400",
+                "done",
+                1795488067715
+              ],
+              [
+                "capture:nfl:q1_receiving_yards:14962401",
+                "done",
+                1795488183222
+              ],
+              [
+                "capture:nfl:q1_rushing_yards:14962400",
+                "done",
+                1795488069046
+              ],
+              [
+                "capture:nfl:rushing_receiving_yards:14962397",
+                "done",
+                1795487712765
+              ],
+              [
+                "capture:nfl:sacks:14962398",
+                "done",
+                1795487829674
+              ],
+              [
+                "capture:nfl:tackles:14962399",
+                "done",
+                1795487948760
+              ],
+              [
+                "capture:nfl:tackles_assists:14962399",
+                "done",
+                1795487950103
+              ]
+            ],
+            "meta": {
+              "rows_read": 56,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "phases",
+              "jobs",
+              "maxUsed",
+              "maxActive",
+              "maxReserved",
+              "sourceCheckpoints"
+            ],
+            "rows": [
+              [
+                36,
+                9,
+                22,
+                4,
+                12,
+                5
+              ]
+            ],
+            "meta": {
+              "rows_read": 434,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "job",
+              "at",
+              "phase",
+              "outcome",
+              "detail"
+            ],
+            "rows": [
+              [
+                "capture:nfl:q1_receiving_yards:14962401",
+                1795488183222,
+                "publish",
+                "done",
+                "{\"reason\":null,\"retryAt\":null,\"usage\":{\"used\":2,\"limit\":220,\"costs\":{\"kv\":2},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":0,\"maxActive\":0,\"maxReserved\":0,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"eligible\":0,\"expired\":0,\"progress\":{\"sourceCheckpoints\":1,\"checkpointBytes\":1448257,\"lastCheckpointAt\":1795488183222,\"stalledAttempts\":0,\"needsAttention\":false}}"
+              ],
+              [
+                "capture:nfl:q1_receiving_yards:14962401",
+                1795488181825,
+                "picks",
+                "checkpoint",
+                "{\"reason\":null,\"retryAt\":1795488182825,\"usage\":{\"used\":0,\"limit\":220,\"costs\":{},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":0,\"maxActive\":0,\"maxReserved\":0,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"eligible\":0,\"expired\":0,\"progress\":{\"sourceCheckpoints\":1,\"checkpointBytes\":1448257,\"lastCheckpointAt\":1795488181825,\"stalledAttempts\":0,\"needsAttention\":false}}"
+              ]
+            ],
+            "meta": {
+              "rows_read": 2,
+              "rows_written": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "capture:nhl",
+      "result": {
+        "results": [
+          {
+            "columns": [
+              "id",
+              "state",
+              "touched"
+            ],
+            "rows": [
+              [
+                "capture:nhl:shots_on_goal:14962401",
+                "done",
+                1795488188403
+              ]
+            ],
+            "meta": {
+              "rows_read": 26,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "phases",
+              "jobs",
+              "maxUsed",
+              "maxActive",
+              "maxReserved",
+              "sourceCheckpoints"
+            ],
+            "rows": [
+              [
+                4,
+                1,
+                100,
+                4,
+                12,
+                24
+              ]
+            ],
+            "meta": {
+              "rows_read": 118,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "job",
+              "at",
+              "phase",
+              "outcome",
+              "detail"
+            ],
+            "rows": [
+              [
+                "capture:nhl:shots_on_goal:14962401",
+                1795488188403,
+                "publish",
+                "done",
+                "{\"reason\":null,\"retryAt\":null,\"usage\":{\"used\":3,\"limit\":220,\"costs\":{\"kv\":3},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":0,\"maxActive\":0,\"maxReserved\":0,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"eligible\":5,\"expired\":0,\"progress\":{\"sourceCheckpoints\":24,\"checkpointBytes\":1487391,\"lastCheckpointAt\":1795488188403,\"stalledAttempts\":0,\"needsAttention\":false}}"
+              ],
+              [
+                "capture:nhl:shots_on_goal:14962401",
+                1795488187019,
+                "picks",
+                "checkpoint",
+                "{\"reason\":null,\"retryAt\":1795488187021,\"usage\":{\"used\":6,\"limit\":220,\"costs\":{\"provider_gate\":3,\"history_http\":3},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":3,\"maxActive\":1,\"maxReserved\":3,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[],\"denialHits\":0},\"eligible\":5,\"expired\":0,\"progress\":{\"sourceCheckpoints\":24,\"checkpointBytes\":1487391,\"lastCheckpointAt\":1795488187019,\"stalledAttempts\":0,\"needsAttention\":false}}"
+              ]
+            ],
+            "meta": {
+              "rows_read": 2,
+              "rows_written": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "grade:nba",
+      "result": {
+        "results": [
+          {
+            "columns": [
+              "id",
+              "state",
+              "touched"
+            ],
+            "rows": [],
+            "meta": {
+              "rows_read": 3,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "phases",
+              "jobs",
+              "maxUsed",
+              "maxActive",
+              "maxReserved",
+              "sourceCheckpoints"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                null,
+                null,
+                null,
+                null
+              ]
+            ],
+            "meta": {
+              "rows_read": 475,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "job",
+              "at",
+              "phase",
+              "outcome",
+              "detail"
+            ],
+            "rows": [],
+            "meta": {
+              "rows_read": 475,
+              "rows_written": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "grade:nfl",
+      "result": {
+        "results": [
+          {
+            "columns": [
+              "id",
+              "state",
+              "touched"
+            ],
+            "rows": [],
+            "meta": {
+              "rows_read": 1,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "phases",
+              "jobs",
+              "maxUsed",
+              "maxActive",
+              "maxReserved",
+              "sourceCheckpoints"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                null,
+                null,
+                null,
+                null
+              ]
+            ],
+            "meta": {
+              "rows_read": 26,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "job",
+              "at",
+              "phase",
+              "outcome",
+              "detail"
+            ],
+            "rows": [],
+            "meta": {
+              "rows_read": 26,
+              "rows_written": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "grade:nhl",
+      "result": {
+        "results": [
+          {
+            "columns": [
+              "id",
+              "state",
+              "touched"
+            ],
+            "rows": [],
+            "meta": {
+              "rows_read": 2,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "phases",
+              "jobs",
+              "maxUsed",
+              "maxActive",
+              "maxReserved",
+              "sourceCheckpoints"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                null,
+                null,
+                null,
+                null
+              ]
+            ],
+            "meta": {
+              "rows_read": 196,
+              "rows_written": 0
+            }
+          },
+          {
+            "columns": [
+              "job",
+              "at",
+              "phase",
+              "outcome",
+              "detail"
+            ],
+            "rows": [],
+            "meta": {
+              "rows_read": 196,
+              "rows_written": 0
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

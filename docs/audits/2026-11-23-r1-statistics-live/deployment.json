@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-24T02:33:58.741Z",
+  "active": {
+    "id": "f446e3b5-204f-4604-b3c5-151d5d877b16",
+    "source": "cf_cli",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Approved R1 eb7bcf7 db22520f39e6; prediction st...",
+      "workers/triggered_by": "upload"
+    },
+    "versions": [
+      {
+        "version_id": "d5abc7e2-f119-4cad-9245-58e19ab9ad1a",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-24T02:33:12.064748Z"
+  },
+  "restoredCommands": {
+    "build": "cd frontend && npm ci && npm run build:vinext",
+    "deploy": "cd frontend && npm run deploy:vinext",
+    "branchIncludes": [
+      "__cw08_manual_release_only__"
+    ]
+  }
+}

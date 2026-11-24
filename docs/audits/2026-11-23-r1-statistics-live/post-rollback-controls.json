@@ -1,0 +1,78 @@
+{
+  "at": "2026-11-24T02:44:06.522Z",
+  "sach-sports-cloudflare-test": {
+    "deployment": {
+      "id": "d86b1e4d-6b43-4b47-b44e-4fbdd5330b08",
+      "source": "api",
+      "strategy": "percentage",
+      "author_email": "sevans70@hotmail.com",
+      "annotations": {
+        "workers/message": "Approved immediate R1 fallback: repeated Prediction Dashboard Month 47s exceeds acceptance; preserve records and CW08",
+        "workers/triggered_by": "deployment"
+      },
+      "versions": [
+        {
+          "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-24T02:43:33.309664Z"
+    },
+    "schedules": {
+      "schedules": [
+        {
+          "cron": "0,30 * * * *",
+          "created_on": "2026-11-09T10:32:52.803607Z",
+          "modified_on": "2026-11-09T10:32:52.803607Z"
+        },
+        {
+          "cron": "10-17 9 * * *",
+          "created_on": "2026-11-09T05:43:58.936277Z",
+          "modified_on": "2026-11-09T05:43:58.936277Z"
+        },
+        {
+          "cron": "*/2 * * * *",
+          "created_on": "2026-11-09T10:32:52.803607Z",
+          "modified_on": "2026-11-09T10:32:52.803607Z"
+        }
+      ]
+    }
+  },
+  "sach-cw08-nhl-shadow": {
+    "deployment": {
+      "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+      "source": "api",
+      "strategy": "percentage",
+      "author_email": "sevans70@hotmail.com",
+      "annotations": {
+        "workers/message": "Approved CW08 transport-only update; frozen mod...",
+        "workers/triggered_by": "upload"
+      },
+      "versions": [
+        {
+          "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-14T19:54:01.859122Z"
+    },
+    "schedules": {
+      "schedules": [
+        {
+          "cron": "*/15 * * * *",
+          "created_on": "2026-11-14T05:24:15.908994Z",
+          "modified_on": "2026-11-14T05:24:15.908994Z"
+        }
+      ]
+    }
+  },
+  "builds": [
+    {
+      "build": "cd frontend && npm ci && npm run build:vinext",
+      "deploy": "cd frontend && npm run deploy:vinext",
+      "branchIncludes": [
+        "__cw08_manual_release_only__"
+      ]
+    }
+  ]
+}

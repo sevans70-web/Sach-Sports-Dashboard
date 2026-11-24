@@ -1,0 +1,367 @@
+{
+  "scope": "Actual production Chromium, original clocks, TLS verified, no mocked responses",
+  "checks": [
+    {
+      "sport": "nba",
+      "period": "Today",
+      "status": 200,
+      "seconds": 0.832,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": false,
+      "recordFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nba",
+      "period": "Yesterday",
+      "status": 200,
+      "seconds": 0.378,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": false,
+      "recordFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nba",
+      "period": "Week",
+      "status": 200,
+      "seconds": 0.36,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": false,
+      "recordFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nba",
+      "period": "Month",
+      "status": 200,
+      "seconds": 52.932,
+      "summary": {
+        "total": 6626,
+        "hits": 3178,
+        "misses": 2351,
+        "pushes": 338,
+        "completed": 5867,
+        "awaitingResult": 754,
+        "void": 5,
+        "unknown": 0,
+        "hitRate": 57.5,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "recordFreshness": {
+        "latestSavedAt": "2026-11-15T11:01:17.198Z",
+        "latestGradedAt": "2026-11-15T15:55:37.546001+00:00"
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nba",
+      "period": "Season",
+      "status": 200,
+      "seconds": 60.144,
+      "summary": {
+        "total": 6416,
+        "hits": 3076,
+        "misses": 2274,
+        "pushes": 331,
+        "completed": 5681,
+        "awaitingResult": 732,
+        "void": 3,
+        "unknown": 0,
+        "hitRate": 57.5,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "recordFreshness": {
+        "latestSavedAt": "2026-11-15T11:01:17.198Z",
+        "latestGradedAt": "2026-11-15T15:55:37.546001+00:00"
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Today",
+      "status": 200,
+      "seconds": 0.529,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": false,
+      "recordFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Yesterday",
+      "status": 200,
+      "seconds": 0.448,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": false,
+      "recordFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Week",
+      "status": 200,
+      "seconds": 0.877,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": false,
+      "recordFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Month",
+      "status": 200,
+      "seconds": 42.064,
+      "summary": {
+        "total": 1330,
+        "hits": 443,
+        "misses": 431,
+        "pushes": 4,
+        "completed": 878,
+        "awaitingResult": 452,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": 50.7,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "recordFreshness": {
+        "latestSavedAt": "2026-11-15T11:01:07.662Z",
+        "latestGradedAt": "2026-11-15T19:01:04.091046+00:00"
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nfl",
+      "period": "Season",
+      "status": 200,
+      "seconds": 34.256,
+      "summary": {
+        "total": 1797,
+        "hits": 471,
+        "misses": 464,
+        "pushes": 4,
+        "completed": 939,
+        "awaitingResult": 465,
+        "void": 80,
+        "unknown": 313,
+        "hitRate": 50.4,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "recordFreshness": {
+        "latestSavedAt": "2026-11-15T11:01:07.662Z",
+        "latestGradedAt": "2026-11-15T19:01:04.091046+00:00"
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Today",
+      "status": 200,
+      "seconds": 0.627,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": false,
+      "recordFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Yesterday",
+      "status": 200,
+      "seconds": 0.263,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": false,
+      "recordFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Week",
+      "status": 200,
+      "seconds": 0.342,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": false,
+      "recordFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Month",
+      "status": 200,
+      "seconds": 36.245,
+      "summary": {
+        "total": 1150,
+        "hits": 648,
+        "misses": 397,
+        "pushes": 0,
+        "completed": 1045,
+        "awaitingResult": 105,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": 62,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "recordFreshness": {
+        "latestSavedAt": "2026-11-15T17:59:12.898012+00:00",
+        "latestGradedAt": "2026-11-15T18:33:12.679909+00:00"
+      },
+      "reconciled": true
+    },
+    {
+      "sport": "nhl",
+      "period": "Season",
+      "status": 200,
+      "seconds": 30.997,
+      "summary": {
+        "total": 1639,
+        "hits": 747,
+        "misses": 473,
+        "pushes": 2,
+        "completed": 1222,
+        "awaitingResult": 105,
+        "void": 312,
+        "unknown": 0,
+        "hitRate": 61.2,
+        "lateRecords": 135
+      },
+      "partial": true,
+      "recordFreshness": {
+        "latestSavedAt": "2026-11-15T17:59:12.898012+00:00",
+        "latestGradedAt": "2026-11-15T18:33:12.679909+00:00"
+      },
+      "reconciled": true
+    }
+  ],
+  "errors": [],
+  "success": true
+}

@@ -1,0 +1,23 @@
+{
+  "artifact": "R1-2026-11-23-eb7bcf7-db22520f39e6",
+  "status": "withdrawn_after_actual_production_acceptance_failure",
+  "productionCodeUploads": 1,
+  "deployment": "f446e3b5-204f-4604-b3c5-151d5d877b16",
+  "candidateVersion": "d5abc7e2-f119-4cad-9245-58e19ab9ad1a",
+  "rollbackDeployment": "d86b1e4d-6b43-4b47-b44e-4fbdd5330b08",
+  "activeFallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "criticalFailure": "Repeated NBA Prediction Dashboard Month visibility 47.194 seconds fails agreed loading acceptance; first Month/Season 52.932/60.144 seconds",
+  "fullAcceptancePassed": false,
+  "captureMarketsObserved": 10,
+  "captureMarketsRequired": 38,
+  "gradingRotationsObserved": 0,
+  "gradingRotationsRequired": 3,
+  "originalRecordsPreserved": 20468,
+  "newOriginalsPreserved": 5,
+  "newPicksPreserved": 5,
+  "automaticBuildsPaused": true,
+  "cw08Modified": false,
+  "frozenArchiveUnchanged": true,
+  "evidence": "docs/audits/2026-11-23-r1-statistics-live/README.md",
+  "requiresNewVerifiedCandidateAndSeparateApproval": true
+}
