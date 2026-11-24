@@ -1,0 +1,11 @@
+{
+  "scope": "Isolated local Git-metadata rehearsal; no remote build or deployment",
+  "pinnedPackageCommit": "1e75ca85ddaa8bbf4d59f9868458b7b40e24f457",
+  "frozenCompiledSourceCommit": "e35c9d7f02c9f63354aa74dfbc3dc933dc0f67e9",
+  "immediateParentMatches": true,
+  "fetchDepth": 2,
+  "visibleAncestors": 2,
+  "originalAncestryGuardPassed": true,
+  "originalArtifactChecksumsUnchanged": true,
+  "noFullBuild": true
+}
