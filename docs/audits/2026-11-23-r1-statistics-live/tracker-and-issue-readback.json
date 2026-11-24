@@ -1,0 +1,29 @@
+{
+  "schema": "r1-live-tracker-issue-receipt/v1",
+  "evidenceCommit": "6a66fef",
+  "artifact": "R1-2026-11-23-eb7bcf7-db22520f39e6",
+  "decision": "WITHDRAWN_AFTER_CRITICAL_ACTUAL_ACCEPTANCE_FAILURE",
+  "deploymentId": "f446e3b5-204f-4604-b3c5-151d5d877b16",
+  "rollbackDeploymentId": "d86b1e4d-6b43-4b47-b44e-4fbdd5330b08",
+  "tracker": {
+    "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+    "url": "https://docs.google.com/spreadsheets/d/1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8/edit",
+    "cellsUpdated": 23,
+    "cellsVerified": 23,
+    "completedRowsMoved": 0,
+    "unchangedNeighbors": true,
+    "idsHistoryValidationNotesChipsWrappingPreserved": true,
+    "intentionalEvidenceLinkUpdated": true,
+    "nativeRender": "Not performed; connected metadata/style readback verified; no layout changes",
+    "status": "CW09/CW11 Blocked; R1/V62 open after actual performance rollback",
+    "evidenceCommit": "6a66fef"
+  },
+  "issue": {
+    "repository": "sevans70-web/Sach-Sports-Dashboard",
+    "number": 129,
+    "commentId": 7120553604,
+    "url": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7120553604",
+    "postSucceeded": true
+  },
+  "noFurtherDeploymentRequested": true
+}

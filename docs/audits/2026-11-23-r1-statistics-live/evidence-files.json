@@ -118,5 +118,10 @@
     "path": "statistics.log.gz",
     "bytes": 669,
     "sha256": "fe40cb3651edc1bd51ba81b7f241c075280da48e0b0db4fbf5fca9a167307053"
+  },
+  {
+    "path": "tracker-and-issue-readback.json",
+    "bytes": 1238,
+    "sha256": "7d2a2dcdc97915a19fae11297e83c035b3a43b6d6e92b004c473bb65abc1f737"
   }
 ]
