@@ -1,0 +1,10 @@
+{"compiledNBASupportingHistory":14,"markets":7,"providerCalls":0,"historyWrites":0,"cachedForecastsUnchanged":true}
+✔ compiled NBA supporting-history route serves exact top/bottom input receipts across seven markets with zero provider/history writes (9899.702402ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14723.5592

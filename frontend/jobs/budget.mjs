@@ -10,7 +10,7 @@ const official=new Set(['api-web.nhle.com','api.nhle.com','site.api.espn.com','s
 export function cacheTtl(url){const u=new URL(url);if(!official.has(u.hostname))return 0;
  if(/\/gamecenter\/|\/score\//.test(u.pathname))return 0;
  if(u.pathname==='/apis/search/v2')return 60000;
- if(u.hostname==='site.api.espn.com'&&/^\/apis\/site\/v2\/sports\/basketball\/nba\/teams\/\d+\/schedule$/.test(u.pathname)&&/^\d{4}$/.test(u.searchParams.get('season')||'')&&u.searchParams.get('seasontype')==='2')return 15*60000;
+ if(u.hostname==='site.api.espn.com'&&/^\/apis\/site\/v2\/sports\/(?:basketball\/nba|football\/nfl)\/teams\/\d+\/schedule$/.test(u.pathname)&&/^\d{4}$/.test(u.searchParams.get('season')||'')&&u.searchParams.get('seasontype')==='2')return 15*60000;
  return /\/roster|\/game-log\/|\/gamelog|\/statistics|\/stats\/|\/standings\/|\/summary$/.test(u.pathname)?15*60000:0;}
 export function retryTime(value,now=Date.now()){const n=Number(value),date=Date.parse(value||'');return Math.max(now+60000,value!=null&&String(value).trim()!==''&&Number.isFinite(n)&&n>=0?now+n*1000:Number.isFinite(date)?date:0);}
 function active(scope){if(scope.closed||scope.abort.signal.aborted)throw scope.abort.signal.reason||new JobDeferred('job_phase_closed');}
@@ -68,6 +68,10 @@ function optionalHistoryDenialKey(url,scope){const u=new URL(url);if(!['site.web
   u.hostname==='site.web.api.espn.com'&&u.pathname==='/apis/common/v3/sports/basketball/nba/statistics/byathlete'||
   u.hostname==='site.api.espn.com'&&u.pathname==='/apis/site/v2/sports/basketball/nba/summary'&&/^\d+$/.test(u.searchParams.get('event')||'')||
   u.hostname==='site.api.espn.com'&&/^\/apis\/site\/v2\/sports\/basketball\/nba\/teams\/\d+\/schedule$/.test(u.pathname)&&/^\d{4}$/.test(u.searchParams.get('season')||'')&&u.searchParams.get('seasontype')==='2'&&[...u.searchParams.keys()].length===2
+ ))return 'denied:'+u.href;
+ if(scope.allowNflSourceDenials&&u.hostname==='site.api.espn.com'&&(
+  u.pathname==='/apis/site/v2/sports/football/nfl/summary'&&/^\d+$/.test(u.searchParams.get('event')||'')||
+  /^\/apis\/site\/v2\/sports\/football\/nfl\/teams\/\d+\/schedule$/.test(u.pathname)&&/^\d{4}$/.test(u.searchParams.get('season')||'')&&u.searchParams.get('seasontype')==='2'&&[...u.searchParams.keys()].length===2
  ))return 'denied:'+u.href;
  const optional=scope.allowNflSourceDenials&&u.pathname.includes('/football/nfl/')||scope.allowNbaSourceDenials&&u.pathname.includes('/basketball/nba/');const path=optional&&/^\/apis\/common\/v3\/sports\/(?:football\/nfl|basketball\/nba)\/athletes\/\d+\/gamelog$/.test(u.pathname)?u.pathname.replace(/athletes\/\d+/,'athletes/:id'):scope.allowNflSourceDenials&&u.pathname==='/apis/search/v2'&&u.searchParams.get('sport')==='football'?'/apis/search/v2':null;// NBA 403 evidence is specific to an athlete/season, never all athletes.
  return path?'denied:'+u.origin+(u.pathname.includes('/basketball/nba/')?u.pathname+u.search:path):null;}

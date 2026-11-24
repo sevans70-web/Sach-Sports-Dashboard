@@ -1,0 +1,92 @@
+✔ budget pause drains admitted bodies; resumed attempt requests only unfinished inputs (136.196489ms)
+✔ duplicate public inputs coalesce without sharing consumed response bodies (10.584903ms)
+✔ request timeout cancels bodies and queued work without late HTTP or checkpoints (49.855192ms)
+✔ late provider RPC after phase cancellation cannot launch HTTP (36.794906ms)
+✔ 429 persistence has reserved RPC capacity at budget edge and retries respect cooldown (2.844986ms)
+✔ genuine 404 status is briefly cached; transient errors cannot become empty player histories (3.428001ms)
+✔ each redirect hop is metered and cancellation reaches a streaming private database response (17.827684ms)
+✔ explicit manual/error redirect policies remain authoritative inside capture accounting (1.698306ms)
+✔ a Worker market without a fitted model retains the sportsbook quote and reports the missing model (2.505609ms)
+✔ unsupported markets cannot trigger unused observation refresh; combinations require every fitted component (1.969291ms)
+✔ fitted workload and rate produce a projection distinct from the unchanged historical mean (5.746785ms)
+✔ target outcomes, book line and archived heuristic scores cannot alter the forecast (1.785862ms)
+✔ missing histories, future snapshots, after-start and unsupported markets abstain (0.237295ms)
+✔ an exact official context supplies a missing season; another fixture cannot do so (0.600535ms)
+✔ WNBA workload models accept playoff fixture identity without borrowing the NBA regular-season context restriction (0.61648ms)
+✔ GI requires exact fresh quote evidence and a prior calibration artifact (2.131821ms)
+✔ a model selection can exist without GI while failed, stale and after-start decisions abstain (1.078883ms)
+✔ combination forecasts sum fitted component expectations without inventing joint probability or GI (3.354086ms)
+{"market":"points","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"rebounds","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"assists","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"threes_made","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"pts_rebs_asts","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"pts_rebs","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"pts_asts","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+✔ all eligible recorded NBA points forecasts carry their exact supporting history, including lower roles (662.439642ms)
+✔ all eligible recorded NBA rebounds forecasts carry their exact supporting history, including lower roles (589.216804ms)
+✔ all eligible recorded NBA assists forecasts carry their exact supporting history, including lower roles (641.404332ms)
+✔ all eligible recorded NBA threes_made forecasts carry their exact supporting history, including lower roles (667.216699ms)
+✔ all eligible recorded NBA pts_rebs_asts forecasts carry their exact supporting history, including lower roles (596.731111ms)
+✔ all eligible recorded NBA pts_rebs forecasts carry their exact supporting history, including lower roles (500.366599ms)
+✔ all eligible recorded NBA pts_asts forecasts carry their exact supporting history, including lower roles (558.488698ms)
+✔ chart evidence rejects wrong identities, stale receipt bindings, future games, altered statistics and missing source timestamps (2.476699ms)
+✔ a newly fetched source keeps its actual receipt time without restamping the pregame forecast (0.538106ms)
+{"compiledNFLCheckpointProgress":[3,7,9],"providerCalls":10,"requestLimit":10,"restartRecovery":true,"foregroundHTTP200":true}
+✔ compiled workerd: cold official NFL capture checkpoints through request exhaustion, restart and concurrent foreground requests (754.584015ms)
+✔ compiled workerd: persistent 403 hold preserves partial progress and does not block another lane (829.527188ms)
+✔ compiled workerd: origin429 cooldown stops retries and resumes from the saved cursor after expiry (844.470342ms)
+{"compiledColdSixTeams":true,"sourceCalls":58,"maxConcurrentSources":2,"usage":{"used":116,"limit":220,"costs":{"provider_gate":58,"official_http":58},"cacheHits":3,"cacheWrites":119,"checkpointBytes":5370605,"completedRequests":58,"maxActive":2,"maxReserved":6,"coalesced":0,"queuedCancelled":0,"aborted":0,"sourceDenials":[],"denialHits":0},"wallMs":1015}
+✔ compiled workerd: six-team cold recovery is bounded to two source requests alongside foreground traffic (1040.352376ms)
+✔ compiled workerd: a stalled response cancels, preserves earlier checkpoints and recovers without detached requests (3600.715461ms)
+{"November26QBs":6,"passingProjections":5,"passingTdProjections":5,"officialRequests":58}
+✔ November26 official full-game histories restore genuine supported forecasts without athlete logs (249.146187ms)
+✔ all explicit receiving/targets/rushing workload observations remain player/category matched; missing zeroes are never inferred (1.606246ms)
+✔ wrong identities, preseason, nonfinal, incomplete categories and negative attempts fail closed (4.004258ms)
+{"recordedNovember26PlayerCoverage":[{"market":"passing_yards","quotedPlayers":6,"availableIndependentProjections":5,"holds":{"fewer_than_three_same_season_team_appearances":1}},{"market":"passing_tds","quotedPlayers":6,"availableIndependentProjections":5,"holds":{"fewer_than_three_same_season_team_appearances":1}},{"market":"rushing_yards","quotedPlayers":10,"availableIndependentProjections":10,"holds":{}},{"market":"receiving_yards","quotedPlayers":37,"availableIndependentProjections":34,"holds":{"prior_workload_role_uncertain":2,"fewer_than_three_same_season_team_appearances":1}},{"market":"receptions","quotedPlayers":37,"availableIndependentProjections":34,"holds":{"prior_workload_role_uncertain":2,"fewer_than_three_same_season_team_appearances":1}}],"quoteScope":"original archived timestamps; no manufactured fresh EV"}
+✔ every quoted player in the five supported November26 markets is classified from authentic current-season workload evidence (33.99722ms)
+✔ recorded live NFL QB disappearance is reproduced and quote-backed coverage restored without manufacturing selections (84.299573ms)
+✔ model validation failures remain unavailable confidence/EV; baselines and unmodelled quarters stay distinct (0.545379ms)
+✔ exact normalized probabilities can price signed NFL research EV without generating a betting selection (4.389336ms)
+✔ wrong sport, invalid quote, after-start recovery, unavailable player and tampered capture remain excluded (6.897494ms)
+✔ negative and zero exact-price NFL comparisons remain signed and never acquire selections (0.488953ms)
+✔ quarter sportsbook category aliases remain exact to period and do not borrow full-game offers (169.196902ms)
+✔ two-sided NFL quarter forecasts retain their projection direction without being promoted to betting picks (2.789096ms)
+✔ foreground retained NFL board exposes diagnostics without calling sportsbook feeds or changing originals (44.343886ms)
+✔ background capture bypasses retained-board shortcut and actually reaches source collection (2.895137ms)
+✔ foreground merges a job-published later block with frozen early evidence even when legacy publication is absent (3.637652ms)
+✔ explicit NFL day reaches retained and cold routes without unrelated weekly requests or duplicate schedule fetching (4.8517ms)
+✔ count mass responds to mean, retains zero/multiple outcomes and integer pushes (4.271038ms)
+✔ same EV requirement permits long-odds OVER and favorite UNDER without quotas (0.644792ms)
+✔ NHL runtime exposes count diagnostics but withholds unvalidated selections and old GI (7.258312ms)
+[P01 coverage audit] {"sport":"nhl","market":"goals","rows":1,"verifiedQuotes":1,"modelAvailable":true,"fittedForecasts":1,"blockers":{"selected":1}}
+[P01 coverage audit] {"sport":"nhl","market":"assists","rows":1,"verifiedQuotes":1,"modelAvailable":true,"fittedForecasts":1,"blockers":{"selected":1}}
+✔ frozen saved NHL forecasts retain original side and probabilities byte for byte (536.848264ms)
+✔ NHL coverage retains eight eligible UNDERs without relabeling or mutating them (4.771139ms)
+✔ cold main/featured concurrent views coalesce, persist across eviction, and do no archive work in the request (19.998904ms)
+✔ genuine grade invalidation updates the derived original despite archive failure and retains saved terms (22.919372ms)
+✔ verified source checkpoints resume after restart; incomplete responses cannot erase larger valid views; repeated failures back off (42.242898ms)
+✔ all five periods use Toronto fixture dates and preserve zero/push/grade summary semantics (6.788401ms)
+✔ deadline cancellation rejects late archive checkpoint writes and retains the verified view (121.861586ms)
+✔ serialized public responses preserve exact filters and coalesce concurrent aggregation; grades invalidate memo (18.03569ms)
+✔ nba: prior numeric history, evidence labels and completed ordering stay consistent (21.764553ms)
+✔ nfl: prior numeric history, evidence labels and completed ordering stay consistent (1.114886ms)
+✔ cfb: prior numeric history, evidence labels and completed ordering stay consistent (0.57218ms)
+✔ nhl: prior numeric history, evidence labels and completed ordering stay consistent (0.637047ms)
+✔ cbb: prior numeric history, evidence labels and completed ordering stay consistent (0.730893ms)
+✔ soccer: prior numeric history, evidence labels and completed ordering stay consistent (0.448485ms)
+✔ wnba: prior numeric history, evidence labels and completed ordering stay consistent (0.565668ms)
+✔ mlb: prior numeric history, evidence labels and completed ordering stay consistent (0.611085ms)
+✔ quarter history never substitutes full-game values and selected windows average their actual sample (0.762513ms)
+✔ clock labels distinguish quarters, college halves, hockey periods and supplied overtime (0.694301ms)
+✔ NFL charts span seasons, keep missed games blank, and distinguish a recorded zero (1.06039ms)
+✔ cloud player history retains exact games and zero values; excludes undated averages, projections and missing values (2.549595ms)
+✔ MLB final observations retain zeros, exact innings-outs conversion and never infer absent stats (319.286174ms)
+ℹ tests 71
+ℹ suites 0
+ℹ pass 71
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 40463.90147

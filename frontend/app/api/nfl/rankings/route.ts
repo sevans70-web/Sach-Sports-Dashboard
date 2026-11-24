@@ -1,5 +1,7 @@
 import {bookFeedDiagnostic} from '@/lib/dashboard-book-feed';
 import {nflOfficialFetch} from '@/lib/official-history-source';
+import {nflOfficialPlayerHistory} from '@/lib/nfl-final-history';
+import {dashboardJobContext} from '@/lib/dashboard-job-context';
 import {nflBookRows} from '@/lib/nfl-book-rows';
 import {workerRuntimeBinding} from '@/lib/worker-runtime-secret';
 import {readPregameBoard} from '@/lib/ranking-board-cache';
@@ -31,7 +33,6 @@ export const dynamic="force-dynamic";
 export const revalidate=0;
 
 const OWLS_URL="https://api.owlsinsight.com/api/v1/nfl/props";
-const ATHLETE_BASE="https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes";
 const CACHE_TTL_MS=10*60_000;
 type CacheEntry<T>={expires:number;value:T};
 const rosterCache=new Map<string,CacheEntry<any>>();
@@ -161,16 +162,16 @@ async function modelOnlyRows(market:NflMarketKey,schedule:any[]){
   }));
  }))).flat();
 }
-async function fetchLog(id:string,season:number){const r=await nflOfficialFetch(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,{cache:"no-store"});if(!r.ok)throw Error('official_history_http_'+r.status);return r.json()}
-async function model(id:string,market:NflMarketKey,asOf:string){
+async function model(id:string,market:NflMarketKey,asOf:string,teamId:string){
  if(!id||market==="first_td"||market.startsWith("q1_"))return {projection:null,games:0};
  const cutoff=Number.isFinite(Date.parse(asOf))?asOf:new Date().toISOString();
  const season=Number(cutoff.slice(0,4));
  try{
-  const payload=await fetchLog(id,season);
+  const payload=await nflOfficialPlayerHistory(id,String(teamId),season);
   const combined:Record<string,string[][]>={passing_rushing_yards:[["passingyards","passyards"],["rushingyards","rushyards"]],rushing_receiving_yards:[["rushingyards","rushyards"],["receivingyards","receptionyards"]],anytime_td:[["rushingtouchdowns","rushingtds"],["receivingtouchdowns","receivingtds"]]};
-  return footballResearchSample(payload,combined[market]||HISTORY_KEYS[market]||[],market,cutoff,season);
- }catch(error){return {projection:null,games:0,sourceUnavailable:true,sourceReason:error instanceof Error?error.message:"official_history_unavailable"}}
+  return {...footballResearchSample(payload,combined[market]||HISTORY_KEYS[market]||[],market,cutoff,season),officialSourcePolicy:payload.sourcePolicy,
+   officialSources:Object.entries(payload.events).map(([gameId,event]:[string,any])=>({gameId,source:event.source,retrievedAt:event.retrievedAt})),completeFinals:payload.completeFinals};
+ }catch(error){dashboardJobContext()?.assertActive();if((error as any)?.deferred)throw error;return {projection:null,games:0,sourceUnavailable:true,sourceReason:error instanceof Error?error.message:"official_history_unavailable"}}
 }
 
 function teamLogo(profile:any,row:any,schedule:any[]){
@@ -352,7 +353,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
    if(qbOnly&&pos&&pos!=="QB")return null;
    if(market==="passing_interceptions"&&pos!=="QB")return null;
    if(nonQbRush&&pos==="QB")return null;
-   const m=await model(profile.id,market,row.gameTime||new Date().toISOString());
+   const m=await model(profile.id,market,row.gameTime||new Date().toISOString(),profile.teamId);
    if(row.earlyModel&&(m.projection==null||m.games<2))return null;
    const probability=nflPredictionProbability(market,m.projection,row.line,row.prob);
    const rankingProbability=probability??row.prob??50;

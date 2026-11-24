@@ -1,0 +1,418 @@
+{
+  "clock": "2026-11-24T16:11:54.262233+00:00",
+  "verificationEnvironment": "authorized workspace HTTPS; not production Cloudflare network acceptance",
+  "requests": 58,
+  "retries": 0,
+  "concurrency": 2,
+  "metrics": [
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/8/schedule?season=2026&seasontype=2",
+      "status": 200,
+      "durationMs": 386,
+      "rawBytes": 312525,
+      "rawSha256": "8cc817f4e0bc7ee18792240fb47cc11953bb181e0c7704a5c0dac2eb2c1e554e"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/3/schedule?season=2026&seasontype=2",
+      "status": 200,
+      "durationMs": 394,
+      "rawBytes": 313220,
+      "rawSha256": "e3687d6036f65efa2b41c9768dfd514e9baf76fa87a7b0d7e92ca24e266e8deb"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/6/schedule?season=2026&seasontype=2",
+      "status": 200,
+      "durationMs": 307,
+      "rawBytes": 321941,
+      "rawSha256": "6ad03c671deb1b0592e919eff6d8517a81bc1b06d7c88ba688084c8a6326b103"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/21/schedule?season=2026&seasontype=2",
+      "status": 200,
+      "durationMs": 351,
+      "rawBytes": 314693,
+      "rawSha256": "8656fc04de2f68e4b2a2f039a7b40ad0b5ee533670b28d6c81d95338500a9679"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/12/schedule?season=2026&seasontype=2",
+      "status": 200,
+      "durationMs": 259,
+      "rawBytes": 314831,
+      "rawSha256": "1afe3861a1197e5ee8c0b8e72ec6fb4647042a0dabbf22a25fdb59b7845e80c9"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/2/schedule?season=2026&seasontype=2",
+      "status": 200,
+      "durationMs": 344,
+      "rawBytes": 313246,
+      "rawSha256": "3693979cc5eaef76bd244b636eb7dbe7377316e607bcd4fa7d9089a3fc9c37ec"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872660",
+      "status": 200,
+      "durationMs": 352,
+      "rawBytes": 610333,
+      "rawSha256": "959c26592bb794c10e0f03b6600f08554dc7f7a1994d64a958538246785bab73"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872661",
+      "status": 200,
+      "durationMs": 510,
+      "rawBytes": 645378,
+      "rawSha256": "abc3f9da838bf6da906e706e11d9f00e6e8018437de0d96da7e9a54a5dfe456e"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872923",
+      "status": 200,
+      "durationMs": 304,
+      "rawBytes": 693453,
+      "rawSha256": "06c2ee39bb2d8804878836c136793c859c00d7ec4e291f85791ff07154ead35c"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872929",
+      "status": 200,
+      "durationMs": 379,
+      "rawBytes": 580403,
+      "rawSha256": "6a6ea77e6039485fea5958316489942a75c262c7e9769671e4efdd16180ffcc4"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872930",
+      "status": 200,
+      "durationMs": 270,
+      "rawBytes": 526819,
+      "rawSha256": "8133051c1fb1c1af62f9c99bf0f656ca507d346e7577fb40f7f49576fe6d345c"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872932",
+      "status": 200,
+      "durationMs": 318,
+      "rawBytes": 582426,
+      "rawSha256": "430b2d56e192ee69d9ba2b929d849b76ed2b9ac47657cb7b198054fece2ce143"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872931",
+      "status": 200,
+      "durationMs": 415,
+      "rawBytes": 567118,
+      "rawSha256": "705b5c1405c396df0f25b8ce89596787710f3f251fbe618c5142e909d4afddfe"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872937",
+      "status": 200,
+      "durationMs": 335,
+      "rawBytes": 550336,
+      "rawSha256": "44a029c9108e37caba6cf7060ea73ef9de632137f310490037dd8713986d5378"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872939",
+      "status": 200,
+      "durationMs": 307,
+      "rawBytes": 550737,
+      "rawSha256": "6265ffb4e0c2a8511e3b97178c98c63c291ec3fce1b578ec1869c5074d80a21c"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872944",
+      "status": 200,
+      "durationMs": 280,
+      "rawBytes": 549438,
+      "rawSha256": "3f793960f5c7a111b45a74f9a6600c40c72093741690f9b0b9202dda9934c179"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872945",
+      "status": 200,
+      "durationMs": 301,
+      "rawBytes": 637518,
+      "rawSha256": "e79448ba7e3007283f87d9b274cc679b8c89f6f7a75ac2803d43f1d2e609f93d"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872952",
+      "status": 200,
+      "durationMs": 275,
+      "rawBytes": 534061,
+      "rawSha256": "670661f8156bf3cda72759ddb403e4b8b9d24571c7d3da03c76d71812a84897f"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872953",
+      "status": 200,
+      "durationMs": 258,
+      "rawBytes": 592494,
+      "rawSha256": "9933c54f42c23b88429604463a61253601894c7980b662b61e88b441b9fe662e"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872954",
+      "status": 200,
+      "durationMs": 258,
+      "rawBytes": 551243,
+      "rawSha256": "34120bb585379a7e6e18a3add1be309eefba80f061e48fd149f2622bf1ab183c"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872960",
+      "status": 200,
+      "durationMs": 310,
+      "rawBytes": 609986,
+      "rawSha256": "10f6959e880e43bb51d679b5afa3166205276f8d143531d7c6ffd176c085dd01"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872963",
+      "status": 200,
+      "durationMs": 210,
+      "rawBytes": 533328,
+      "rawSha256": "377995941f9b9341e2aaedbcbf61b5c5646ed3207d4df3206f02c57f81fb5f29"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872967",
+      "status": 200,
+      "durationMs": 198,
+      "rawBytes": 604228,
+      "rawSha256": "b14a25e845b69fd49447546755cb1193afcc8daf58f23073635299836fbe9451"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872971",
+      "status": 200,
+      "durationMs": 224,
+      "rawBytes": 588063,
+      "rawSha256": "c2b2db406dab8bd58974c39ecac913752b53f38ff0020ad61ff9a978ead9976e"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872970",
+      "status": 200,
+      "durationMs": 323,
+      "rawBytes": 635588,
+      "rawSha256": "ebc0f685d99f25fe71965f6f101337bd6c31cc876efb4d3babc472ca1d32c654"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872976",
+      "status": 200,
+      "durationMs": 127,
+      "rawBytes": 621087,
+      "rawSha256": "5f0f3927482853f0fc19fa05127ad49775a6bdfa079cc7f7518dde74a1f563d0"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872972",
+      "status": 200,
+      "durationMs": 344,
+      "rawBytes": 547203,
+      "rawSha256": "fb6850b3c5817d72f7b5aa308273dbd9b121140efc8bda4214bbebdcfd640eff"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872978",
+      "status": 200,
+      "durationMs": 300,
+      "rawBytes": 622324,
+      "rawSha256": "7f548c214b4c42964b6c5e8952d3dde07d9daeba35645b7d9722caada5a5c6d6"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872980",
+      "status": 200,
+      "durationMs": 260,
+      "rawBytes": 578095,
+      "rawSha256": "51041817e34672e82115740409bda579eba07f3912c20a3e0b76caa2b82aebb5"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872981",
+      "status": 200,
+      "durationMs": 248,
+      "rawBytes": 612932,
+      "rawSha256": "c7e347b313333b71c4286c476bba69dbadb0b4c6892dbb49f594f3f27995f35f"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872990",
+      "status": 200,
+      "durationMs": 312,
+      "rawBytes": 588474,
+      "rawSha256": "0e7fa3e7c0ce84d2ff69c1d50c4c47e6c98cf3dfbf968fa3be15f6c839fa953b"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872991",
+      "status": 200,
+      "durationMs": 252,
+      "rawBytes": 614578,
+      "rawSha256": "899df2d54ec437c10fa4ba06bcca58c50a9fe032068b7e3a855bf21a8eae3a75"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872998",
+      "status": 200,
+      "durationMs": 198,
+      "rawBytes": 619663,
+      "rawSha256": "332e1e8972108370a82839a57c71084044cdfb0c43beae7c2d0c7450b4e82bc0"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872994",
+      "status": 200,
+      "durationMs": 252,
+      "rawBytes": 627789,
+      "rawSha256": "d58e3afff6ce6ba5a0cdf38e0f125a99a936590f4895623121a84cc2e7b00e3a"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401872999",
+      "status": 200,
+      "durationMs": 360,
+      "rawBytes": 605825,
+      "rawSha256": "3aea56f2f8def3e3b26a5f4cf53646705155319b5fd69fd345d4dc3b5ee2c5b5"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873005",
+      "status": 200,
+      "durationMs": 380,
+      "rawBytes": 595304,
+      "rawSha256": "90f920da27f5acfdb9b4b23bc6fd655a010f75739d981724496e796944fcc073"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873006",
+      "status": 200,
+      "durationMs": 313,
+      "rawBytes": 581770,
+      "rawSha256": "b6b0a331903dbc29d12f66f33d9c6148b8f3746cdc43a8bfac8a685ef64cd8bc"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873007",
+      "status": 200,
+      "durationMs": 303,
+      "rawBytes": 613928,
+      "rawSha256": "7a1411d2c1b31b4ba66815d4d353ea3736f878ec28ecf76ac694ef7eff6799ac"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873010",
+      "status": 200,
+      "durationMs": 180,
+      "rawBytes": 569812,
+      "rawSha256": "3d56a05c98e2e3f58269b62790fb4913244cdbc32483b242ef450198e7ce8d87"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873009",
+      "status": 200,
+      "durationMs": 306,
+      "rawBytes": 568636,
+      "rawSha256": "227bbfa631c077e53d74eab5bb8a2b13132b85260059a88df16a6148f8dae73b"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873020",
+      "status": 200,
+      "durationMs": 150,
+      "rawBytes": 566643,
+      "rawSha256": "8cc4d713e151008ec572e531578c18434a89f7f270427e25cd5127942cf49195"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873024",
+      "status": 200,
+      "durationMs": 119,
+      "rawBytes": 683662,
+      "rawSha256": "7e07493a4d4956a1a4498b14b74196d44ff3b98beeaf519dc77d18bd452ecde2"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873022",
+      "status": 200,
+      "durationMs": 434,
+      "rawBytes": 534875,
+      "rawSha256": "1bb2bced6c683c9dbf270b2da280491122d34b941417f32b35ffa262d58a76ca"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873026",
+      "status": 200,
+      "durationMs": 361,
+      "rawBytes": 619137,
+      "rawSha256": "f267944ab706d65f322b94ae053a0c1cd0f2b6a8bfa36dc7683c6da944178cc3"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873030",
+      "status": 200,
+      "durationMs": 128,
+      "rawBytes": 556104,
+      "rawSha256": "c94eeb51808a9065a78d3a8c81a1230e9b4b6fa0f8f67ec127555f385ee7466e"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873033",
+      "status": 200,
+      "durationMs": 164,
+      "rawBytes": 593228,
+      "rawSha256": "09b3f8800d18882ff73075d5b11cf536334be3de510e12dbeca2e328c8cfc4ed"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873036",
+      "status": 200,
+      "durationMs": 134,
+      "rawBytes": 589253,
+      "rawSha256": "04e9264f4a203baa123a67c03d20aa2ab7fed1d46288f9ff0b00237dee45a901"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873035",
+      "status": 200,
+      "durationMs": 312,
+      "rawBytes": 587940,
+      "rawSha256": "afbd955cdd9ad3c088f3674c574c365a16acfe24769ab930e024a3f46e37c8fd"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873040",
+      "status": 200,
+      "durationMs": 251,
+      "rawBytes": 651032,
+      "rawSha256": "832ebb8c092947550e1e468a8ba3ba0522afa537f3d1d7706e99075f0606f53a"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873042",
+      "status": 200,
+      "durationMs": 246,
+      "rawBytes": 530001,
+      "rawSha256": "7b7e5a2f51968ebf206f5b9b0dad8ed218a1ed452052b0a0b3af1c860e1fa32a"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873044",
+      "status": 200,
+      "durationMs": 172,
+      "rawBytes": 619352,
+      "rawSha256": "1d5b3eaffda9b46c8b616d4068d5094720f2c3c00901d64d5e0288d3da7bcc67"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873045",
+      "status": 200,
+      "durationMs": 157,
+      "rawBytes": 597877,
+      "rawSha256": "06bcbf8056f0f7fd25d729d1b3bb9eb9be272521a7887b20426b300af165fbfc"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873050",
+      "status": 200,
+      "durationMs": 284,
+      "rawBytes": 619297,
+      "rawSha256": "fcc8720f48a5ee358e82dc590f49ff306dc2114edc8633051273bf2b1489d998"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873051",
+      "status": 200,
+      "durationMs": 281,
+      "rawBytes": 604694,
+      "rawSha256": "08ed5fc5cbd59ce6c2909f3515828ff7ecdd036c4d3c48cda743ffc61baa57df"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873053",
+      "status": 200,
+      "durationMs": 156,
+      "rawBytes": 590235,
+      "rawSha256": "16dd10f69555936904a902b619638536a4c2b607eb25c923e20ff2323f15d6e3"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873054",
+      "status": 200,
+      "durationMs": 176,
+      "rawBytes": 585360,
+      "rawSha256": "333521e4f593f305889eed711a0270f6a1f2128ae1d6985e98b11944f3450ec3"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873058",
+      "status": 200,
+      "durationMs": 164,
+      "rawBytes": 635410,
+      "rawSha256": "cca04f3bee4594a94e0a2e26e45614fc96622ce22373eb1a460de837c6a4485c"
+    },
+    {
+      "source": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401873063",
+      "status": 200,
+      "durationMs": 240,
+      "rawBytes": 649716,
+      "rawSha256": "471abfd53d659f051f21ab1af7eebfdf5f35bc1fcd2f758249d94eab3c8f9c0a"
+    }
+  ],
+  "fixtureSha256": "a35f1cddf3fbfd7b670abe206308106921a3dc64667cfd6b56a1d6da79de6722",
+  "records": 58,
+  "allHTTP200": true
+}

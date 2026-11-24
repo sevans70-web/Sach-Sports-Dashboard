@@ -1,0 +1,34 @@
+✔ a Worker market without a fitted model retains the sportsbook quote and reports the missing model (2.696345ms)
+✔ unsupported markets cannot trigger unused observation refresh; combinations require every fitted component (0.523698ms)
+✔ fitted workload and rate produce a projection distinct from the unchanged historical mean (3.668759ms)
+✔ target outcomes, book line and archived heuristic scores cannot alter the forecast (1.693963ms)
+✔ missing histories, future snapshots, after-start and unsupported markets abstain (0.235717ms)
+✔ an exact official context supplies a missing season; another fixture cannot do so (0.454675ms)
+✔ WNBA workload models accept playoff fixture identity without borrowing the NBA regular-season context restriction (0.442086ms)
+✔ GI requires exact fresh quote evidence and a prior calibration artifact (1.907264ms)
+✔ a model selection can exist without GI while failed, stale and after-start decisions abstain (1.274518ms)
+✔ combination forecasts sum fitted component expectations without inventing joint probability or GI (2.448336ms)
+{"market":"points","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"rebounds","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"assists","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"threes_made","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"pts_rebs_asts","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"pts_rebs","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+{"market":"pts_asts","eligibleForecastHistoriesVerified":204,"source":"existing authorized November23 census; no new provider or price audit"}
+✔ all eligible recorded NBA points forecasts carry their exact supporting history, including lower roles (605.17628ms)
+✔ all eligible recorded NBA rebounds forecasts carry their exact supporting history, including lower roles (561.869262ms)
+✔ all eligible recorded NBA assists forecasts carry their exact supporting history, including lower roles (587.106574ms)
+✔ all eligible recorded NBA threes_made forecasts carry their exact supporting history, including lower roles (645.326407ms)
+✔ all eligible recorded NBA pts_rebs_asts forecasts carry their exact supporting history, including lower roles (569.513613ms)
+✔ all eligible recorded NBA pts_rebs forecasts carry their exact supporting history, including lower roles (638.963832ms)
+✔ all eligible recorded NBA pts_asts forecasts carry their exact supporting history, including lower roles (484.197693ms)
+✔ chart evidence rejects wrong identities, stale receipt bindings, future games, altered statistics and missing source timestamps (1.689575ms)
+✔ a newly fetched source keeps its actual receipt time without restamping the pregame forecast (0.777735ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12561.092609

@@ -1,0 +1,18 @@
+{
+  "readOnly": true,
+  "productionWritesInThisTask": 0,
+  "dashboardDeployment": "72ab06fe-229a-4ece-a5d8-96eb1da50f6e",
+  "dashboardVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "dashboardVersionPercentage": 100,
+  "manualBuildCommand": "cd frontend && npm ci && npm run build:vinext",
+  "manualDeployCommand": "cd frontend && npm run deploy:vinext",
+  "branchIncludes": [
+    "__cw08_manual_release_only__"
+  ],
+  "CW08Deployment": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+  "CW08Version": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+  "CW08Cron": "*/15 * * * *",
+  "deploymentPrepared": false,
+  "deploymentUploaded": false,
+  "newInfrastructure": false
+}

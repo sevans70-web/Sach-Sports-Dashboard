@@ -1,0 +1,15 @@
+[33m[PLUGIN_TIMINGS] [0mJavaScript callbacks ran for 3.1s of this 3.2s build (95%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin sach-worker-model-runtime transform (95%, 3.0s, 52 calls)
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+
+{"compiledNFLActualAttachment":[{"market":"passing_yards","rows":6,"independentProjections":5,"holds":{"price_validation_failed":5,"fewer_than_three_same_season_team_appearances":1}},{"market":"passing_tds","rows":6,"independentProjections":5,"holds":{"verified_quote_unavailable":5,"fewer_than_three_same_season_team_appearances":1}},{"market":"rushing_yards","rows":10,"independentProjections":10,"holds":{"price_validation_failed":10}},{"market":"receiving_yards","rows":37,"independentProjections":34,"holds":{"price_validation_failed":34,"prior_workload_role_uncertain":2,"fewer_than_three_same_season_team_appearances":1}},{"market":"receptions","rows":37,"independentProjections":34,"holds":{"price_validation_failed":34,"prior_workload_role_uncertain":2,"fewer_than_three_same_season_team_appearances":1}}],"officialRequests":58,"productionWrites":0,"quoteTimestampsPreserved":true}
+✔ compiled production NFL attachment restores five supported November26 model inputs and retains genuine holds (7655.098829ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9376.061483

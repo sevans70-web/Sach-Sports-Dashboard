@@ -1,7 +1,7 @@
 import {assertNbaRankingActive} from '@/lib/nba-ranking-work';
 import {boundedWork} from '@/lib/bounded-work';
 import {dashboardJobContext} from '@/lib/dashboard-job-context';
-import {nflOfficialFetch} from '@/lib/official-history-source';
+import {nflOfficialPlayerHistory} from '@/lib/nfl-final-history';
 import {refreshNhlObservations} from '@/lib/live-nhl-observations';
 import {nbaEvMarket} from '@/lib/nba-ranking-ev';
 import {workerModelRuntime} from "@/lib/worker-model-runtime";
@@ -22,6 +22,7 @@ import {espnOpportunityGames,nhlOpportunityGames,type OpportunityGame} from '@/l
 import {providerFetch} from '@/lib/provider-fetch';
 import {attachRecordedProgressLines} from '@/lib/recorded-progress';
 import {forecastInputReceipt} from '@/lib/forecast-input-receipt';
+import {nbaSupportingHistory} from '@/lib/nba-supporting-history';
 import {nbaCombinationHistory,NBA_COMBINATION_MARKETS} from '@/lib/nba-combination-history';
 import {firstBasketBookOnly} from '@/lib/nba-slate-scope';
 import {NHL_COUNT_POLICY,nhlCountMarket,nhlCountDistribution,evaluateNhlCountPrice} from '@/lib/nhl-count-model';
@@ -128,13 +129,15 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   quoteUpdatedAt:row.quoteUpdatedAt,calculatedAt:new Date(now).toISOString(),
   basis:'fitted_distribution_and_exact_quote',validatedForBetting:false,
  }:null;
+ const inputReceipt=forecastInputReceipt(key,data.digest,new Date(now).toISOString(),f.inputFeatures);
  return {status:'available',projection:Math.round(f.projection*10)/10,expectedWorkload:Math.round(f.expectedWorkload*10)/10,
   workloadUnit:market==='sacks'?'defensive snaps':['nba','wnba','cbb'].includes(sport)?'minutes':['passing_yards','passing_tds'].includes(market)?'pass attempts':market==='rushing_yards'?'carries':sport==='nhl'?'minutes':'targets',
   interval80:{lower:Math.round(values[Math.floor((values.length-1)*.1)]*10)/10,upper:Math.round(values[Math.floor((values.length-1)*.9)]*10)/10},
   modelId:countMarket?NHL_COUNT_POLICY:model.featurePolicy==='basketball_context'?'basketball-context-distribution-candidate-v1':'workload-distribution-candidate-v2',modelGroup:key,
   ...(countMarket?{countModelValidation:{selectionApproved:false,reason:'nhl_count_revalidation_required',pointModel:'existing_workload_rate',probabilityModel:'poisson',distributionSamples:1001}}:{}),
   trainedThrough:model.trainedThrough,calibratedThrough:model.calibratedThrough,latestHistoryAt:latest.gameTime,calculatedAt:new Date(now).toISOString(),snapshotAsOf:data.asOf,snapshotSha256:data.digest,
-  inputReceipt:forecastInputReceipt(key,data.digest,new Date(now).toISOString(),f.inputFeatures),
+  inputReceipt,
+  ...(sport==='nba'?{supportingHistory:nbaSupportingHistory(row,market,history,inputReceipt)}:{}),
   giScore:gi?.score??null,giEstimatedUnitReturn:gi?.estimatedUnitReturn??null,giReason:countMarket?'price_validation_failed':gi?.reason||data.giStatus?.[key]?.reason||(!pricing?'verified_quote_unavailable':'GI_exact_price_calibration_missing'),
   candidateSide:selectionSide&&gi?.score>0&&gi?.estimatedUnitReturn!=null&&gi.estimatedUnitReturn>=.03?selectionSide:null,
   modelSelection,
@@ -172,15 +175,27 @@ async function attachForecasts(payload:any,sport:string,now=Date.now(),options:{
   payload={...payload,officialHistoryCoverage:{requested:refresh.requestedPlayers,unavailable:refresh.unavailablePlayers.length,budgetExceeded:refresh.budgetExceeded}};
  }
  let nflRefreshUnavailable=new Set<string>();
- if(sport==='nfl'&&payload.market!=='sacks'){
+ if(sport==='nfl'&&payload.market!=='sacks'&&!options.offlineOnly&&runtimeSupportsMarket(data,sport,String(payload.market||''))){
   const pricedGoalies=false;
   const players=[...new Map<string,any>(payload.rows.filter((r:any)=>(!pricedGoalies||verifiedPropQuote(r,now))&&/^\d+$/.test(String(r.playerId))&&Date.parse(r.gameTime)>now&&!r.frozen&&!r.lockedAtKickoff).map((r:any)=>[String(r.playerId),r])).values()];
   const updates:OpportunityGame[]=[];
+  const refreshedScopes=new Set<string>();
   for(let i=0;i<players.length;i+=4)await Promise.all(players.slice(i,i+4).map(async row=>{
-   const season=String(row.season),url=`https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${encodeURIComponent(row.playerId)}/gamelog?season=${encodeURIComponent(season)}`;
-   try{const r=await nflOfficialFetch(url);if(!r.ok){nflRefreshUnavailable.add(String(row.playerId));return;}const identity={sport,season,playerId:String(row.playerId),playerName:row.playerName,source:url,retrievedAt:new Date(now).toISOString()};const payload=await r.json();updates.push(...espnOpportunityGames(payload,identity))}catch{nflRefreshUnavailable.add(String(row.playerId))}
+   const season=String(row.season);
+   try{const payload=await nflOfficialPlayerHistory(String(row.playerId),String(row.teamId),Number(season),now);
+    refreshedScopes.add([String(row.playerId),String(row.teamId),season].join('|'));
+    const identity={sport,season,playerId:String(row.playerId),playerName:row.playerName,source:payload.sourcePolicy,retrievedAt:new Date(now).toISOString()};
+    updates.push(...espnOpportunityGames(payload,identity).map(g=>({...g,source:payload.events[g.gameId].source,retrievedAt:payload.events[g.gameId].retrievedAt})));
+   }catch(error){dashboardJobContext()?.assertActive();if((error as any)?.deferred)throw error;nflRefreshUnavailable.add(String(row.playerId))}
   }));
-  if(updates.length){const merged=new Map(data.observations.map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));for(const r of updates)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);data={...data,observations:[...merged.values()]}}
+  if(refreshedScopes.size){
+   // A complete current official season/team census is authoritative for this
+   // live input slice. Do not resurrect an absent/missing player statistic from
+   // an older bundled revision. This changes no stored prediction or record.
+   const merged=new Map(data.observations.filter(g=>g.sport!=='nfl'||!refreshedScopes.has([g.playerId,g.teamId,g.season].join('|'))).map(r=>[[r.sport,r.market,r.playerId,r.gameId].join('|'),r]));
+   for(const r of updates)merged.set([r.sport,r.market,r.playerId,r.gameId].join('|'),r);data={...data,observations:[...merged.values()]};
+  }
+  payload={...payload,officialHistoryCoverage:{requested:players.length,unavailable:nflRefreshUnavailable.size,sourcePolicy:'official_team_calendar_and_final_boxscores',athleteLogRetries:0}};
  }
  let basketballRefreshUnavailable=new Set<string>();
  if(!options.offlineOnly&&['nba','cbb'].includes(sport)&&runtimeSupportsMarket(data,sport,String(payload.market||payload.rows[0]?.market||''))){

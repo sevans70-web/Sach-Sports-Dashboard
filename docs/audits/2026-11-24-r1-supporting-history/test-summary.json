@@ -1,0 +1,14 @@
+{
+  "distinctTargetedTests": 73,
+  "passed": 73,
+  "failed": 0,
+  "regression": 71,
+  "additionalCompiledHistoryRoute": 1,
+  "additionalCompiledNflAttachment": 1,
+  "finalAffectedRepeat": 19,
+  "typeScriptExitCode": 0,
+  "typeScriptDiagnostics": 0,
+  "fullSuiteRun": false,
+  "productionBuildRun": false,
+  "liveProductionAcceptanceClaimed": false
+}
