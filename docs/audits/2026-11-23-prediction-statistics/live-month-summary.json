@@ -1,0 +1,172 @@
+{
+  "scope": "actual Chromium read-only existing production Month APIs; TLS on",
+  "reads": [
+    {
+      "sport": "nba",
+      "status": 200,
+      "seconds": 45.714,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "coverage": {
+        "files": 0,
+        "availableDates": [
+          "2026-09-27",
+          "2026-10-03",
+          "2026-10-04",
+          "2026-10-05",
+          "2026-10-06",
+          "2026-10-07",
+          "2026-10-08",
+          "2026-10-15",
+          "2026-10-16",
+          "2026-10-20"
+        ],
+        "cloudDocuments": 0,
+        "driveDocuments": 76,
+        "historySource": "Google Drive",
+        "protectedOriginals": {
+          "added": 0,
+          "alreadyPresent": 0,
+          "invalid": 0
+        },
+        "complete": false,
+        "duplicatesReconciled": 0,
+        "conflictingCopies": 0,
+        "errorCount": 2935,
+        "errorSamples": [
+          "drive:pts_asts|2026-10-20:checking",
+          "drive:pts_rebs|2026-10-20:checking",
+          "drive:pts_rebs_asts|2026-10-20:checking",
+          "drive:rebounds|2026-10-20:checking"
+        ]
+      },
+      "records": 0,
+      "error": null
+    },
+    {
+      "sport": "nfl",
+      "status": 200,
+      "seconds": 45.601,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "coverage": {
+        "files": 0,
+        "availableDates": [
+          "2026-09-27",
+          "2026-09-28",
+          "2026-10-01",
+          "2026-10-02",
+          "2026-10-03",
+          "2026-10-04",
+          "2026-10-05",
+          "2026-10-06",
+          "2026-10-07",
+          "2026-10-08"
+        ],
+        "cloudDocuments": 0,
+        "driveDocuments": 111,
+        "historySource": "Google Drive",
+        "protectedOriginals": {
+          "added": 0,
+          "alreadyPresent": 0,
+          "invalid": 0
+        },
+        "complete": false,
+        "duplicatesReconciled": 552,
+        "conflictingCopies": 291,
+        "errorCount": 1313,
+        "errorSamples": [
+          "drive:anytime_td|2026-10-11:checking",
+          "drive:first_td|2026-10-11:checking",
+          "drive:passing_rushing_yards|2026-10-11:checking",
+          "drive:passing_tds|2026-10-11:checking"
+        ]
+      },
+      "records": 0,
+      "error": null
+    },
+    {
+      "sport": "nhl",
+      "status": 200,
+      "seconds": 45.959,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "coverage": {
+        "files": 0,
+        "availableDates": [
+          "2026-09-27",
+          "2026-10-01",
+          "2026-10-02",
+          "2026-10-03",
+          "2026-10-04",
+          "2026-10-05",
+          "2026-10-06",
+          "2026-10-07",
+          "2026-10-08",
+          "2026-10-09",
+          "2026-10-10",
+          "2026-10-11",
+          "2026-10-12",
+          "2026-10-13",
+          "2026-10-14",
+          "2026-10-15",
+          "2026-10-16",
+          "2026-10-17",
+          "2026-10-24",
+          "2026-10-25",
+          "2026-10-26"
+        ],
+        "cloudDocuments": 0,
+        "driveDocuments": 126,
+        "historySource": "Google Drive",
+        "protectedOriginals": {
+          "added": 0,
+          "alreadyPresent": 0,
+          "invalid": 0
+        },
+        "complete": false,
+        "duplicatesReconciled": 0,
+        "conflictingCopies": 0,
+        "errorCount": 1088,
+        "errorSamples": [
+          "drive:featured_goalie_saves|2026-10-26:checking",
+          "drive:featured_goals|2026-10-26:checking",
+          "drive:featured_points|2026-10-26:checking",
+          "drive:featured_shots_on_goal|2026-10-26:checking"
+        ]
+      },
+      "records": 0,
+      "error": null
+    }
+  ]
+}

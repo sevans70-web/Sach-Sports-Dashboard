@@ -1,0 +1,125 @@
+{
+  "decision": "GO_FOR_SEPARATE_UPDATED_ARTIFACT_APPROVAL",
+  "artifact": "R1-2026-11-23-eb7bcf7-db22520f39e6",
+  "productionDeployed": false,
+  "oldConditionalAuthorizationUsed": false,
+  "modelChanged": false,
+  "targetedDistinctTests": 36,
+  "finalTestFailures": 0,
+  "fullSuiteRepeated": false,
+  "desktopMobileReplayFlows": 6,
+  "actualProductionBefore": {
+    "nbaMonthRows": 0,
+    "nflMonthRows": 0,
+    "nhlMonthRows": 0,
+    "seconds": [
+      45.714,
+      45.601,
+      45.959
+    ]
+  },
+  "currentProtected": {
+    "picks": 1473,
+    "grades": 1269,
+    "ungraded": 204,
+    "protectedTotal": 20468
+  },
+  "finalCompiledMonth": [
+    {
+      "sport": "nba",
+      "period": "Month",
+      "status": 200,
+      "ms": 11494,
+      "requests": 183,
+      "summary": {
+        "total": 6601,
+        "hits": 3178,
+        "misses": 2351,
+        "pushes": 338,
+        "completed": 5867,
+        "awaitingResult": 729,
+        "void": 5,
+        "unknown": 0,
+        "hitRate": 57.5,
+        "lateRecords": 0
+      },
+      "protected": {
+        "added": 363,
+        "alreadyPresent": 716,
+        "invalid": 0
+      },
+      "partial": true,
+      "coverageErrorCount": 2,
+      "coverageErrorKinds": [
+        "cloud",
+        "drive"
+      ],
+      "records": 6601
+    },
+    {
+      "sport": "nfl",
+      "period": "Month",
+      "status": 200,
+      "ms": 2335,
+      "requests": 117,
+      "summary": {
+        "total": 1314,
+        "hits": 443,
+        "misses": 431,
+        "pushes": 4,
+        "completed": 878,
+        "awaitingResult": 436,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": 50.7,
+        "lateRecords": 0
+      },
+      "protected": {
+        "added": 59,
+        "alreadyPresent": 90,
+        "invalid": 0
+      },
+      "partial": true,
+      "coverageErrorCount": 1,
+      "coverageErrorKinds": [
+        "drive"
+      ],
+      "records": 1314
+    },
+    {
+      "sport": "nhl",
+      "period": "Month",
+      "status": 200,
+      "ms": 952,
+      "requests": 69,
+      "summary": {
+        "total": 1149,
+        "hits": 648,
+        "misses": 397,
+        "pushes": 0,
+        "completed": 1045,
+        "awaitingResult": 104,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": 62,
+        "lateRecords": 0
+      },
+      "protected": {
+        "added": 95,
+        "alreadyPresent": 150,
+        "invalid": 0
+      },
+      "partial": true,
+      "coverageErrorCount": 1,
+      "coverageErrorKinds": [
+        "drive"
+      ],
+      "records": 1149
+    }
+  ],
+  "coldTimesAreLocalNotProduction": true,
+  "finalArchiveChecksum": "3dba5cdc277e920367bc0585d30fe980a703b69b51bf8f5a6ac517ec0a445c7e",
+  "bundleChecksum": "db22520f39e641c29b93e26664b957836a2ec3ff334541b396d3a229bebc0cd2",
+  "archiveCoverage": "Isolated Drive outage plus bounded legacy-document reads are explicitly partial; all protected model-pick identities accounted for. Full live archive/grade acceptance remains open.",
+  "completedTrackerRows": 0
+}

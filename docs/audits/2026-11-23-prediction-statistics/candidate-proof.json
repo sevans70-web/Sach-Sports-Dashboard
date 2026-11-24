@@ -1,0 +1,141 @@
+{
+  "scope": "Exact compiled Worker, existing verified private restore, real legacy Supabase documents and protected records; isolated Drive outage and home no-legacy duplicate-free contracts; original November23Toronto clock. No production calls/writes; not live acceptance.",
+  "baseline": false,
+  "proof": [
+    {
+      "sport": "nba",
+      "period": "Month",
+      "status": 200,
+      "ms": 11494,
+      "requests": 183,
+      "summary": {
+        "total": 6601,
+        "hits": 3178,
+        "misses": 2351,
+        "pushes": 338,
+        "completed": 5867,
+        "awaitingResult": 729,
+        "void": 5,
+        "unknown": 0,
+        "hitRate": 57.5,
+        "lateRecords": 0
+      },
+      "protected": {
+        "added": 363,
+        "alreadyPresent": 716,
+        "invalid": 0
+      },
+      "partial": true,
+      "coverageErrorCount": 2,
+      "coverageErrorKinds": [
+        "cloud",
+        "drive"
+      ],
+      "records": 6601
+    },
+    {
+      "sport": "nfl",
+      "period": "Month",
+      "status": 200,
+      "ms": 2335,
+      "requests": 117,
+      "summary": {
+        "total": 1314,
+        "hits": 443,
+        "misses": 431,
+        "pushes": 4,
+        "completed": 878,
+        "awaitingResult": 436,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": 50.7,
+        "lateRecords": 0
+      },
+      "protected": {
+        "added": 59,
+        "alreadyPresent": 90,
+        "invalid": 0
+      },
+      "partial": true,
+      "coverageErrorCount": 1,
+      "coverageErrorKinds": [
+        "drive"
+      ],
+      "records": 1314
+    },
+    {
+      "sport": "nhl",
+      "period": "Month",
+      "status": 200,
+      "ms": 952,
+      "requests": 69,
+      "summary": {
+        "total": 1149,
+        "hits": 648,
+        "misses": 397,
+        "pushes": 0,
+        "completed": 1045,
+        "awaitingResult": 104,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": 62,
+        "lateRecords": 0
+      },
+      "protected": {
+        "added": 95,
+        "alreadyPresent": 150,
+        "invalid": 0
+      },
+      "partial": true,
+      "coverageErrorCount": 1,
+      "coverageErrorKinds": [
+        "drive"
+      ],
+      "records": 1149
+    },
+    {
+      "home": {
+        "success": true,
+        "partial": false,
+        "scope": "Overall recorded results · NBA/NFL/NHL",
+        "hits": 675,
+        "misses": 594,
+        "settled": 1269,
+        "pending": 204,
+        "hitRate": 53.2,
+        "sports": [
+          {
+            "sport": "nba",
+            "hits": 527,
+            "misses": 496,
+            "pending": 56,
+            "pushes": 0,
+            "void": 0,
+            "settled": 1023
+          },
+          {
+            "sport": "nfl",
+            "hits": 17,
+            "misses": 18,
+            "pending": 114,
+            "pushes": 0,
+            "void": 0,
+            "settled": 35
+          },
+          {
+            "sport": "nhl",
+            "hits": 131,
+            "misses": 80,
+            "pending": 34,
+            "pushes": 0,
+            "void": 0,
+            "settled": 211
+          }
+        ],
+        "updatedAt": "2026-11-24T00:16:17.180Z"
+      }
+    }
+  ],
+  "calls": 390,
+  "writes": 0
+}

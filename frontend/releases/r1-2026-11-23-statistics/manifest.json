@@ -1,0 +1,76 @@
+{
+  "schema": "r1-dashboard-release/v1",
+  "artifact": "R1-2026-11-23-eb7bcf7-db22520f39e6",
+  "status": "rehearsal_passed_awaiting_approval",
+  "worker": "sach-sports-cloudflare-test",
+  "sourceCommit": "eb7bcf720ac278f7ad542025e09874222c91d64a",
+  "sourceFrontendTree": "daed49ef72e45cc4d2ee11b2568d4e72c953d3de",
+  "applicationRepairCommit": "eb7bcf720ac278f7ad542025e09874222c91d64a",
+  "includedVerifiedCommits": [
+    "eb7bcf720ac278f7ad542025e09874222c91d64a",
+    "58829c2",
+    "d605e1a",
+    "6d98710",
+    "600bd5d",
+    "1167c46",
+    "6f8980b"
+  ],
+  "bundleDigest": "db22520f39e641c29b93e26664b957836a2ec3ff334541b396d3a229bebc0cd2",
+  "files": 429,
+  "allFileChecksums": "files.json",
+  "allFileChecksumsSha256": "2eac005d37cce63a320e735cd2df3f64b532aa57ed4561d4b0a8abc098ef5426",
+  "archive": {
+    "file": "candidate.tar.gz",
+    "bytes": 10372300,
+    "sha256": "3dba5cdc277e920367bc0585d30fe980a703b69b51bf8f5a6ac517ec0a445c7e"
+  },
+  "fallbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "immediatePriorVersion": "9b38d251-9f0a-4d95-b07c-fc7feb6eab93",
+  "immediatePriorDeployment": "907bf0e9-e512-48d6-8629-ab9b33a68710",
+  "productionDeployed": false,
+  "approvalRequired": true,
+  "createdAt": "2026-11-24T00:58:35.079Z",
+  "execution": "Local preparation, exact prebuilt artifact only; no upload or production-data initialization authorized in preparation",
+  "startup": "Bounded native capture alarm refreshes current official inputs into existing operational evidence tables. No historical import/restamp. Original101 evidence pointers preserved in rehearsal. Stop on failed acceptance.",
+  "runtime": {
+    "compatibilityDate": "2026-11-06",
+    "compatibilityFlags": [
+      "nodejs_compat"
+    ],
+    "subrequests": 350,
+    "foregroundNbaSourceOperations": 256,
+    "jobSubrequests": 220,
+    "jobSourceConcurrency": 4,
+    "jobDeadlineMs": 25000,
+    "jobSourceTimeoutMs": 10000,
+    "namespace": "fc70a55e49c84d28bacc562a8d5cfb62",
+    "kv": "644df6a469e84dba90c8f7dac410f895",
+    "newNamespaces": 0,
+    "newMigrations": 0
+  },
+  "scope": [
+    "NBA redirect/cache/EV/PR memory repairs; stored-input durable cold recovery and exact ID/team quote matching",
+    "NFL selected-day schedule,17-tab visibility and bounded checkpoint/capture recovery",
+    "NHL loading/rankings/evidence recovery; unchanged frozen model safeguards",
+    "Independent bounded capture/grading and compatible held rollback"
+  ],
+  "protectedBackupRecords": 20468,
+  "cw08Changes": false,
+  "automaticBuildsRemainPaused": true,
+  "fullR1LiveAcceptancePassed": false,
+  "supersedesArtifact": "R1-2026-11-23-78ed0d5-cf008e306082",
+  "previousAuthorizationApplies": false,
+  "additionalScope": [
+    "Prediction history includes live immutable picks/grades for all five periods and retains archival data",
+    "Bounded older grading backlog recovery, settled-record skipping and stable pagination",
+    "Original-side/daily summaries, source timestamps, automatic featured refresh, retained results after failed refresh",
+    "Bounded current-first archive fetching and compact streamed history reconciliation",
+    "Home aggregate includes authenticated model-pick grades without double counting legacy identities"
+  ],
+  "rehearsalNote": "Targeted verification passed; conditional approval for the superseded artifact was not consumed. Updated full R1 requires separate explicit approval and actual production acceptance.",
+  "implementationCommits": [
+    "2ffc415",
+    "bfecf30",
+    "eb7bcf7"
+  ]
+}

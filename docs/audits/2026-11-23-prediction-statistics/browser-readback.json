@@ -1,0 +1,41 @@
+{
+  "scope": "actual Chromium read-only production performance page, TLS on",
+  "responses": [
+    {
+      "url": "https://sach-sports-cloudflare-test.sevans70.workers.dev/api/history/performance?sport=nba&period=Today&market=points",
+      "status": 200,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "coverage": {
+        "files": 0,
+        "availableDates": [],
+        "cloudDocuments": 0,
+        "driveDocuments": 0,
+        "historySource": "Supabase",
+        "protectedOriginals": {
+          "added": 0,
+          "alreadyPresent": 0,
+          "invalid": 0
+        },
+        "errors": [],
+        "complete": true,
+        "duplicatesReconciled": 0,
+        "conflictingCopies": 0
+      },
+      "error": null
+    }
+  ],
+  "errors": [],
+  "pageStatus": 200,
+  "text": "SACH SPORTS\n\u2315\n\u2630\nHOME\nNBA\nNFL\nNHL\n\u2039 Back to NBA Intelligence\nNBA Results & History\nFeatured Picks Performance\nToday\nYesterday\nWeek\nMonth\nSeason\n\nSome featured history could not be verified. Totals cover only the saved selections currently available.\n\n\u2b50 Play of the Day\n\u2014\n0 wins \u00b7 0 losses \u00b7 0 pending\n\ud83d\udc8e Best Value\n\u2014\n0 wins \u00b7 0 losses \u00b7 0 pending\n\ud83c\udfc0 First Basket\n\u2014\n0 wins \u00b7 0 losses \u00b7 0 pending\n\ud83d\ude80 Long Shot\n\u2014\n0 wins \u00b7 0 losses \u00b7 0 pending\n\nNo saved featured selections found for this period.\n\n\ud83d\udcca\nPrediction Performance\n\nOriginal saved forecasts and recorded results \u00b7 some forecasts do not include a sportsbook price.\n\nSaved pregame Sach picks \u00b7 model estimates\n\nHit rate\n\u2014\n0 / 0 decisions\n\u2713\nSettled\n0\n0 Hits\n0 Misses\n\u231b\nPending\n0\nNo saved forecasts awaiting results\n\u25a5\nCategory Performance\n\u2304\n\ud83c\udfc0\nPoints\n\ud83d\udcaa\nRebounds\n\ud83c\udfaf\nAssists\n3\ufe0f\u20e3\n3-Pointers Made\n\u23f1\ufe0f\nQ1 Points\n\u23f1\ufe0f\nQ1 Rebounds\n\u23f1\ufe0f\nQ1 Assists\n\ud83d\udcca\nPoints + Rebounds + Assists\n\ud83d\udcca\nPoints + Rebounds\n\ud83d\udcca\nPoints + Assists\n\ud83d\udcca\nRebounds + Assists\n\ud83d\udd90\ufe0f\nSteals\n\ud83e\uddf1\nBlocks\n1\ufe0f\u20e3\nFirst Basket\n\ud83c\udfc0\nPoints prediction results\nHit rate\n\u2014\n0 / 0 decisions\n\u2713\nSettled\n0\n0 Hits\n0 Misses\n\u231b\nPending\n0\nNo saved forecasts awaiting results\nProbability accuracy for this category\nFilter saved results \nAll results\nHits\nMisses\nPushes\nPending\nUnknown\nVoid / withdrawn\n\nShowing 0 of 0 saved records. Summary totals cover all results in this category.\n\nWeek covers the last 7 calendar days; Month the last 31; Season the last 370.\n\n0 saved forecasts \u00b7 0 void/withdrawn"
+}

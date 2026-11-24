@@ -1,0 +1,38 @@
+{
+  "scope": "Exact compiled Worker, existing verified private restore, real legacy Supabase documents and protected records; isolated Drive outage and home no-legacy duplicate-free contracts; original November23Toronto clock. No production calls/writes; not live acceptance.",
+  "baseline": true,
+  "proof": [
+    {
+      "sport": "nba",
+      "period": "Month",
+      "status": 200,
+      "ms": 3315,
+      "requests": 1,
+      "summary": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "protected": {
+        "added": 0,
+        "alreadyPresent": 0,
+        "invalid": 0
+      },
+      "partial": true,
+      "coverageErrorCount": 1,
+      "coverageErrorKinds": [
+        "drive"
+      ],
+      "records": 0
+    }
+  ],
+  "calls": 1,
+  "writes": 0
+}

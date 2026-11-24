@@ -1,0 +1,10 @@
+{
+  "artifact": "R1-2026-11-23-eb7bcf7-db22520f39e6",
+  "digest": "db22520f39e641c29b93e26664b957836a2ec3ff334541b396d3a229bebc0cd2",
+  "archive": {
+    "file": "candidate.tar.gz",
+    "bytes": 10372300,
+    "sha256": "3dba5cdc277e920367bc0585d30fe980a703b69b51bf8f5a6ac517ec0a445c7e"
+  },
+  "files": 429
+}
