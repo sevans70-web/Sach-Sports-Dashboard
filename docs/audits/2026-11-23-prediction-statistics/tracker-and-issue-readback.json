@@ -1,0 +1,26 @@
+{
+  "schema": "tracker-issue-receipt/v1",
+  "packageCommit": "3fb78826fdbfa49f5bed7903d74b1ebba6d6e159",
+  "artifact": "R1-2026-11-23-eb7bcf7-db22520f39e6",
+  "productionUploaded": false,
+  "oldConditionalApprovalUsed": false,
+  "tracker": {
+    "spreadsheetId": "1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8",
+    "cellsUpdated": 23,
+    "cellsVerified": 23,
+    "historyIdsValidationNotesChipsWrappingPreserved": true,
+    "intentionalLinkTargetsUpdated": true,
+    "completedRowsMoved": 0,
+    "status": "CW09/CW11 Needs verification; R1 open pending revised approval and actual acceptance",
+    "nativeRender": "Not performed; content-only style/wrapping metadata verified",
+    "url": "https://docs.google.com/spreadsheets/d/1YVHL_0J_S1El0hKbduRKSySP_-Gh9tXJMNVcgOWeFp8/edit"
+  },
+  "issue": {
+    "repository": "sevans70-web/Sach-Sports-Dashboard",
+    "number": 129,
+    "commentId": 7118775894,
+    "url": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7118775894",
+    "postSucceeded": true
+  },
+  "decision": "Await separate approval for replacement frozen artifact; R1 remains open; no completed rows moved."
+}
