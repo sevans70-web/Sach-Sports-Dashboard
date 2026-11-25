@@ -1,0 +1,29 @@
+{
+  "issueCommentId": 7149427864,
+  "issueUrl": "https://github.com/sevans70-web/Sach-Sports-Dashboard/issues/129#issuecomment-7149427864",
+  "evidenceCommit": "782db72",
+  "tracker": {
+    "cellsUpdated": 22,
+    "readbackPassed": 22,
+    "formatsValidationsHistoryAndLinksPreserved": true,
+    "cw10Untouched": true,
+    "completedMoves": 0,
+    "cw11": "Blocked",
+    "cw09": "Blocked",
+    "R1AndV62": "Open; actual acceptance failed and rollback active",
+    "P01": "Unchanged; model holds remain separate",
+    "visualVerification": "Bounded cell/format/validation/link metadata verified; no native rendered-sheet visual claimed"
+  },
+  "outcome": "One authorized exact artifact uploaded, critical actual NBA availability acceptance failed, approved compatible fallback active; no second attempt",
+  "candidateDeployment": "36457d68-1761-4458-a505-9c5146c4e0fd",
+  "rollbackDeployment": "898ed02c-a21d-4d1f-85fd-59a416de8df8",
+  "rollbackVersion": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+  "all20904ProtectedRecordsAndInventoriesVerified": true,
+  "commandsRestored": true,
+  "automaticBuildsPaused": true,
+  "CW08Unchanged": true,
+  "P01HoldsNotRollbackTrigger": true,
+  "fullR1Complete": false,
+  "noCompletedMoves": true,
+  "nextTask": "Current-slate/original-pregame-board availability and honest zero-eligible completion; fallback NHL ended-request promise ownership; retain unresolved live operational/statistics acceptance"
+}
