@@ -1,0 +1,11 @@
+{
+  "commandsChangedOnly": true,
+  "readbackPassed": true,
+  "automaticBuildsPaused": true,
+  "build": {
+    "id": "a8f71e45-9dc7-4044-8cf5-0e86bbb21022",
+    "status": "queued",
+    "created_on": "2026-11-25T01:03:54.814Z"
+  },
+  "restoreRequiredImmediatelyOnBuildCompletionOrFailure": true
+}

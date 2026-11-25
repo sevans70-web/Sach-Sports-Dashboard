@@ -1,0 +1,39 @@
+{
+  "events": [
+    {
+      "at": 1795568967626,
+      "message": "[performance-read] {\"sport\":\"nba\",\"period\":\"Season\",\"observe\":false,\"cloud\":true,\"files\":0,\"records\":8529,\"localMs\":0,\"cloudWaitMs\":9226,\"cloudDocuments\":2892,\"driveDocuments\":0,\"historySource\":\"Google Drive\",\"cloudErrors\":1,\"cloudErrorTypes\":[\"unavailable\"],\"reconcileMs\":0,\"totalMs\":9226}",
+      "version": "2c1c328b-3c01-4d06-b718-9a3d7070f9c1"
+    },
+    {
+      "at": 1795568939347,
+      "message": "[dashboard-job-phase] {\"id\":\"capture:nba:pts_asts:14963074\",\"kind\":\"capture\",\"sport\":\"nba\",\"market\":\"pts_asts\",\"from\":\"rank\",\"to\":\"originals\",\"state\":\"active\",\"eligible\":0,\"stored\":0,\"picksStored\":0,\"expired\":0,\"usage\":{\"used\":20,\"limit\":220,\"costs\":{\"provider_gate\":10,\"history_http\":1,\"official_http\":9},\"cacheHits\":0,\"cacheWrites\":0,\"checkpointBytes\":0,\"completedRequests\":10,\"maxActive\":4,\"maxReserved\":12,\"coalesced\":0,\"queuedCancelled\":0,\"aborted\":0,\"sourceDenials\":[{\"endpoint\":\"https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/statistics/byathlete?region=us&lang=en&contentorigin=espn&isqualified=false&limit=500&sort=offensive.avgPoints%3Adesc&season=2026&seasontype=2&page=1\",\"status\":403,\"retryAt\":1795572539347}],\"denialHits\":0}}",
+      "version": "2c1c328b-3c01-4d06-b718-9a3d7070f9c1"
+    },
+    {
+      "at": 1795568929884,
+      "message": "[performance-read] {\"sport\":\"nba\",\"period\":\"Season\",\"observe\":false,\"cloud\":true,\"files\":0,\"records\":8357,\"localMs\":0,\"cloudWaitMs\":9485,\"cloudDocuments\":2825,\"driveDocuments\":0,\"historySource\":\"Google Drive\",\"cloudErrors\":1,\"cloudErrorTypes\":[\"unavailable\"],\"reconcileMs\":0,\"totalMs\":9485}",
+      "version": "2c1c328b-3c01-4d06-b718-9a3d7070f9c1"
+    },
+    {
+      "at": 1795568920652
+    },
+    {
+      "at": 1795568919952
+    },
+    {
+      "at": 1795568919952
+    },
+    {
+      "at": 1795568884735,
+      "message": "performance_protected_history_unavailable",
+      "version": "2c1c328b-3c01-4d06-b718-9a3d7070f9c1"
+    }
+  ],
+  "statistics": {
+    "elapsed": 0.076764317,
+    "rows_read": 2336521,
+    "bytes_read": 90219385,
+    "abr_level": 1
+  }
+}

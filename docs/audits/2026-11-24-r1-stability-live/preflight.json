@@ -1,0 +1,164 @@
+{
+  "at": "2026-11-25T01:01:13.243Z",
+  "sach-sports-cloudflare-test": {
+    "active": {
+      "id": "72ab06fe-229a-4ece-a5d8-96eb1da50f6e",
+      "source": "api",
+      "strategy": "percentage",
+      "author_email": "sevans70@hotmail.com",
+      "annotations": {
+        "workers/message": "Approved immediate R1 fallback: NBA supporting history returns empty arrays and NFL current independent forecasts unavailable; mandatory acceptance incomplete. Preserve all original/new records and CW08.",
+        "workers/triggered_by": "deployment"
+      },
+      "versions": [
+        {
+          "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-24T15:39:20.002328Z"
+    },
+    "schedule": {
+      "schedules": [
+        {
+          "cron": "0,30 * * * *",
+          "created_on": "2026-11-09T10:32:52.803607Z",
+          "modified_on": "2026-11-09T10:32:52.803607Z"
+        },
+        {
+          "cron": "10-17 9 * * *",
+          "created_on": "2026-11-09T05:43:58.936277Z",
+          "modified_on": "2026-11-09T05:43:58.936277Z"
+        },
+        {
+          "cron": "*/2 * * * *",
+          "created_on": "2026-11-09T10:32:52.803607Z",
+          "modified_on": "2026-11-09T10:32:52.803607Z"
+        }
+      ]
+    }
+  },
+  "sach-cw08-nhl-shadow": {
+    "active": {
+      "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+      "source": "api",
+      "strategy": "percentage",
+      "author_email": "sevans70@hotmail.com",
+      "annotations": {
+        "workers/message": "Approved CW08 transport-only update; frozen mod...",
+        "workers/triggered_by": "upload"
+      },
+      "versions": [
+        {
+          "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-14T19:54:01.859122Z"
+    },
+    "schedule": {
+      "schedules": [
+        {
+          "cron": "*/15 * * * *",
+          "created_on": "2026-11-14T05:24:15.908994Z",
+          "modified_on": "2026-11-14T05:24:15.908994Z"
+        }
+      ]
+    }
+  },
+  "settings": {
+    "placement": {},
+    "compatibility_date": "2026-11-06",
+    "compatibility_flags": [
+      "nodejs_compat"
+    ],
+    "usage_model": "standard",
+    "tags": [],
+    "tail_consumers": [],
+    "logpush": false,
+    "limits": {
+      "subrequests": 350
+    },
+    "observability": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "redact_query_string": true,
+      "logs": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "persist": true,
+        "invocation_logs": true
+      },
+      "traces": {
+        "enabled": true,
+        "persist": true,
+        "head_sampling_rate": 0.1
+      }
+    },
+    "annotations": {
+      "workers/message": "Approved R1 performance b8d05e3 c8428f1ae381; CW08 unchanged",
+      "workers/triggered_by": "upload"
+    },
+    "bindings": [
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "type": "secret_text",
+        "name": "BACKUP_DRIVE_FOLDER_ID"
+      },
+      {
+        "class_name": "DashboardJobQueue",
+        "name": "DASHBOARD_JOBS",
+        "namespace_id": "fc70a55e49c84d28bacc562a8d5cfb62",
+        "type": "durable_object_namespace"
+      },
+      {
+        "type": "secret_text",
+        "name": "GOOGLE_OAUTH_CLIENT_ID"
+      },
+      {
+        "type": "secret_text",
+        "name": "GOOGLE_OAUTH_CLIENT_SECRET"
+      },
+      {
+        "type": "secret_text",
+        "name": "GOOGLE_OAUTH_REFRESH_TOKEN"
+      },
+      {
+        "type": "secret_text",
+        "name": "OWLS_INSIGHT_API_KEY"
+      },
+      {
+        "type": "secret_text",
+        "name": "SPORTSGAMEODDS_API_KEY"
+      },
+      {
+        "type": "secret_text",
+        "name": "SUPABASE_SECRET_KEY"
+      },
+      {
+        "type": "secret_text",
+        "name": "SUPABASE_URL"
+      },
+      {
+        "name": "VINEXT_KV_CACHE",
+        "namespace_id": "644df6a469e84dba90c8f7dac410f895",
+        "type": "kv_namespace"
+      }
+    ]
+  },
+  "triggers": [
+    {
+      "id": "1ab4bcd7-477b-42b6-b7f3-07ba1748b3e7",
+      "build_command": "cd frontend && npm ci && npm run build:vinext",
+      "deploy_command": "cd frontend && npm run deploy:vinext",
+      "branch_includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "branch_excludes": []
+    }
+  ],
+  "fallbackAvailable": "a48c431a-5c3e-4491-8529-38cb20dfa898"
+}

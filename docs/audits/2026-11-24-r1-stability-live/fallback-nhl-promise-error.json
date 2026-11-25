@@ -1,0 +1,9 @@
+{
+  "status": 503,
+  "body": {
+    "success": false,
+    "market": "shots_on_goal",
+    "rows": [],
+    "error": "This promise was created by a request that has since ended, so it can never settle. With the handle_cross_request_promise_resolution compatibility flag, a promise can only settle in the request that created it, and settling it after that request ends is dropped."
+  }
+}

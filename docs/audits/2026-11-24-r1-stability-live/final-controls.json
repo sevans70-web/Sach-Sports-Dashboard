@@ -1,0 +1,98 @@
+{
+  "at": "2026-11-25T01:14:27.494Z",
+  "dashboard": {
+    "id": "898ed02c-a21d-4d1f-85fd-59a416de8df8",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "R1 stability critical live browser failure: NBA Points zero ranking cards and original pregame board unavailable. Restore approved compatible fallback; preserve all original/new records. P01 model holds are not the rollback trigger.",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-25T01:09:28.833866Z"
+  },
+  "CW08": {
+    "id": "39ea465b-ca3f-47f8-9bd2-50eb2f1ad174",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "Approved CW08 transport-only update; frozen mod...",
+      "workers/triggered_by": "upload"
+    },
+    "versions": [
+      {
+        "version_id": "46e95f99-98f2-4abe-a2b2-0ff24b4f8e4b",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-14T19:54:01.859122Z"
+  },
+  "CW08Schedule": {
+    "schedules": [
+      {
+        "cron": "*/15 * * * *",
+        "created_on": "2026-11-14T05:24:15.908994Z",
+        "modified_on": "2026-11-14T05:24:15.908994Z"
+      }
+    ]
+  },
+  "triggers": [
+    {
+      "build_command": "cd frontend && npm ci && npm run build:vinext",
+      "deploy_command": "cd frontend && npm run deploy:vinext",
+      "branch_includes": [
+        "__cw08_manual_release_only__"
+      ],
+      "branch_excludes": []
+    }
+  ],
+  "buildEvidence": [
+    [
+      1795568859665,
+      "[r1-stability-frozen-artifact] {\"digest\":\"84829ff137affe1e09736ed901f853da3805259d184cc7ecb0cc2b6ed976aa99\",\"files\":431,\"worker\":\"sach-sports-cloudflare-test\",\"sourceCommit\":\"e35c9d7f02c9f63354aa74dfbc3dc933dc0f67e9\",\"archiveSha256\":\"6898b846076b44675d6e4bea271c473c2641d1f9944bc78b4061981f21911d00\",\"approvalRequired\":true,\"productionDeployed\":false,\"rehearsal\":\"rehearsal_passed_awaiting_approval\",\"artifact\":\"R1-STABILITY-2026-11-24-e35c9d7-84829ff137af\",\"sourceInputFilesVerified\":812,\"scope\":\"stability_only_model_holds_retained\"}"
+    ],
+    [
+      1795568859772,
+      "Executing user deploy command: cd frontend && node scripts/prepare-r1-stability-release.mjs --prepare-only && node scripts/deploy-cloudflare.mjs --tag r1-stability-2026-11-24 --message R1-STABILITY-2026-11-24-e35c9d7-84829ff137af"
+    ],
+    [
+      1795568860905,
+      "[r1-stability-frozen-artifact] {\"digest\":\"84829ff137affe1e09736ed901f853da3805259d184cc7ecb0cc2b6ed976aa99\",\"files\":431,\"worker\":\"sach-sports-cloudflare-test\",\"sourceCommit\":\"e35c9d7f02c9f63354aa74dfbc3dc933dc0f67e9\",\"archiveSha256\":\"6898b846076b44675d6e4bea271c473c2641d1f9944bc78b4061981f21911d00\",\"approvalRequired\":true,\"productionDeployed\":false,\"rehearsal\":\"rehearsal_passed_awaiting_approval\",\"artifact\":\"R1-STABILITY-2026-11-24-e35c9d7-84829ff137af\",\"sourceInputFilesVerified\":812,\"scope\":\"stability_only_model_holds_retained\"}"
+    ],
+    [
+      1795568865158,
+      "│  Total Upload: 14344.57 KiB / gzip: 7591.89 KiB"
+    ],
+    [
+      1795568869825,
+      "│  Worker Startup Time: 47 ms"
+    ],
+    [
+      1795568869840,
+      "│  Uploaded sach-sports-cloudflare-test (7.25 sec)"
+    ],
+    [
+      1795568870264,
+      "│  Current Version ID: 2c1c328b-3c01-4d06-b718-9a3d7070f9c1"
+    ],
+    [
+      1795568870265,
+      "◆  Deploy complete"
+    ],
+    [
+      1795568870524,
+      "Success: Deploy command completed"
+    ],
+    [
+      1795568870641,
+      "✨ Success! Build completed."
+    ]
+  ]
+}

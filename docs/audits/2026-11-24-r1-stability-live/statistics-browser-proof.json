@@ -1,0 +1,192 @@
+{
+  "scope": "Actual production desktop Chromium; TLS verification enabled; real clock; no mocked responses",
+  "shellSeconds": 2.132,
+  "checks": [
+    {
+      "period": "Month",
+      "seconds": 2.195,
+      "limit": 15,
+      "selectedRecords": 742,
+      "overall": {
+        "total": 8106,
+        "hits": 3862,
+        "misses": 3014,
+        "pushes": 344,
+        "completed": 7220,
+        "awaitingResult": 882,
+        "void": 4,
+        "unknown": 0,
+        "hitRate": 56.2,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "cached",
+        "protectedCheckedAt": "2026-11-25T01:08:36.190Z",
+        "archiveCheckedAt": "2026-11-24T15:39:16.157Z",
+        "lastError": "performance_protected_history_unavailable",
+        "revision": 9
+      },
+      "sourceFreshness": {
+        "latestSavedAt": "2026-11-24T15:39:06.195692+00:00",
+        "latestGradedAt": "2026-11-15T15:55:37.546001+00:00"
+      }
+    },
+    {
+      "period": "Yesterday",
+      "seconds": 0.225,
+      "limit": 5,
+      "selectedRecords": 0,
+      "overall": {
+        "total": 0,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 0,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "cached",
+        "protectedCheckedAt": "2026-11-25T01:08:36.190Z",
+        "archiveCheckedAt": "2026-11-24T15:39:16.157Z",
+        "lastError": "performance_protected_history_unavailable",
+        "revision": 9
+      },
+      "sourceFreshness": {
+        "latestSavedAt": null,
+        "latestGradedAt": null
+      }
+    },
+    {
+      "period": "Month",
+      "seconds": 0.445,
+      "limit": 5,
+      "selectedRecords": 742,
+      "overall": {
+        "total": 8106,
+        "hits": 3862,
+        "misses": 3014,
+        "pushes": 344,
+        "completed": 7220,
+        "awaitingResult": 882,
+        "void": 4,
+        "unknown": 0,
+        "hitRate": 56.2,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "cached",
+        "protectedCheckedAt": "2026-11-25T01:08:36.190Z",
+        "archiveCheckedAt": "2026-11-24T15:39:16.157Z",
+        "lastError": "performance_protected_history_unavailable",
+        "revision": 9
+      },
+      "sourceFreshness": {
+        "latestSavedAt": "2026-11-24T15:39:06.195692+00:00",
+        "latestGradedAt": "2026-11-15T15:55:37.546001+00:00"
+      }
+    },
+    {
+      "period": "Today",
+      "seconds": 0.298,
+      "limit": 5,
+      "selectedRecords": 19,
+      "overall": {
+        "total": 134,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 134,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "cached",
+        "protectedCheckedAt": "2026-11-25T01:08:36.190Z",
+        "archiveCheckedAt": "2026-11-24T15:39:16.157Z",
+        "lastError": "performance_protected_history_unavailable",
+        "revision": 9
+      },
+      "sourceFreshness": {
+        "latestSavedAt": "2026-11-24T15:39:06.195692+00:00",
+        "latestGradedAt": null
+      }
+    },
+    {
+      "period": "Week",
+      "seconds": 0.232,
+      "limit": 5,
+      "selectedRecords": 19,
+      "overall": {
+        "total": 134,
+        "hits": 0,
+        "misses": 0,
+        "pushes": 0,
+        "completed": 0,
+        "awaitingResult": 134,
+        "void": 0,
+        "unknown": 0,
+        "hitRate": null,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "cached",
+        "protectedCheckedAt": "2026-11-25T01:08:36.190Z",
+        "archiveCheckedAt": "2026-11-24T15:39:16.157Z",
+        "lastError": "performance_protected_history_unavailable",
+        "revision": 9
+      },
+      "sourceFreshness": {
+        "latestSavedAt": "2026-11-24T15:39:06.195692+00:00",
+        "latestGradedAt": null
+      }
+    },
+    {
+      "period": "Season",
+      "seconds": 0.802,
+      "limit": 5,
+      "selectedRecords": 767,
+      "overall": {
+        "total": 8168,
+        "hits": 3862,
+        "misses": 3014,
+        "pushes": 344,
+        "completed": 7220,
+        "awaitingResult": 944,
+        "void": 4,
+        "unknown": 0,
+        "hitRate": 56.2,
+        "lateRecords": 0
+      },
+      "partial": true,
+      "cache": {
+        "status": "cached",
+        "protectedCheckedAt": "2026-11-25T01:08:36.190Z",
+        "archiveCheckedAt": "2026-11-24T15:39:16.157Z",
+        "lastError": "performance_protected_history_unavailable",
+        "revision": 9
+      },
+      "sourceFreshness": {
+        "latestSavedAt": "2026-11-24T15:39:06.195692+00:00",
+        "latestGradedAt": "2026-11-15T15:55:37.546001+00:00"
+      }
+    }
+  ],
+  "errors": [],
+  "autoRefreshStart": 1795568924.965292,
+  "automaticRefreshAcceptance": "Not verified before critical rollback; audit ended after fallback and cannot be a candidate-only failure",
+  "auditFailureAfterRollback": "automatic refresh not observed",
+  "rollbackAtEpochSeconds": 1795568968.833866,
+  "candidateBrowserFailureEpochSeconds": 1795568936.4464698
+}

@@ -1,0 +1,73 @@
+{
+  "scope": "Actual rollback desktop/mobile browser; TLS verified; no replay",
+  "sessions": [
+    {
+      "view": "desktop",
+      "sport": "nba",
+      "status": 200,
+      "seconds": 1.309,
+      "slate": {
+        "status": 200,
+        "games": 12,
+        "success": true
+      }
+    },
+    {
+      "view": "desktop",
+      "sport": "nfl",
+      "status": 200,
+      "seconds": 0.683,
+      "slate": {
+        "status": 200,
+        "games": 15,
+        "success": true
+      }
+    },
+    {
+      "view": "desktop",
+      "sport": "nhl",
+      "status": 200,
+      "seconds": 1.442,
+      "slate": {
+        "status": 200,
+        "games": 15,
+        "success": true
+      }
+    },
+    {
+      "view": "mobile",
+      "sport": "nba",
+      "status": 200,
+      "seconds": 0.765,
+      "slate": {
+        "status": 200,
+        "games": 12,
+        "success": true
+      }
+    },
+    {
+      "view": "mobile",
+      "sport": "nfl",
+      "status": 200,
+      "seconds": 0.668,
+      "slate": {
+        "status": 200,
+        "games": 15,
+        "success": true
+      }
+    },
+    {
+      "view": "mobile",
+      "sport": "nhl",
+      "status": 200,
+      "seconds": 0.459,
+      "slate": {
+        "status": 200,
+        "games": 15,
+        "success": true
+      }
+    }
+  ],
+  "errors": [],
+  "success": true
+}

@@ -1,0 +1,79 @@
+{
+  "scope": "Actual compatible fallback browser/HTTP after immediate rollback; no replay; TLS verified",
+  "checks": [
+    {
+      "view": "desktop",
+      "sport": "nba",
+      "market": "points",
+      "http": 200,
+      "rows": 0,
+      "visibleCards": 0,
+      "seconds": 4.13,
+      "boardUnavailable": true,
+      "verifiedQuotes": 0,
+      "coverageNotice": null
+    },
+    {
+      "view": "desktop",
+      "sport": "nfl",
+      "market": "passing_yards",
+      "http": 200,
+      "rows": 6,
+      "visibleCards": 0,
+      "seconds": 4.006,
+      "boardUnavailable": null,
+      "verifiedQuotes": 6,
+      "coverageNotice": null
+    },
+    {
+      "view": "desktop",
+      "sport": "nhl",
+      "market": "shots_on_goal",
+      "http": 200,
+      "rows": 8,
+      "visibleCards": 0,
+      "seconds": 3.626,
+      "boardUnavailable": null,
+      "verifiedQuotes": 0,
+      "coverageNotice": null
+    },
+    {
+      "view": "mobile",
+      "sport": "nba",
+      "market": "points",
+      "http": 200,
+      "rows": 0,
+      "visibleCards": 0,
+      "seconds": 3.106,
+      "boardUnavailable": true,
+      "verifiedQuotes": 0,
+      "coverageNotice": null
+    },
+    {
+      "view": "mobile",
+      "sport": "nfl",
+      "market": "passing_yards",
+      "http": 200,
+      "rows": 6,
+      "visibleCards": 0,
+      "seconds": 4.302,
+      "boardUnavailable": null,
+      "verifiedQuotes": 6,
+      "coverageNotice": null
+    },
+    {
+      "view": "mobile",
+      "sport": "nhl",
+      "market": "shots_on_goal",
+      "http": 503,
+      "rows": 0,
+      "visibleCards": 0,
+      "seconds": 1.895,
+      "boardUnavailable": null,
+      "verifiedQuotes": null,
+      "coverageNotice": null
+    }
+  ],
+  "errors": [],
+  "noBrowserErrors": true
+}

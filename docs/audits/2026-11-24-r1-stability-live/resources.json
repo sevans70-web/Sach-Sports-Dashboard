@@ -1,0 +1,100 @@
+{
+  "from": 1795568867906,
+  "to": 1795568968833,
+  "scope": "Short actual candidate window only; no direct heap measurement or complete soak",
+  "calculations": [
+    {
+      "alias": "events",
+      "aggregates": [
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "ok"
+            }
+          ],
+          "groupKey": "ok",
+          "value": 84,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 84
+        },
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "canceled"
+            }
+          ],
+          "groupKey": "canceled",
+          "value": 1,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "alias": "maxCpuMs",
+      "aggregates": [
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "ok"
+            }
+          ],
+          "groupKey": "ok",
+          "value": 3589,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 84
+        },
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "canceled"
+            }
+          ],
+          "groupKey": "canceled",
+          "value": 3,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "alias": "maxWallMs",
+      "aggregates": [
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "ok"
+            }
+          ],
+          "groupKey": "ok",
+          "value": 15926,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 84
+        },
+        {
+          "groups": [
+            {
+              "key": "$workers.outcome",
+              "value": "canceled"
+            }
+          ],
+          "groupKey": "canceled",
+          "value": 10828,
+          "interval": 1,
+          "sampleInterval": 1,
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

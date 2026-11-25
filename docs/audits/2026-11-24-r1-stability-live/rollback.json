@@ -1,0 +1,32 @@
+{
+  "rollback": {
+    "id": "898ed02c-a21d-4d1f-85fd-59a416de8df8"
+  },
+  "active": {
+    "id": "898ed02c-a21d-4d1f-85fd-59a416de8df8",
+    "source": "api",
+    "strategy": "percentage",
+    "author_email": "sevans70@hotmail.com",
+    "annotations": {
+      "workers/message": "R1 stability critical live browser failure: NBA Points zero ranking cards and original pregame board unavailable. Restore approved compatible fallback; preserve all original/new records. P01 model holds are not the rollback trigger.",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "a48c431a-5c3e-4491-8529-38cb20dfa898",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-25T01:09:28.833866Z"
+  },
+  "commands": [
+    {
+      "build_command": "cd frontend && npm ci && npm run build:vinext",
+      "deploy_command": "cd frontend && npm run deploy:vinext",
+      "branch_includes": [
+        "__cw08_manual_release_only__"
+      ]
+    }
+  ],
+  "rolledBackFor": "Actual NBA Points browser regression, not NFL/NHL probability holds"
+}
