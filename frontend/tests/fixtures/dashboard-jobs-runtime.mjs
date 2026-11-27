@@ -8,7 +8,7 @@ const dashboard={async fetch(request,env,ctx){const u=new URL(request.url);
   for(let i=0;i<(source.histories||0);i++)await fetch('https://api-web.nhle.com/v1/player/'+(1000+i)+'/game-log/20262027/2').then(r=>r.json());
   await importedEnv.VINEXT_KV_CACHE.get('probe');
   if(source.defer)ctx.waitUntil(fetch('https://api-web.nhle.com/v1/player/9999/game-log/20262027/2').then(r=>r.json()));
-  return Response.json({success:true,rows:source.rows||[]});
+  return Response.json(source.board??{success:true,rows:source.rows||[]});
  }return Response.json({ok:true});}};
 const Base=dashboardJobClass({dashboard,createReplay:()=>({consume(){},gameIds(){return[];}}),saveCorrections:async()=>{},publish:async(env,sport,market,body)=>env.VINEXT_KV_CACHE.put('board:'+sport+':'+market,JSON.stringify(body))});
 export class DashboardJobQueue extends Base{

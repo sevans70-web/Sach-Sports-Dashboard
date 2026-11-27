@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {mkdtemp,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join,resolve} from 'node:path';
+import {mkdtemp,readFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join,resolve} from 'node:path';
 import {rolldown} from 'rolldown';import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
+import {capturePhase} from '../jobs/tasks.mjs';
 const now=Date.now(),start=new Date(now+7200000).toISOString();
 const row=(id=123)=>({gameId:'2026020999',playerId:String(id),playerName:'Fixture Player '+id,gameTime:start,quoteVerified:true,quoteVersion:1,marketBacked:true,quoteUpdatedAt:new Date(now-1000).toISOString(),quoteId:'quote-'+id,sportsbookKey:'fixture',sportsbook:'Fixture',sportsbookLine:2.5,overPrice:100,underPrice:-120,lineType:'total',prediction:'OVER',researchForecast:{modelSelection:{side:'OVER',line:2.5,price:100,quoteId:'quote-'+id,sportsbookKey:'fixture',calculatedAt:new Date(now).toISOString()}}});
 const key=r=>[r.sport,r.market,r.game_id,r.player_id].join('|');
@@ -67,4 +68,110 @@ test('scheduled delivery is idempotent and does no ranking or grading work in th
   const {CAPTURE_MARKETS,marketsForCaptureTick}=await import('../scripts/worker-pregame-capture.mjs');const markets=marketsForCaptureTick(time);assert.equal(markets.length,2);
   for(const {sport,market} of markets){const s=await runtime.call('inspect',null,'capture:'+sport);assert.equal(s.status.jobs.filter(j=>j.market===market).length,1);}
  }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
+});
+
+const unavailableBoard = JSON.parse(await readFile(
+ new URL('./fixtures/nba-points-unavailable-2026-11-24.json', import.meta.url),
+ 'utf8',
+));
+
+test('capture blocks the retained unavailable NBA board and preserves healthy empty and populated outcomes', async () => {
+ const dir = await mkdtemp(join(tmpdir(), 'dashboard-board-state-'));
+ const tables = {worker_pregame_originals:new Map(), worker_pregame_picks:new Map()};
+ const capturedAt = new Date(now).toISOString();
+ let runtime;
+ let board = unavailableBoard;
+ let reads = 0;
+ let writes = 0;
+ const lane = 'capture:nba';
+ const cacheKey = 'board:nba:points';
+ const answer = async request => {
+  const url = new URL(request.url);
+  if (url.hostname === 'fixture.test') return Response.json({board});
+  assert.equal(url.hostname, 'db.supabase.co');
+  const table = tables[url.pathname.split('/').at(-1)];
+  assert.ok(table);
+  if (request.method === 'GET') {
+   reads++;
+   return Response.json([...table.values()]);
+  }
+  assert.equal(request.method, 'POST');
+  writes++;
+  assert.equal(request.headers.get('Prefer'), 'resolution=ignore-duplicates,return=minimal');
+  for (const record of await request.json()) {
+   if (!table.has(key(record))) table.set(key(record), {...record, captured_at:capturedAt});
+  }
+  return new Response(null, {status:201});
+ };
+ try {
+  runtime = await setup(dir, answer);
+  const {call, mf} = runtime;
+  const kv = await mf.getKVNamespace('VINEXT_KV_CACHE');
+  const step = () => call('step', null, lane);
+  const enqueue = id => call('enqueue', {id, sport:'nba', market:'points', kind:'capture', created:now}, lane);
+  const job = (status, id) => status.jobs.find(entry => entry.id === id);
+  await kv.put(cacheKey, 'previous-board');
+  await call('clock', now + 300000, lane);
+
+  await enqueue('unavailable');
+  const blocked = job(await step(), 'unavailable');
+  assert.equal(blocked.state, 'blocked');
+  assert.equal(blocked.lastError, 'rankings_board_unavailable');
+  assert.equal(blocked.retryAt, null);
+  await enqueue('unavailable');
+  assert.equal(job(await step(), 'unavailable').state, 'blocked');
+  const inspected = await call('inspect', null, lane);
+  assert.deepEqual(inspected.docs, []);
+  assert.deepEqual(inspected.events.map(entry => entry.outcome), ['blocked']);
+  assert.equal(await kv.get(cacheKey), 'previous-board');
+  assert.deepEqual([reads, writes], [0, 0]);
+
+  board = {success:true, market:'points', rows:[]};
+  await enqueue('healthy-empty');
+  for (let phase = 0; phase < 3; phase++) await step();
+  const empty = job(await step(), 'healthy-empty');
+  assert.equal(empty.state, 'done');
+  assert.equal(empty.eligible, 0);
+  assert.equal(empty.lastError, null);
+  assert.equal(await kv.get(cacheKey), 'previous-board');
+  assert.deepEqual([reads, writes], [0, 0]);
+
+  board = {success:true, market:'points', rows:[row()]};
+  await enqueue('populated');
+  for (let phase = 0; phase < 3; phase++) await step();
+  const populated = job(await step(), 'populated');
+  assert.equal(populated.state, 'done');
+  assert.equal(populated.eligible, 1);
+  assert.equal(writes, 2);
+  const firstReceipts = Object.values(tables).map(table => [...table.values()]);
+  assert.ok(firstReceipts.every(records => records.length === 1));
+  assert.ok(firstReceipts.flat().every(record =>
+   record.player_id === '123' && record.game_id === row().gameId &&
+   record.captured_at === capturedAt && record.payload.quote.quoteId === row().quoteId
+  ));
+  assert.deepEqual(JSON.parse(await kv.get(cacheKey)), board);
+
+  const refreshed = row();
+  refreshed.quoteId = 'later-quote';
+  refreshed.researchForecast.modelSelection.quoteId = 'later-quote';
+  board = {success:true, market:'points', rows:[refreshed]};
+  await enqueue('populated-retry');
+  for (let phase = 0; phase < 3; phase++) await step();
+  assert.equal(job(await step(), 'populated-retry').state, 'done');
+  assert.equal(writes, 2);
+  assert.deepEqual(Object.values(tables).map(table => [...table.values()]), firstReceipts);
+ } finally {
+  await runtime?.mf.dispose();
+  await rm(dir, {recursive:true, force:true});
+ }
+});
+
+test('a checkpointed unavailable board cannot write or publish when resumed', async () => {
+ for (const phase of ['originals', 'picks', 'publish']) {
+  const unexpected = () => assert.fail('An unavailable checkpoint must stop before making any calls');
+  await assert.rejects(
+   capturePhase({phase, board:unavailableBoard}, {publish:unexpected, now:unexpected}),
+   {message:'rankings_board_unavailable', blocked:true},
+  );
+ }
 });

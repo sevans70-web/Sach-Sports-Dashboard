@@ -74,13 +74,16 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
    }
   }catch(error){
    const attempts=(job.attempts||0)+1;due=Math.max(this.now()+Math.min(15*60000,1000*2**Math.min(attempts,10)),error.retryAt||0);
-   next={...job,attempts,lastError:safeError(error),usage:error.usage||null};
-   console.warn('[dashboard-job-deferred]',JSON.stringify({id:job.id,kind:job.kind,sport:job.sport,market:job.market,phase:job.phase,reason:next.lastError,retryAt:due,usage:next.usage}));
+   // A later scheduled tick can capture a new board without retrying this one.
+   const blocked=job.kind==='capture'&&error.blocked===true;
+   next={...job,attempts,state:blocked?'blocked':job.state,lastError:safeError(error),usage:error.usage||null};
+   console.warn(blocked?'[dashboard-job-blocked]':'[dashboard-job-deferred]',JSON.stringify({id:job.id,kind:job.kind,sport:job.sport,market:job.market,phase:job.phase,reason:next.lastError,retryAt:blocked?null:due,usage:next.usage}));
   }finally{
    if(owns()){
-    const touched=this.now();next.retryAt=next.state==='done'?null:due;
+    const touched=this.now();next.retryAt=next.state==='active'?due:null;
     this.sql.exec('UPDATE jobs SET state=?,due=?,touched=?,data=? WHERE id=?',next.state||'active',due,touched,encode(next),job.id);
-    this.sql.exec('INSERT INTO phase_events(job,at,phase,outcome,detail) VALUES(?,?,?,?,?)',job.id,touched,job.phase,next.lastError?'deferred':next.state==='done'?'done':'checkpoint',JSON.stringify({reason:next.lastError||null,retryAt:next.retryAt,usage:next.usage,eligible:next.eligible,expired:next.expired}));
+    const outcome=next.state==='blocked'?'blocked':next.state==='done'?'done':next.lastError?'deferred':'checkpoint';
+    this.sql.exec('INSERT INTO phase_events(job,at,phase,outcome,detail) VALUES(?,?,?,?,?)',job.id,touched,job.phase,outcome,JSON.stringify({reason:next.lastError||null,retryAt:next.retryAt,usage:next.usage,eligible:next.eligible,expired:next.expired}));
     this.setMeta('lease',null);
    }
    await this.arm();

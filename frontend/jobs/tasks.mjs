@@ -5,12 +5,20 @@ import {readWorkerRecentReplayPage} from '../scripts/worker-history-backup.mjs';
 import {JobDeferred} from './budget.mjs';
 const key=r=>[r.market,r.game_id,r.player_id].join('|');
 const chunkSize=30;
+function requireCaptureBoard(board) {
+ if (board?.boardUnavailable !== true) return;
+ const error = new JobDeferred('rankings_board_unavailable');
+ error.blocked = true;
+ throw error;
+}
 export async function capturePhase(job,services){
  const {env,route,publish,now}=services;
+ requireCaptureBoard(job.board);
  if(job.phase==='rank'){
   const response=await route('/api/'+job.sport+'/rankings?market='+encodeURIComponent(job.market));
   if(!response.ok)throw new JobDeferred('rankings_http_'+response.status);
   const board=await response.json();
+  requireCaptureBoard(board);
   if(board?.success===false||!Array.isArray(board?.rows))throw new JobDeferred('rankings_unavailable');
   const unique=new Map();
   for(const row of board.rows){const quote=originalPregameQuote(row,job.sport,job.market,now());if(quote&&!unique.has(key(quote)))unique.set(key(quote),quote);}
@@ -27,7 +35,7 @@ export async function capturePhase(job,services){
  }
  if(job.phase==='publish'){
   // Do not refresh stale reserved boards into a current-market cache.
-  if(now()-job.reservedAt<120000)await publish?.(env,job.sport,job.market,job.board);
+  if(job.board?.rows?.length&&now()-job.reservedAt<120000)await publish?.(env,job.sport,job.market,job.board);
   const {board,quotes,...receipt}=job;
   return {...receipt,phase:'done',state:'done'};
  }
