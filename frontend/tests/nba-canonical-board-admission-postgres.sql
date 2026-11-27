@@ -16,7 +16,8 @@ $check$;
 
 -- This old original must remain readable and immutable without a new receipt.
 insert into public.history_documents (sport, stream, game_date, checksum, payload)
-values ('nba', 'slate_board_points', '2020-01-08', repeat('f', 64), '[{"legacy":true}]');
+values ('nba', 'slate_board_points', '2020-01-08',
+  encode(sha256(convert_to('[{"legacy":true}]', 'UTF8')), 'hex'), '[{"legacy":true}]');
 
 \ir ../migrations/nba-canonical-board-admission.sql
 
@@ -79,6 +80,7 @@ declare
   first_row public.history_documents%rowtype;
   after_row public.history_documents%rowtype;
   observed jsonb;
+  detail text;
 begin
   select public.verified_nba_board_schedule(day) into observed
     from public.fixture_nba_slates where name='upcoming';
@@ -110,12 +112,20 @@ begin
   begin
     perform public.fixture_nba_put('upcoming','points','legacy-overwrite','legacy');
     raise exception 'legacy RPC overwrote the first board';
-  exception when check_violation then null;
+  exception when check_violation then
+    get stacked diagnostics detail = message_text;
+    if detail <> 'canonical NBA originals are immutable' then raise; end if;
   end;
   begin
     update public.history_documents set checksum=repeat('c',64)
       where sport='nba' and stream='slate_board_points';
     raise exception 'direct UPDATE bypassed the guard';
+  exception when check_violation then null;
+  end;
+  begin
+    update public.history_documents set stream='slate_board_rebounds'
+      where sport='nba' and stream='slate_board_points';
+    raise exception 'rekey from protected history bypassed the guard';
   exception when check_violation then null;
   end;
   begin
@@ -135,6 +145,12 @@ begin
   perform public.write_history_document('nhl','slate_board_points','2020-01-08',repeat('a',64),'[]',0,'2020-01-08T18:00:00Z');
   perform public.write_history_document('nhl','slate_board_points','2020-01-08',repeat('b',64),'[1]',0,'2020-01-08T19:00:00Z');
   perform public.write_history_document('nba','featured_points','2020-01-08',repeat('b',64),'[2]',0,'2020-01-08T19:00:00Z');
+  begin
+    update public.history_documents set stream='slate_board_points'
+      where sport='nba' and stream='featured_points';
+    raise exception 'rekey into protected history bypassed the guard';
+  exception when check_violation then null;
+  end;
   if not exists (select 1 from public.history_documents where sport='nhl' and payload='[1]')
      or not exists (select 1 from public.history_documents where sport='nba' and stream='featured_points' and payload='[2]')
      or not exists (select 1 from public.history_documents where sport='nba' and stream='slate_board_points' and payload='[{"legacy":true}]') then
