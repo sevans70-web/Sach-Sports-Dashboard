@@ -20,7 +20,14 @@ export async function rankingResponse(key:string,build:()=>Promise<any>,force=fa
   const built=Promise.resolve().then(build);
   const bounded=hockey?Promise.race([built,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error("NHL rankings refresh timed out; please retry")),timeout);})]):built;
   work=bounded.then(value=>{
-   if(pending.get(id)===work&&value?.success!==false&&value?.rows?.length){
+   if(hockey&&value?.dataState==='unavailable'&&pending.get(id)===work&&
+      hit&&Date.now()-hit.at<60_000&&Date.now()<hit.boundary){
+    const retained={...hit.value,dataState:'stale',observedAt:new Date(hit.at).toISOString(),
+     coverageNotice:value.coverageNotice+' Showing the last verified board.'};
+    hit.value=retained;
+    return retained;
+   }
+   if(pending.get(id)===work&&value?.success!==false&&value?.rows?.length&&!(hockey&&value?.dataState==='partial')){
     const times=value.rows.map((r:any)=>Date.parse(r.gameTime)).filter((n:number)=>Number.isFinite(n)&&n>Date.now());
     if(cache.size>128)cache.delete(cache.keys().next().value!);
     cache.set(id,{at:Date.now(),value,boundary:times.length?Math.min(...times):Infinity});
