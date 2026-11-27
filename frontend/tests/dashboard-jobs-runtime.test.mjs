@@ -2,11 +2,22 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {mkdtemp,readFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join,resolve} from 'node:path';
 import {rolldown} from 'rolldown';import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import {capturePhase} from '../jobs/tasks.mjs';
+import {checksum} from '../scripts/history-cloud.mjs';
 const now=Date.now(),start=new Date(now+7200000).toISOString();
 const row=(id=123)=>({gameId:'2026020999',playerId:String(id),playerName:'Fixture Player '+id,gameTime:start,quoteVerified:true,quoteVersion:1,marketBacked:true,quoteUpdatedAt:new Date(now-1000).toISOString(),quoteId:'quote-'+id,sportsbookKey:'fixture',sportsbook:'Fixture',sportsbookLine:2.5,overPrice:100,underPrice:-120,lineType:'total',prediction:'OVER',researchForecast:{modelSelection:{side:'OVER',line:2.5,price:100,quoteId:'quote-'+id,sportsbookKey:'fixture',calculatedAt:new Date(now).toISOString()}}});
 const key=r=>[r.sport,r.market,r.game_id,r.player_id].join('|');
-async function setup(dir,answer){const file=join(dir,'worker.mjs');const b=await rolldown({input:resolve('tests/fixtures/dashboard-jobs-runtime.mjs'),external:['cloudflare:workers',/^node:/],platform:'neutral'});await b.write({file,format:'esm'});await b.close();
- const mf=new Miniflare(convertV4MiniflareOptions({name:'dashboard-test',modules:true,modulesRoot:dir,scriptPath:file,compatibilityDate:'2026-11-06',compatibilityFlags:['nodejs_compat'],durableObjects:{DASHBOARD_JOBS:{className:'DashboardJobQueue',useSQLite:true}},kvNamespaces:['VINEXT_KV_CACHE'],resourcePersistencePath:join(dir,'storage'),bindings:{SUPABASE_URL:'https://db.supabase.co',SUPABASE_SECRET_KEY:'synthetic-fixture-only'},outboundService:answer}));
+async function setup(dir,answer,operatorBindings){const file=join(dir,'worker.mjs');const b=await rolldown({input:resolve('tests/fixtures/dashboard-jobs-runtime.mjs'),external:['cloudflare:workers',/^node:/],platform:'neutral'});await b.write({file,format:'esm'});await b.close();
+ const options=convertV4MiniflareOptions({name:'dashboard-test',modules:true,modulesRoot:dir,scriptPath:file,compatibilityDate:'2026-11-06',compatibilityFlags:['nodejs_compat'],durableObjects:{DASHBOARD_JOBS:{className:'DashboardJobQueue',useSQLite:true}},kvNamespaces:['VINEXT_KV_CACHE'],resourcePersistencePath:join(dir,'storage'),bindings:{SUPABASE_URL:'https://db.supabase.co',SUPABASE_SECRET_KEY:'synthetic-fixture-only',...operatorBindings},outboundService:answer});
+ if(operatorBindings){
+  const caller=convertV4MiniflareOptions({name:'operator-fixture',modules:true,
+   script:`export default {async fetch(request,env){
+    try{return Response.json(await env.OPERATOR.acceptNbaPoints(await request.json()));}
+    catch(error){return Response.json({error:error.message},{status:409});}
+   }}`,compatibilityDate:'2026-11-06',
+   serviceBindings:{OPERATOR:{name:'dashboard-test',entrypoint:'NbaAcceptanceOperator'}}});
+  options.workers.push(...caller.workers);
+ }
+ const mf=new Miniflare(options);
  const call=async(action,value,lane='capture:nhl')=>{const r=await mf.dispatchFetch('https://test.local/control',{method:'POST',body:JSON.stringify({action,value,lane})});assert.equal(r.status,200,await r.clone().text());return r.json();};return {mf,call};}
 test('independent durable lanes resume over-budget capture, survive restart and preserve original receipts after lost acknowledgements',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'dashboard-runtime-'));let runtime;let histories=0,ackLoss=true;const tables={worker_pregame_originals:new Map(),worker_pregame_picks:new Map()};
@@ -67,6 +78,89 @@ test('scheduled delivery is idempotent and does no ranking or grading work in th
   await worker.scheduled({cron:'*/2 * * * *',scheduledTime:time});await worker.scheduled({cron:'*/2 * * * *',scheduledTime:time});assert.equal(hits,0);
   const {CAPTURE_MARKETS,marketsForCaptureTick}=await import('../scripts/worker-pregame-capture.mjs');const markets=marketsForCaptureTick(time);assert.equal(markets.length,2);
   for(const {sport,market} of markets){const s=await runtime.call('inspect',null,'capture:'+sport);assert.equal(s.status.jobs.filter(j=>j.market===market).length,1);}
+ }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
+});
+
+test('protected NBA Points acceptance drains all queues and excludes scheduler and operator races',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'nba-acceptance-runtime-'));
+ const clock=Date.parse('2026-11-27T23:15:00Z'),day='2026-11-27';
+ const lockAt='2026-11-28T00:00:00.000Z',expiresAt='2026-11-27T23:55:00.000Z';
+ const fixtures={'1234':lockAt,'5678':'2026-11-28T01:00:00.000Z'};
+ const grant={day,lockAt,expiresAt,scheduleSha256:checksum(fixtures)};
+ const token='fixture-operator-credential-only-12345',lane='control:nba-acceptance';
+ const scope={sport:'nba',market:'points',day,token};
+ const otherLanes=['capture:nfl','capture:nhl','replay:nba','replay:nfl','replay:nhl'];
+ let runtime,reply=fixtures,hold,entered,reads=0,rankingCalls=0;
+ const outbound=async req=>{
+  const url=new URL(req.url);
+  if(url.hostname==='fixture.test'){
+   assert.equal(url.searchParams.get('sport'),'nba');
+   assert.equal(url.searchParams.get('market'),'points');
+   rankingCalls++;
+   return Response.json({rows:[]});
+  }
+  assert.equal(req.method,'GET');
+  assert.equal(url.href,'https://db.supabase.co/rest/v1/rpc/verified_nba_board_schedule?p_day='+day);
+  reads++;
+  if(hold){entered();await hold;}
+  return reply===null?new Response('{}',{status:503}):Response.json(reply);
+ };
+ try{
+  runtime=await setup(dir,outbound,{SACH_NBA_ACCEPTANCE_OPERATOR_TOKEN:token,SACH_NBA_ACCEPTANCE_GRANT:JSON.stringify(grant)});
+  const {mf,call}=runtime,operator=await mf.getWorker('operator-fixture'),worker=await mf.getWorker('dashboard-test');
+  const invoke=async request=>(await operator.fetch('https://fixture.local/',{method:'POST',body:JSON.stringify(request)})).json();
+  const expect=async(request,error)=>assert.deepEqual(await invoke(request),{error});
+  await call('clock',clock,lane);await call('clock',clock,'capture:nba');
+  await expect({...scope,token:'unauthorized'},'acceptance_unauthorized');
+  await expect({...scope,market:'rebounds'},'acceptance_invalid_scope');
+  await expect({...scope,sport:'nfl'},'acceptance_invalid_scope');
+  await expect({...scope,day:'2026-11-28'},'acceptance_invalid_scope');
+  await call('clock',Date.parse(expiresAt),lane);
+  await expect(scope,'acceptance_closed');
+  await call('clock',clock,lane);
+  await call('in-flight-tick',1,lane);
+  await expect(scope,'acceptance_concurrent_work');
+  await call('in-flight-tick',0,lane);
+
+  const hiddenLane='replay:nhl',older={id:'older-active',kind:'replay',sport:'nhl',state:'active',touched:clock};
+  const done=Array.from({length:100},(_,i)=>({...older,id:'done-'+i,state:'done',touched:clock+i+1}));
+  const visible=await call('seed',[older,...done],hiddenLane);
+  assert.equal(visible.jobs.length,100);assert.ok(visible.jobs.every(j=>j.state==='done'));
+  assert.equal((await call('readiness',null,hiddenLane)).active,1);
+  await expect(scope,'acceptance_queue_busy');
+  await call('clear-fixture-jobs',null,hiddenLane);
+  await call('clock',clock,'capture:nfl');
+  await call('lease',{token:'busy',until:clock+1000},'capture:nfl');
+  await expect(scope,'acceptance_queue_busy');
+  await call('clock',clock+1001,'capture:nfl');
+  assert.equal(reads,0);
+
+  reply=null;await expect(scope,'acceptance_schedule_unverified');
+  reply={...fixtures,'5678':'2026-11-28T02:00:00.000Z'};
+  await expect(scope,'acceptance_schedule_unverified');
+  reply=fixtures;
+  const checking=new Promise(resolve=>{entered=resolve;});
+  let release;
+  hold=new Promise(resolve=>{release=resolve;});
+  const accepted=invoke(scope);
+  try{
+   await checking;
+   await expect(scope,'acceptance_concurrent_work');
+   await worker.scheduled({cron:'*/2 * * * *',scheduledTime:clock});
+   await worker.scheduled({cron:'*/5 * * * *',scheduledTime:clock});
+   for(const other of otherLanes)assert.equal((await call('readiness',null,other)).active,0);
+  }finally{hold=null;release();}
+  const id='acceptance:nba:points:'+day;
+  assert.deepEqual(await accepted,{id,queued:true});
+  await expect(scope,'acceptance_queue_busy');
+  for(let i=0;i<4;i++)await call('step',null,'capture:nba');
+  assert.deepEqual(await invoke(scope),{id,queued:false});
+  assert.equal(rankingCalls,1);
+  assert.equal((await call('inspect',null,'capture:nba')).status.jobs.length,1);
+  assert.equal((await call('readiness',null,'capture:nba')).busy,false);
+  await worker.scheduled({cron:'0,30 * * * *',scheduledTime:Date.UTC(2026,10,27,23,30)});
+  const gradeLanes=await Promise.all(['nba','nfl','nhl'].map(sport=>call('inspect',null,'grade:'+sport)));
+  assert.equal(gradeLanes.flatMap(result=>result.status.jobs).filter(j=>j.kind==='grade').length,1);
  }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
 });
 

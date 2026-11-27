@@ -8,7 +8,7 @@ export function readCloudDocument(sport:string,stream:string,day:string):Promise
 export function createNbaSlateBoardIfAbsent(board:{
  version:1;day:string;market:string;capturedAt:string;lockAt:string;
  captureSchedule:Record<string,string>;rows:unknown[];
-}):Promise<unknown>;
+},acceptanceDeadline?:number):Promise<unknown>;
 export function createProtectedCloudReceipt(sport:string,stream:string,day:string,payload:unknown):Promise<Array<{savedAt:string;payload:any}>>;
 export function listCloudDocuments(sport:string):Promise<any[]>;
 

@@ -193,6 +193,21 @@ test('missing, expired and differing independent schedule evidence prevents any 
  }
 });
 
+test('operator scope pins the entire schedule and stops a delayed write at grant expiry', async () => {
+ const db=storage();
+ const lock=Date.parse(tipoff),expires=clock+500;
+ const acceptance={day,lock,expires,scheduleSha256:checksum({...approvedSchedule,'another-fixture':tipoff})};
+ const budget={env:{},store:{},gate:async()=>0,acceptance};
+ await assert.rejects(runJobBudget(budget,()=>persistCapturedNbaSlateBoard(board(),games,day,'points')),
+  {message:'nba_capture_board_unverified'});
+ assert.deepEqual(db.calls,[]);
+ let gates=0;
+ await assert.rejects(runJobBudget({...budget,acceptance:{...acceptance,scheduleSha256:checksum(approvedSchedule)},
+  gate:async()=>{if(++gates===2)clock=expires;return 0;},
+ },()=>persistCapturedNbaSlateBoard(board(),games,day,'points')),{message:'nba_capture_board_locked'});
+ assert.deepEqual(db.calls,[['APPROVAL',day]]);
+});
+
 test('storage errors and uncertain writes do not succeed, and retries verify the original without overwriting', async () => {
  const original = board('first');
  for (const failure of ['post','ack','read','corrupt']) {

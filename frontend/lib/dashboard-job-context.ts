@@ -1,4 +1,7 @@
 /** Optional request-local hook installed only by the dashboard job runtime. */
-export function dashboardJobContext():{id:string;assertActive:()=>void}|undefined{
- return (globalThis as typeof globalThis&{__sachDashboardJobContext?:()=>{id:string;assertActive:()=>void}|undefined}).__sachDashboardJobContext?.();
+type DashboardJobContext={id:string;assertActive:()=>void;acceptance?:{
+ day:string;lock:number;expires:number;scheduleSha256:string;
+}};
+export function dashboardJobContext():DashboardJobContext|undefined{
+ return (globalThis as typeof globalThis&{__sachDashboardJobContext?:()=>DashboardJobContext|undefined}).__sachDashboardJobContext?.();
 }

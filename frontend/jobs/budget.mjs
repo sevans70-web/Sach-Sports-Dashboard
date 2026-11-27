@@ -16,7 +16,7 @@ export function budgetBinding(binding,scope,kind='kv'){
  return new Proxy(binding,{get(target,key){const value=Reflect.get(target,key,target);if(typeof value!=='function')return value;return (...args)=>{charge(scope,kind,Array.isArray(args[0])?Math.max(1,args[0].length):1);return value.apply(target,args);};}});
 }
 export function installJobFetch(){
- globalThis.__sachDashboardJobContext=()=>{const scope=context.getStore();return scope?{id:scope.id,assertActive:()=>{if(scope.paused||scope.closed)charge(scope,'blocked',0);}}:undefined;};
+ globalThis.__sachDashboardJobContext=()=>{const scope=context.getStore();return scope?{id:scope.id,acceptance:scope.acceptance,assertActive:()=>{if(scope.paused||scope.closed)charge(scope,'blocked',0);}}:undefined;};
  if(globalThis.fetch===globalThis[nativeKey])return;
  const native=globalThis.fetch.bind(globalThis);
  const wrapped=(input,init)=>{const scope=context.getStore();return scope?jobFetch(scope,native,input,init):native(input,init);};
@@ -56,8 +56,8 @@ async function jobFetch(scope,native,input,init={}){
  })();
  scope.inflight.add(work);try{return await work;}finally{scope.inflight.delete(work);}
 }
-export async function runJobBudget({env,store,gate,limit=220,deadlineMs=25000,cacheSources=false,now=()=>Date.now()},operation,withEnvironment=(_env,f)=>f()){
- installJobFetch();const scope={id:crypto.randomUUID(),store,gate,limit,cacheSources,now,used:0,costs:{},cacheHits:0,inflight:new Set(),abort:new AbortController(),paused:null,closed:false};
+export async function runJobBudget({env,store,gate,limit=220,deadlineMs=25000,cacheSources=false,acceptance,now=()=>Date.now()},operation,withEnvironment=(_env,f)=>f()){
+ installJobFetch();const scope={id:crypto.randomUUID(),store,gate,limit,cacheSources,acceptance,now,used:0,costs:{},cacheHits:0,inflight:new Set(),abort:new AbortController(),paused:null,closed:false};
  const scopedEnv={...env,VINEXT_KV_CACHE:budgetBinding(env.VINEXT_KV_CACHE,scope)};
  let timer;const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{try{fail(scope,'job_wall_deadline');}catch(e){reject(e);}},deadlineMs);});
  try{

@@ -95,22 +95,23 @@ export async function readCloudDocument(sport,stream,day){
 }
 
 // The scoped capture writer is insert-only even when shared Worker history is read-only.
-export async function createNbaSlateBoardIfAbsent(board){
+export async function createNbaSlateBoardIfAbsent(board,acceptanceDeadline=Infinity){
  const {day,market,capturedAt,lockAt,captureSchedule}=board;
  const captured=Date.parse(capturedAt),lock=Date.parse(lockAt);
  if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!/^[a-z0-9_]+$/.test(market)||
     !Number.isFinite(captured)||!Number.isFinite(lock)||captured>=lock)throw Error('nba_capture_board_unverified');
- if(Date.now()>=lock)throw Error('nba_capture_board_locked');
+ const deadline=Math.min(lock,acceptanceDeadline);
+ if(Date.now()>=deadline)throw Error('nba_capture_board_locked');
  const approved=await cloudRequest('rpc/verified_nba_board_schedule?p_day='+day,{signal:AbortSignal.timeout(2500)});
  if(!approved||canonical(approved)!==canonical(captureSchedule))throw Error('NBA capture schedule not approved');
  const stream='slate_board_'+market,payload=[{...board,captureSource:'dashboard_worker'}];
  const body=JSON.stringify({sport:'nba',stream,game_date:day,checksum:checksum(payload),payload,
   source_bytes:Buffer.byteLength(JSON.stringify(payload)),source_updated_at:capturedAt});
  const now=Date.now();
- if(captured>now||now>=lock)throw Error('nba_capture_board_locked');
+ if(captured>now||now>=deadline)throw Error('nba_capture_board_locked');
  await requestCloud('history_documents?on_conflict=sport,stream,game_date',{
   method:'POST',headers:{Prefer:'resolution=ignore-duplicates,return=minimal'},body,
-  signal:AbortSignal.timeout(Math.min(lock-now,2500)),sachNotAfter:lock,
+  signal:AbortSignal.timeout(Math.min(deadline-now,2500)),sachNotAfter:deadline,
  });
  return readCloudDocument('nba',stream,day);
 }

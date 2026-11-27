@@ -1,5 +1,7 @@
 import {env as importedEnv} from 'cloudflare:workers';
 import {dashboardJobClass,enqueueDashboardTick} from '../../jobs/coordinator.mjs';
+import {encode} from '../../jobs/budget.mjs';
+export {NbaAcceptanceOperator} from '../../jobs/nba-acceptance.mjs';
 const dashboard={async fetch(request,env,ctx){const u=new URL(request.url);
  if(u.pathname.includes('live-player-stats'))return fetch('https://official.test/final?'+u.searchParams);
  if(u.pathname.endsWith('/rankings')){
@@ -16,6 +18,14 @@ export class DashboardJobQueue extends Base{
  async test(action,value){if(action==='clock'){this.setMeta('testNow',value);return this.status();}
   if(action==='step'){const due=this.rows("SELECT MIN(due) AS due FROM jobs WHERE state='active'")[0]?.due||0;this.setMeta('testNow',Math.max(this.now()+1001,due+1));await this.alarm();return this.status();}
   if(action==='alarm'){await this.alarm();return this.status();}
+  if(action==='readiness')return this.captureReadiness();
+  if(action==='seed'){
+   for(const job of value)this.sql.exec('INSERT INTO jobs VALUES(?,?,?,?,?,?,?)',
+    job.id,job.kind,job.sport,job.state,job.touched,job.touched,encode(job));
+   return this.status();
+  }
+  if(action==='clear-fixture-jobs'){this.sql.exec('DELETE FROM jobs');return this.status();}
+  if(action==='in-flight-tick'){this.setMeta('unconfirmedCaptureTicks',value);return this.status();}
   if(action==='inspect')return {status:this.status(),docs:this.rows('SELECT * FROM documents'),cache:this.rows('SELECT url,expires FROM source_cache'),events:this.rows('SELECT * FROM phase_events ORDER BY id')};
   if(action==='lease'){this.setMeta('lease',value);return this.status();}throw Error('invalid_test');}
 }

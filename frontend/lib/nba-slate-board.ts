@@ -5,7 +5,8 @@ import {readDurableHistory,writeDurableHistory} from '@/lib/durable-history';
 import {visitHistorySnapshots,torontoHistoryDay} from '@/lib/history-archive';
 import {withHistoryLock} from '@/lib/history-lock';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
-import {createNbaSlateBoardIfAbsent} from '../scripts/history-cloud.mjs';
+import {checksum,createNbaSlateBoardIfAbsent} from '../scripts/history-cloud.mjs';
+import {dashboardJobContext} from '@/lib/dashboard-job-context';
 import {publicNbaRanking} from '@/lib/public-card-metrics';
 
 export type NbaSlateBoard={version:1;day:string;market:string;capturedAt:string;lockAt:string;rows:any[];recoveredAt?:string};
@@ -48,10 +49,13 @@ export async function persistCapturedNbaSlateBoard(payload:any,games:SlateFixtur
  };
  if(!hasCompleteRows(payload.rows,now))throw Error('nba_capture_board_unverified');
  const captureSchedule=Object.fromEntries([...fixtures].map(([id,tipoff])=>[id,new Date(tipoff).toISOString()]));
+ const acceptance=dashboardJobContext()?.acceptance;
+ if(acceptance&&(market!=='points'||day!==acceptance.day||lock!==acceptance.lock||
+    checksum(captureSchedule)!==acceptance.scheduleSha256))throw Error('nba_capture_board_unverified');
  const candidate={version:1 as const,day,market,capturedAt:new Date(now).toISOString(),
   lockAt:new Date(lock).toISOString(),captureSchedule,rows:payload.rows};
  let stored:unknown;
- try{stored=await createNbaSlateBoardIfAbsent(candidate);}
+ try{stored=await createNbaSlateBoardIfAbsent(candidate,acceptance?.expires);}
  catch(error){
   if(error instanceof Error&&error.message==='nba_capture_board_locked')throw error;
   throw Error('nba_capture_board_storage_unverified');
@@ -59,6 +63,7 @@ export async function persistCapturedNbaSlateBoard(payload:any,games:SlateFixtur
  const original=Array.isArray(stored)&&stored.length===1?stored[0]:null;
  const captured=Date.parse(original?.capturedAt);
  if(original?.version!==1||original.day!==day||original.market!==market||Date.parse(original.lockAt)!==lock||
+    (acceptance&&checksum(original.captureSchedule??null)!==acceptance.scheduleSha256)||
     !Number.isFinite(captured)||captured>=lock||captured>Date.now()||
     !hasCompleteRows(original.rows,captured))throw Error('nba_capture_board_storage_unverified');
  return {...payload,rows:original.rows,publicRankingCount:original.rows.length,boardSaved:true,

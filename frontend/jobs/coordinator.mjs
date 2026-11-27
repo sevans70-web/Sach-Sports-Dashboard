@@ -4,11 +4,13 @@ import {runPhase} from './tasks.mjs';
 import {PREGAME_MARKETS,marketsForCaptureTick,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON} from '../scripts/worker-pregame-capture.mjs';
 import {gradingSportForTick} from '../scripts/worker-pregame-grade.mjs';
 import {workerHistoryBackupScope} from '../scripts/worker-history-backup.mjs';
+import {acceptanceGrant,acceptanceQueue,requireApprovedSchedule} from './nba-acceptance.mjs';
 const sports=['nba','nfl','nhl'];
 const safeError=e=>/^[a-z0-9_ .:-]{1,160}$/i.test(e?.message||'')?e.message:'dashboard_job_failed';
 /** Independent objects provide independent invocation budgets, persistent cursors,
  * and serial phases. Only the dashboard owns this namespace; CW08 is unrelated. */
 export function dashboardJobClass(services){return class DashboardJobQueue extends DurableObject{
+ acceptanceInFlight=false;
  constructor(ctx,env){super(ctx,env);this.sql=ctx.storage.sql;
   this.sql.exec('CREATE TABLE IF NOT EXISTS jobs(id TEXT PRIMARY KEY, kind TEXT, sport TEXT, state TEXT, due INTEGER, touched INTEGER, data TEXT)');
   this.sql.exec('CREATE TABLE IF NOT EXISTS metadata(key TEXT PRIMARY KEY,value TEXT)');
@@ -42,9 +44,44 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   // Coalesce ticks while the same market/day is already pending. Original reserved
   // picks retain their exact first bytes; no tick replaces them with fresh quotes.
   const pending=this.rows('SELECT data FROM jobs WHERE state=?','active').map(r=>decode(r.data));
-  if(!pending.some(p=>p.kind===job.kind&&(job.kind==='capture'?p.market===job.market:job.kind==='replay'?p.day===job.day:true)))
-   this.sql.exec('INSERT OR IGNORE INTO jobs VALUES(?,?,?,?,?,?,?)',id,job.kind,job.sport,'active',this.now(),0,encode(value));
+  const duplicate=pending.some(p=>p.kind===job.kind&&(job.kind==='capture'?p.market===job.market:job.kind==='replay'?p.day===job.day:true));
+  if(job.acceptance){
+   if(this.now()>=job.acceptance.expires)throw Error('acceptance_closed');
+   if(this.rows('SELECT 1 FROM jobs WHERE id=?',id).length)return {id,queued:false};
+   if(this.captureReadiness().busy)throw Error('acceptance_queue_busy');
+  }
+  if(!duplicate)this.sql.exec('INSERT OR IGNORE INTO jobs VALUES(?,?,?,?,?,?,?)',id,job.kind,job.sport,'active',this.now(),0,encode(value));
   await this.arm();return {id,queued:true};
+ }
+ captureReadiness(){
+  const active=this.rows("SELECT COUNT(*) AS n FROM jobs WHERE state='active' AND kind IN ('capture','replay')")[0].n;
+  const leased=(this.meta('lease')?.until??0)>this.now();
+  return {active,leased,busy:active>0||leased};
+ }
+ async captureTick(cron,scheduledTime){
+  if(this.env.SACH_NBA_ACCEPTANCE_GRANT!==undefined||this.acceptanceInFlight)return {queued:[],held:true};
+  this.setMeta('unconfirmedCaptureTicks',(this.meta('unconfirmedCaptureTicks')??0)+1);
+  // An interrupted or ambiguous fan-out remains fenced across eviction. Routine
+  // ticks can still run, but an operator must reconcile before one-shot use.
+  const result=await enqueueScheduledJobs({cron,scheduledTime},this.env);
+  this.setMeta('unconfirmedCaptureTicks',this.meta('unconfirmedCaptureTicks')-1);
+  return result;
+ }
+ async acceptNbaPoints(request){
+  const grant=acceptanceGrant(this.env,request,this.now());
+  if(this.meta('unconfirmedCaptureTicks')||this.acceptanceInFlight)throw Error('acceptance_concurrent_work');
+  this.acceptanceInFlight=true;
+  try{
+   const queues=sports.flatMap(sport=>['capture','replay'].map(kind=>this.env.DASHBOARD_JOBS.getByName(kind+':'+sport)));
+   if((await Promise.all(queues.map(queue=>queue.captureReadiness()))).some(status=>status.busy))
+    throw Error('acceptance_queue_busy');
+   await withEnv(this.env,()=>requireApprovedSchedule(grant));
+   const created=this.now();
+   if(created>=grant.expires)throw Error('acceptance_closed');
+   return await this.env.DASHBOARD_JOBS.getByName('capture:nba').enqueue({
+    id:'acceptance:nba:points:'+grant.day,kind:'capture',sport:'nba',market:'points',created,acceptance:grant,
+   });
+  }finally{this.acceptanceInFlight=false;}
  }
  async arm(){
   const next=this.rows('SELECT MIN(due) AS due FROM jobs WHERE state=?','active')[0]?.due;
@@ -61,7 +98,10 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   const pending=new Set();const ctx={waitUntil:p=>{const promise=Promise.resolve(p);pending.add(promise);promise.finally(()=>pending.delete(promise)).catch(()=>{});},passThroughOnException(){},props:{}};
   let next=job,due=this.now()+1000;
   try{
-   const execution=await runJobBudget({env:this.env,store:fencedStore,now:()=>this.now(),cacheSources:job.kind==='capture',gate:(origin,until)=>this.env.DASHBOARD_JOBS.getByName('provider:'+origin).gate(origin,until)},async env=>{
+   if(job.acceptance&&this.now()>=job.acceptance.expires){
+    const error=new JobDeferred('acceptance_closed');error.blocked=true;throw error;
+   }
+   const execution=await runJobBudget({env:this.env,store:fencedStore,now:()=>this.now(),acceptance:job.acceptance,cacheSources:job.kind==='capture',gate:(origin,until)=>this.env.DASHBOARD_JOBS.getByName('provider:'+origin).gate(origin,until)},async env=>{
     const value=await runPhase(job,{...services,env,store:fencedStore,now:()=>this.now(),route:path=>services.dashboard.fetch(new Request((job.kind==='capture'?'https://sach-capture.internal':'https://sach-grading.internal')+path,{headers:{Accept:'application/json'}}),env,ctx)});
     // Drain framework after()/waitUntil work before closing this request's budget.
     while(pending.size)await Promise.allSettled([...pending]);
@@ -93,6 +133,11 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
 };}
 export async function enqueueDashboardTick(controller,env){
  if(!env.DASHBOARD_JOBS)throw Error('dashboard_job_binding_missing');
+ if(controller.cron===PREGAME_CAPTURE_CRON||controller.cron==='*/5 * * * *')
+  return env.DASHBOARD_JOBS.getByName(acceptanceQueue).captureTick(controller.cron,controller.scheduledTime);
+ return enqueueScheduledJobs(controller,env);
+}
+async function enqueueScheduledJobs(controller,env){
  const created=controller.scheduledTime,slot=Math.floor(created/120000),jobs=[];
  if(controller.cron===PREGAME_CAPTURE_CRON||controller.cron==='*/5 * * * *'){
   for(const {sport,market} of marketsForCaptureTick(created,controller.cron!==PREGAME_CAPTURE_CRON))jobs.push({id:`capture:${sport}:${market}:${slot}`,kind:'capture',sport,market,created});
