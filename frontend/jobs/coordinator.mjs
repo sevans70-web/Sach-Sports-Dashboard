@@ -4,6 +4,7 @@ import {runPhase} from './tasks.mjs';
 import {PREGAME_MARKETS,marketsForCaptureTick,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON} from '../scripts/worker-pregame-capture.mjs';
 import {gradingSportForTick} from '../scripts/worker-pregame-grade.mjs';
 import {workerHistoryBackupScope} from '../scripts/worker-history-backup.mjs';
+import {allowRoutineJob,captureControl,freshCaptureTick} from './capture-restoration.mjs';
 const sports=['nba','nfl','nhl'];
 const safeError=e=>/^[a-z0-9_ .:-]{1,160}$/i.test(e?.message||'')?e.message:'dashboard_job_failed';
 /** Independent objects provide independent invocation budgets, persistent cursors,
@@ -38,6 +39,7 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
  async enqueue(job){
   if(!sports.includes(job.sport)||!['capture','grade','replay'].includes(job.kind)||!Number.isFinite(job.created))throw Error('invalid_job');
   if(job.kind==='capture'&&!PREGAME_MARKETS[job.sport].includes(job.market))throw Error('invalid_market');
+  if(!allowRoutineJob(job))return {id:job.id,queued:false,reason:'nba_routine_held'};
   const id=job.id;const value={...job,state:'active',phase:job.kind==='capture'?'rank':'scan',cursor:job.kind==='replay'?'':0,attempts:0};
   // Coalesce ticks while the same market/day is already pending. Original reserved
   // picks retain their exact first bytes; no tick replaces them with fresh quotes.
@@ -45,6 +47,16 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   if(!pending.some(p=>p.kind===job.kind&&(job.kind==='capture'?p.market===job.market:job.kind==='replay'?p.day===job.day:true)))
    this.sql.exec('INSERT OR IGNORE INTO jobs VALUES(?,?,?,?,?,?,?)',id,job.kind,job.sport,'active',this.now(),0,encode(value));
   await this.arm();return {id,queued:true};
+ }
+ async captureTick(cron,scheduledTime){
+  const now=this.now(),last=this.meta('captureHold');
+  if(last&&last.expires>now){last.expires=now;this.setMeta('captureHold',last);}
+  if((last&&last.starts<=scheduledTime&&scheduledTime<last.expires)||!freshCaptureTick(cron,scheduledTime,now))
+   return {queued:[],heldSports:['nba'],reason:'capture_tick_elapsed'};
+  this.setMeta('unconfirmedCaptureTicks',(this.meta('unconfirmedCaptureTicks')??0)+1);
+  const result=await enqueueScheduledJobs({cron,scheduledTime},this.env);
+  this.setMeta('unconfirmedCaptureTicks',this.meta('unconfirmedCaptureTicks')-1);
+  return {...result,heldSports:['nba']};
  }
  async arm(){
   const next=this.rows('SELECT MIN(due) AS due FROM jobs WHERE state=?','active')[0]?.due;
@@ -61,6 +73,7 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   const pending=new Set();const ctx={waitUntil:p=>{const promise=Promise.resolve(p);pending.add(promise);promise.finally(()=>pending.delete(promise)).catch(()=>{});},passThroughOnException(){},props:{}};
   let next=job,due=this.now()+1000;
   try{
+   if(!allowRoutineJob(job)){const error=new JobDeferred('nba_routine_held');error.blocked=true;throw error;}
    const execution=await runJobBudget({env:this.env,store:fencedStore,now:()=>this.now(),cacheSources:job.kind==='capture',gate:(origin,until)=>this.env.DASHBOARD_JOBS.getByName('provider:'+origin).gate(origin,until)},async env=>{
     const value=await runPhase(job,{...services,env,store:fencedStore,now:()=>this.now(),route:path=>services.dashboard.fetch(new Request((job.kind==='capture'?'https://sach-capture.internal':'https://sach-grading.internal')+path,{headers:{Accept:'application/json'}}),env,ctx)});
     // Drain framework after()/waitUntil work before closing this request's budget.
@@ -74,13 +87,14 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
    }
   }catch(error){
    const attempts=(job.attempts||0)+1;due=Math.max(this.now()+Math.min(15*60000,1000*2**Math.min(attempts,10)),error.retryAt||0);
-   next={...job,attempts,lastError:safeError(error),usage:error.usage||null};
-   console.warn('[dashboard-job-deferred]',JSON.stringify({id:job.id,kind:job.kind,sport:job.sport,market:job.market,phase:job.phase,reason:next.lastError,retryAt:due,usage:next.usage}));
+   const blocked=error.blocked===true;
+   next={...job,attempts,state:blocked?'blocked':job.state,lastError:safeError(error),usage:error.usage||null};
+   console.warn(blocked?'[dashboard-job-blocked]':'[dashboard-job-deferred]',JSON.stringify({id:job.id,kind:job.kind,sport:job.sport,market:job.market,phase:job.phase,reason:next.lastError,retryAt:blocked?null:due,usage:next.usage}));
   }finally{
    if(owns()){
-    const touched=this.now();next.retryAt=next.state==='done'?null:due;
+    const touched=this.now();next.retryAt=next.state==='active'?due:null;
     this.sql.exec('UPDATE jobs SET state=?,due=?,touched=?,data=? WHERE id=?',next.state||'active',due,touched,encode(next),job.id);
-    this.sql.exec('INSERT INTO phase_events(job,at,phase,outcome,detail) VALUES(?,?,?,?,?)',job.id,touched,job.phase,next.lastError?'deferred':next.state==='done'?'done':'checkpoint',JSON.stringify({reason:next.lastError||null,retryAt:next.retryAt,usage:next.usage,eligible:next.eligible,expired:next.expired}));
+    this.sql.exec('INSERT INTO phase_events(job,at,phase,outcome,detail) VALUES(?,?,?,?,?)',job.id,touched,job.phase,next.state==='blocked'?'blocked':next.lastError?'deferred':next.state==='done'?'done':'checkpoint',JSON.stringify({reason:next.lastError||null,retryAt:next.retryAt,usage:next.usage,eligible:next.eligible,expired:next.expired}));
     this.setMeta('lease',null);
    }
    await this.arm();
@@ -90,11 +104,17 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
 };}
 export async function enqueueDashboardTick(controller,env){
  if(!env.DASHBOARD_JOBS)throw Error('dashboard_job_binding_missing');
+ if(controller.cron===PREGAME_CAPTURE_CRON||controller.cron==='*/5 * * * *')
+  return env.DASHBOARD_JOBS.getByName(captureControl).captureTick(controller.cron,controller.scheduledTime);
+ return enqueueScheduledJobs(controller,env);
+}
+async function enqueueScheduledJobs(controller,env){
  const created=controller.scheduledTime,slot=Math.floor(created/120000),jobs=[];
  if(controller.cron===PREGAME_CAPTURE_CRON||controller.cron==='*/5 * * * *'){
   for(const {sport,market} of marketsForCaptureTick(created,controller.cron!==PREGAME_CAPTURE_CRON))jobs.push({id:`capture:${sport}:${market}:${slot}`,kind:'capture',sport,market,created});
   if(controller.cron===PREGAME_CAPTURE_CRON){const scope=workerHistoryBackupScope(created,true);jobs.push({id:`replay:${scope.sport}:${slot}`,kind:'replay',...scope,created});}
  }else if(controller.cron===PREGAME_GRADE_CRON){const sport=gradingSportForTick(created);if(sport)jobs.push({id:`grade:${sport}:${slot}`,kind:'grade',sport,created});}
- for(const job of jobs)await env.DASHBOARD_JOBS.getByName(job.kind+':'+job.sport).enqueue(job);
- return {queued:jobs.map(({id})=>id)};
+ const eligible=jobs.filter(allowRoutineJob);
+ for(const job of eligible)await env.DASHBOARD_JOBS.getByName(job.kind+':'+job.sport).enqueue(job);
+ return {queued:eligible.map(({id})=>id)};
 }
