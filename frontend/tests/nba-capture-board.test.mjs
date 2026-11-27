@@ -40,6 +40,9 @@ const games = [
  {gameId:'fixture-early', tipoff, state:'pre'},
  {gameId:'fixture-late', tipoff:'2026-11-27T01:00:00.000Z', state:'pre'},
 ];
+const approvedSchedule=Object.fromEntries(games.map(game=>[
+ game.gameId,new Date(game.tipoff).toISOString(),
+]));
 function board(quotePrefix='quote') {
  const rows = Array.from({length:25}, (_, index) => {
   const quoteId = quotePrefix + index;
@@ -65,6 +68,13 @@ function storage() {
  globalThis.fetch = async (input, init) => {
   const url = new URL(input instanceof Request ? input.url : input);
   assert.equal(url.origin, 'https://storage.fixture.invalid');
+  if(url.pathname==='/rest/v1/rpc/verified_nba_board_schedule'){
+   assert.equal(init.method??'GET','GET');
+   assert.equal(url.searchParams.get('p_day'),day);
+   calls.push(['APPROVAL',day]);
+   if(failures.approvalMissing)return new Response(null,{status:404});
+   return Response.json(failures.approval===undefined?approvedSchedule:failures.approval);
+  }
   assert.equal(url.pathname, '/rest/v1/history_documents');
   if (init.method === 'POST') {
    assert.equal(url.searchParams.get('on_conflict'), 'sport,stream,game_date');
@@ -74,6 +84,7 @@ function storage() {
    calls.push(['POST',identity]);
    assert.equal(document.checksum, checksum(document.payload));
    assert.equal(document.source_updated_at, document.payload[0].capturedAt);
+   assert.deepEqual(document.payload[0].captureSchedule,approvedSchedule);
    if (failures.post) return new Response(null,{status:503});
    if (!documents.has(identity)) {
     documents.set(identity,{...document,updated_at:failures.recordedAt??new Date().toISOString()});
@@ -99,7 +110,7 @@ test('default Worker persists the exact first board and a cold post-tip reader r
  assert.equal(result.boardSaved,true);
  assert.equal(result.boardCapturedAt,pregame);
  assert.deepEqual(result.rows,input.rows);
- assert.deepEqual(db.calls,[['POST',key],['GET',key]]);
+ assert.deepEqual(db.calls,[['APPROVAL',day],['POST',key],['GET',key]]);
  const first = structuredClone(db.documents.get(key));
  clock = Date.parse(afterTipoff);
  // The direct insert and its verification do not seed the display reader's cache.
@@ -158,13 +169,28 @@ test('earliest tipoff governs the initial check and a second check after job bud
  lateGamesOnly.rows = lateGamesOnly.rows.filter(row=>row.gameId==='fixture-late')
   .map((row,index)=>({...row,rank:index+1}));
  lateGamesOnly.publicRankingCount = lateGamesOnly.rows.length;
+ let gates=0;
  await assert.rejects(runJobBudget({
-  env:{},store:{},gate:async()=>{clock=Date.parse(tipoff); return 0;},
+  env:{},store:{},gate:async()=>{if(++gates===2)clock=Date.parse(tipoff);return 0;},
  },()=>persistCapturedNbaSlateBoard(lateGamesOnly,games,day,'points')),
  {message:'nba_capture_board_locked'});
  await assert.rejects(persistCapturedNbaSlateBoard(lateGamesOnly,games,day,'points'),
   {message:'nba_capture_board_locked'});
- assert.deepEqual(db.calls,[]);
+ assert.deepEqual(db.calls,[['APPROVAL',day]]);
+});
+
+test('missing, expired and differing independent schedule evidence prevents any insert', async () => {
+ for(const mode of ['missing-endpoint','missing-approval','different-fixtures','earlier-tipoff']){
+  const db=storage();
+  if(mode==='missing-endpoint')db.failures.approvalMissing=true;
+  if(mode==='missing-approval')db.failures.approval=null;
+  if(mode==='different-fixtures')db.failures.approval={'other-game':tipoff};
+  if(mode==='earlier-tipoff')db.failures.approval={...approvedSchedule,'fixture-early':pregame};
+  await assert.rejects(persistCapturedNbaSlateBoard(board(),games,day,'points'),
+   {message:'nba_capture_board_storage_unverified'});
+  assert.deepEqual(db.calls,[['APPROVAL',day]]);
+  assert.equal(db.documents.size,0);
+ }
 });
 
 test('storage errors and uncertain writes do not succeed, and retries verify the original without overwriting', async () => {

@@ -47,8 +47,9 @@ export async function persistCapturedNbaSlateBoard(payload:any,games:SlateFixtur
   });
  };
  if(!hasCompleteRows(payload.rows,now))throw Error('nba_capture_board_unverified');
- const candidate:NbaSlateBoard={version:1,day,market,capturedAt:new Date(now).toISOString(),
-  lockAt:new Date(lock).toISOString(),rows:payload.rows};
+ const captureSchedule=Object.fromEntries([...fixtures].map(([id,tipoff])=>[id,new Date(tipoff).toISOString()]));
+ const candidate={version:1 as const,day,market,capturedAt:new Date(now).toISOString(),
+  lockAt:new Date(lock).toISOString(),captureSchedule,rows:payload.rows};
  let stored:unknown;
  try{stored=await createNbaSlateBoardIfAbsent(candidate);}
  catch(error){
