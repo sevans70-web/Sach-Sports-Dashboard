@@ -1,3 +1,4 @@
+import {workerPerformanceServices} from './lib/worker-performance-build';
 import dashboard from 'vinext/server/fetch-handler';
 import {cachePregameBoard,readPregameBoard} from './lib/ranking-board-cache';
 import {recordRankingMarket} from './lib/ranking-market-coverage';
@@ -9,7 +10,7 @@ import {archiveWorkerHistoryDay,workerHistoryBackupScope} from './scripts/worker
 import {archiveWorkerPregameDay} from './scripts/worker-pregame-backup.mjs';
 export {NbaAcceptanceOperator} from './jobs/nba-acceptance.mjs';
 
-export const DashboardJobQueue=dashboardJobClass({dashboard,createReplay:createWorkerGradingReplay,saveCorrections:saveWorkerFinalCorrections,
+export const DashboardJobQueue=dashboardJobClass({dashboard,performance:workerPerformanceServices,createReplay:createWorkerGradingReplay,saveCorrections:saveWorkerFinalCorrections,
  publish:(env,sport,market,body)=>Promise.all([cachePregameBoard(env.VINEXT_KV_CACHE,sport,market,body),recordRankingMarket(env.VINEXT_KV_CACHE,sport,market,body)]),
 });
 

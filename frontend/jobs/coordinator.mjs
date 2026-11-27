@@ -1,6 +1,7 @@
 import {DurableObject,withEnv} from 'cloudflare:workers';
 import {encode,decode,runJobBudget,JobDeferred} from './budget.mjs';
 import {runPhase} from './tasks.mjs';
+import {performanceCache} from './performance-cache.mjs';
 import {nbaEvidenceStore} from './nba-evidence-store.mjs';
 import {PREGAME_MARKETS,marketsForCaptureTick,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON} from '../scripts/worker-pregame-capture.mjs';
 import {gradingSportForTick} from '../scripts/worker-pregame-grade.mjs';
@@ -20,6 +21,24 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   this.sql.exec('CREATE TABLE IF NOT EXISTS documents(job TEXT,stream TEXT,body TEXT,PRIMARY KEY(job,stream))');
  }
  now(){return Date.now();}
+ performanceController(){
+  if(!services.performance)throw Error('performance_services_unavailable');
+  return this.scopedPerformance??=performanceCache(this,services.performance,withEnv,runJobBudget);
+ }
+ performanceView(sport,period){return this.performanceController().read(sport,period);}
+ performanceResponse(sport,period,market,group){return this.performanceController().response(sport,period,market,group);}
+ invalidatePerformance(sport){return this.performanceController().invalidate(sport);}
+ async refreshPerformanceAfterWrite(sport){
+  if(!services.performance)return;
+  let timer;
+  try{
+   const notification=this.env.DASHBOARD_JOBS.getByName('performance:'+sport).invalidatePerformance(sport);
+   await Promise.race([notification,new Promise((_,reject)=>{
+    timer=setTimeout(()=>reject(Error('performance_invalidation_timeout')),1500);
+   })]);
+  }catch{console.warn('[performance-invalidation-pending]',sport);}
+  finally{clearTimeout(timer);}
+ }
  readNbaHistoryEvidence(source){return nbaEvidenceStore(this.sql,()=>this.now()).read(source);}
  rows(sql,...args){return [...this.sql.exec(sql,...args)];}
  meta(key){const row=this.rows('SELECT value FROM metadata WHERE key=?',key)[0];return row?JSON.parse(row.value):null;}
@@ -92,6 +111,7 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
  }
  status(){return {jobs:this.rows('SELECT data FROM jobs ORDER BY touched DESC,id LIMIT 100').map(r=>{const j=decode(r.data);const {board,quotes,picks,grades,...safe}=j;return safe;}),lease:this.meta('lease'),cooldown:this.meta('cooldown')};}
  async alarm(){
+  if(this.meta('performance-state')){await this.performanceController().alarm();return;}
   const lease=this.meta('lease');if(lease?.until>this.now()){await this.arm();return;}
   const row=this.rows('SELECT data FROM jobs WHERE state=? AND due<=? ORDER BY touched,id LIMIT 1','active',this.now())[0];
   if(!row){await this.arm();return;}
@@ -123,11 +143,17 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
     return value;
    },withEnv);
    next={...execution.result,attempts:0,lastError:null,usage:execution.usage};
+   if((job.kind==='capture'&&((job.phase==='picks'&&(next.picksStored||0)>(job.picksStored||0))||
+     (job.phase==='originals'&&(next.stored||0)>(job.stored||0))))||
+     (job.kind==='grade'&&job.phase==='write'&&(next.verified||0)>(job.verified||0)))
+    await this.refreshPerformanceAfterWrite(job.sport);
    if(job.kind==='capture'&&job.phase==='rank'){
     next.reservedAt=this.now();
     fencedStore.document(job.id,'original_reservation',{capturedAt:next.reservedAt,quotes:next.quotes});
    }
   }catch(error){
+   if(error.usage?.costs?.history_http>0&&((job.kind==='capture'&&['originals','picks'].includes(job.phase))||
+     (job.kind==='grade'&&job.phase==='write')))await this.refreshPerformanceAfterWrite(job.sport);
    const attempts=(job.attempts||0)+1;due=Math.max(this.now()+Math.min(15*60000,1000*2**Math.min(attempts,10)),error.retryAt||0);
    // A later scheduled tick can capture a new board without retrying this one.
    const blocked=job.kind==='capture'&&error.blocked===true;

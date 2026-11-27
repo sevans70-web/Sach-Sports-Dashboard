@@ -1,3 +1,4 @@
+import {workerPerformanceView,workerPerformanceSport} from '@/lib/worker-performance';
 import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {randomUUID} from 'node:crypto';
@@ -5,14 +6,15 @@ import {dashboardDay} from '@/lib/dashboard-contract';
 import {historyRoot} from '@/lib/durable-history';
 import {readSavedPerformance,savedHistorySummary} from '@/lib/saved-performance';
 import {reconcilePerformanceRecords} from '@/lib/performance-reconciliation';
-type SavedView=Awaited<ReturnType<typeof readSavedPerformance>>&{snapshotAt:string;refreshing?:boolean};
+type SavedView=Awaited<ReturnType<typeof readSavedPerformance>>&{snapshotAt:string;refreshing?:boolean;cache?:any;featured?:any};
 const pending=new Map<string,Promise<SavedView>>();
 /** Saved records render before final-stat provider calls. Only derived views are
  * updated; original history and pregame evidence remain untouched. */
 export async function performanceView(sport:string,period:string,defer:(work:()=>Promise<any>)=>void,now=Date.now(),root=historyRoot(),read=readSavedPerformance):Promise<SavedView>{
  if(!/^[a-z0-9_-]+$/i.test(sport)||!['Today','Yesterday','Week','Month','Season'].includes(period))throw Error('Invalid performance scope');
- // A Worker has no persistent local snapshot directory. Return the saved
- // cloud view directly, using only recorded results to grade it.
+ // Professional Workers use the existing durable derived-view coordinator.
+ // Interactive refreshes never walk cloud/Drive archives.
+ if(workerPerformanceSport(sport)&&read===readSavedPerformance)return workerPerformanceView(sport,period);
  if(globalThis.navigator?.userAgent==='Cloudflare-Workers'){
   const data=await read(sport,period,new Date(now),root,{observe:false,storage:'cloud'});
   return {...data,snapshotAt:new Date().toISOString(),refreshing:data.coverage.errors?.some(error=>error.startsWith('drive:')&&error.endsWith(':checking'))??false};

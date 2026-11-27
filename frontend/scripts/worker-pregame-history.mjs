@@ -2,7 +2,8 @@ import {cloudRequest} from './history-cloud.mjs';
 import {createHash} from 'node:crypto';
 
 const SPORTS=new Set(['nba','nfl','nhl','cfb','cbb']);
-const dayOf=date=>{const parsed=new Date(date);if(!Number.isFinite(parsed.getTime()))return '';const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(parsed);const p=n=>parts.find(x=>x.type===n)?.value;return [p('year'),p('month'),p('day')].join('-');};
+const dayFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'});
+const dayOf=date=>{const parsed=new Date(date);if(!Number.isFinite(parsed.getTime()))return '';const parts=dayFormatter.formatToParts(parsed);const p=n=>parts.find(x=>x.type===n)?.value;return [p('year'),p('month'),p('day')].join('-');};
 /** The legacy capture hash uses insertion-ordered JSON, while Postgres
  * jsonb reorders object keys. Reconstitute the exact v1 capture field order
  * before checking it; never mark a valid original as corrupted due to jsonb.
@@ -49,6 +50,7 @@ export function immutableModelHistoryRow(pick,grade){
   quoteVerified:true,marketBacked:true,
   status:validGrade?grade.result_status:'pending',actual:validGrade?grade.actual:null,
   gradedAt:validGrade?grade.graded_at:null,
+  reviewReason:validGrade?null:grade?'The recorded grade does not match this original selection and is held for review.':'No matching verified official-final grade has been recorded. The original forecast is preserved.',
   resultSource:validGrade?'official_final_boxscore':null,verifiedResult:Boolean(validGrade),
   originalSelectionChecksum:pick.checksum,modelValidatedForBetting:pick.payload.modelValidation===true,
   performanceSource:'immutable_cloudflare_model_receipt',historyBasis:'original_saved_research_forecast',
@@ -58,35 +60,56 @@ export function immutableModelHistoryRow(pick,grade){
  * history reconciliation, even when that older copy has different lines.
  */
 export function appendMissingImmutableModelPicks(existing,protectedRows){
- const seen=new Set(existing.filter(r=>r?.gameId&&r?.playerId).map(r=>[dayOf(r.gameTime),keyOf(r)].join('|')));
+ const positions=new Map();
+ existing.forEach((r,i)=>{if(r?.gameId&&r?.playerId){const key=[dayOf(r.gameTime),keyOf(r)].join('|');if(!positions.has(key))positions.set(key,i);}});
  const output=[...existing];let added=0,alreadyPresent=0;
  for(const row of protectedRows){
   const key=[dayOf(row.gameTime),keyOf(row)].join('|');
-  if(seen.has(key)){alreadyPresent++;continue;}
-  seen.add(key);output.push(row);added++;
+  if(positions.has(key)){
+   alreadyPresent++;
+   // Settle an exact original call in the derived view only. A pending
+   // legacy copy must not hide its authenticated official-final grade.
+   const index=positions.get(key),prior=output[index];
+   if(prior?.status==='pending'&&row.verifiedResult===true&&row.resultSource==='official_final_boxscore'&&
+      prior.sportsbookLine===row.sportsbookLine&&
+      String(prior.pickSide||prior.prediction||prior.pick||'').toUpperCase()===row.pickSide)
+    output[index]={...prior,status:row.status,actual:row.actual,gradedAt:row.gradedAt,
+     verifiedResult:true,resultSource:row.resultSource};
+   continue;
+  }
+  positions.set(key,output.length);output.push(row);added++;
  }
  return {records:output,added,alreadyPresent};
 }
-async function boundedRead(table,sport,firstDay,limit){
+async function boundedRead(table,sport,firstDay,limit,signal,requestTimeoutMs=12000){
  const result=[];
  for(let offset=0;offset<limit;offset+=200){
   const query=new URLSearchParams({select:'*',sport:'eq.'+sport,game_date:'gte.'+firstDay,
    order:'game_date.desc,market.asc,game_id.asc,player_id.asc',limit:'200',offset:String(offset)});
-  const rows=await cloudRequest(table+'?'+query.toString(),{signal:AbortSignal.timeout(12000)});
+  const timeout=AbortSignal.timeout(requestTimeoutMs);
+  const rows=await cloudRequest(table+'?'+query.toString(),{signal:signal?AbortSignal.any([signal,timeout]):timeout});
   if(!Array.isArray(rows))throw Error('Invalid protected original history');
   result.push(...rows);
   if(rows.length<200)return result;
  }
  throw Error('Protected original history requires paginated recovery');
 }
-/** Bounded seven-day receipts, separate from the legacy document reader.
+/** Bounded period receipts, separate from the legacy document reader.
  * A failed supplemental read must be surfaced, not reported as complete.
  */
-export async function readImmutableModelHistory(sport,firstDay){
+export async function readImmutableModelHistory(sport,firstDay,options={}){
  if(!SPORTS.has(sport)||!/^\d{4}-\d{2}-\d{2}$/.test(firstDay))throw Error('Invalid protected history scope');
- const picks=await boundedRead('worker_pregame_picks',sport,firstDay,1000);
- if(!picks.length)return {rows:[],invalid:0};
- const grades=await boundedRead('worker_pregame_grades',sport,firstDay,1000);
+ const deadline=options.deadlineMs?AbortSignal.timeout(options.deadlineMs):undefined;
+ const limit=options.parallel?5000:1000;
+ let picks,grades;
+ if(options.parallel){[picks,grades]=await Promise.all([
+  boundedRead('worker_pregame_picks',sport,firstDay,limit,deadline,options.requestTimeoutMs),
+  boundedRead('worker_pregame_grades',sport,firstDay,limit,deadline,options.requestTimeoutMs),
+ ]);}else{
+  picks=await boundedRead('worker_pregame_picks',sport,firstDay,limit,deadline,options.requestTimeoutMs);
+  if(!picks.length)return {rows:[],invalid:0};
+  grades=await boundedRead('worker_pregame_grades',sport,firstDay,limit,deadline,options.requestTimeoutMs);
+ }
  const map=new Map(grades.map(r=>[id(r),r])),rows=[];let invalid=0;
  for(const pick of picks){
   const row=immutableModelHistoryRow(pick,map.get(id(pick)));

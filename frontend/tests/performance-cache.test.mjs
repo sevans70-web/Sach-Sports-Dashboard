@@ -1,0 +1,89 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {DatabaseSync} from 'node:sqlite';
+import {performanceCache} from '../jobs/performance-cache.mjs';import {runJobBudget} from '../jobs/budget.mjs';import {loadTs} from './load-ts.mjs';
+const {workerPerformanceServices:base}=await loadTs(new URL('../lib/worker-performance-build.ts',import.meta.url));
+const now=Date.parse('2026-11-24T03:00:00Z');
+function setup(overrides={},budget=runJobBudget){const db=new DatabaseSync(':memory:');db.exec('CREATE TABLE metadata(key TEXT PRIMARY KEY,value TEXT);CREATE TABLE documents(job TEXT,stream TEXT,body TEXT,PRIMARY KEY(job,stream))');let clock=now,alarm=null;const host={env:{DASHBOARD_JOBS:{getByName:()=>({gate:async()=>0})}},now:()=>clock,rows:(sql,...p)=>db.prepare(sql).all(...p),meta:k=>{const r=db.prepare('SELECT value FROM metadata WHERE key=?').get(k);return r?JSON.parse(r.value):null;},setMeta:(k,v)=>db.prepare('INSERT OR REPLACE INTO metadata VALUES(?,?)').run(k,JSON.stringify(v)),sql:{exec:(sql,...p)=>db.prepare(sql).all(...p)},ctx:{storage:{getAlarm:async()=>alarm,setAlarm:async at=>alarm=at,transactionSync:fn=>{db.exec('BEGIN');try{const r=fn();db.exec('COMMIT');return r;}catch(e){db.exec('ROLLBACK');throw e;}}}}};
+ const row={gameId:'401900001',playerId:'10',market:'points',gameDate:'2026-11-15',gameTime:'2026-11-16T00:00:00Z',savedAt:'2026-11-15T17:00:00Z',boardCapturedAt:'2026-11-15T17:00:00Z',pickSide:'UNDER',prediction:'UNDER',sportsbookLine:20.5,modelProjection:18,status:'pending',historyBasis:'original_saved_research_forecast',performanceSource:'immutable_cloudflare_model_receipt'};
+ const view={records:[row],coverage:{complete:false,protectedOriginals:{invalid:0},errors:['archive:background_loading']},summary:{}};let reads=0,refreshes=0;
+ const services={...base,protected:async()=>{reads++;await new Promise(r=>setTimeout(r,5));return structuredClone(view);},featured:async()=>({boards:[],grades:[],complete:true}),refresh:async()=>{refreshes++;return {...structuredClone(view),coverage:{...view.coverage,complete:true,errors:[]}};},...overrides};
+ let cache=performanceCache(host,services,(_env,f)=>f(),budget);
+ return {db,host,row,view,services,read:(...a)=>cache.read(...a),response:(...a)=>cache.response(...a),invalidate:(...a)=>cache.invalidate(...a),alarm:()=>{alarm=null;return cache.alarm();},restart:()=>cache=performanceCache(host,services,(_env,f)=>f(),budget),clock:t=>clock=t,stats:()=>({reads,refreshes,alarm,state:cache.state()}),close:()=>db.close()};}
+
+test('cold main/featured concurrent views coalesce, persist across eviction, and do no archive work in the request',async()=>{const f=setup();try{const original=JSON.stringify(f.row);const views=await Promise.all(Array.from({length:12},(_,i)=>f.read('nba',i%2?'Month':'Season')));assert.equal(f.stats().reads,1);assert.equal(f.stats().refreshes,0);assert.ok(views.every(v=>v.records.length===1&&v.summary.awaitingResult===1&&v.coverage.complete===false));assert.equal(views[0].featured.success,false,'unavailable featured totals are not fabricated zeros');f.restart();const restored=await f.read('nba','Month');assert.equal(f.stats().reads,1);assert.equal(restored.records[0].sportsbookLine,20.5);assert.equal(JSON.stringify(f.row),original);}finally{f.close();}});
+
+test('genuine grade invalidation updates the derived original despite archive failure and retains saved terms',async()=>{const f=setup();try{await f.read('nba','Month');await f.alarm();f.view.records[0]={...f.row,status:'hit',actual:19,verifiedResult:true,resultSource:'official_final_boxscore',gradedAt:'2026-11-24T02:59:00Z'};f.services.refresh=async()=>{throw Error('archive_offline')};f.clock(now+300001);await f.invalidate('nba');const current=await f.read('nba','Month');assert.equal(current.summary.awaitingResult,0);assert.equal(current.summary.hits,1);assert.notEqual(current.cache.status,'stale');await f.alarm();await f.alarm();const next=await f.read('nba','Month');assert.equal(next.summary.hits,1);assert.equal(next.records[0].actual,19);assert.equal(next.records[0].sportsbookLine,20.5);assert.equal(next.records[0].savedAt,f.row.savedAt);assert.equal(next.cache.lastError,'archive_offline');}finally{f.close();}});
+
+test('verified source checkpoints resume after restart; incomplete responses cannot erase larger valid views; repeated failures back off',async()=>{let phase=0;const f=setup({refresh:async(sport,at,cache,protectedView)=>{phase++;if(!cache.read('source-original','v1'))cache.write('source-original','v1',{stream:'performance_projection_v1',game_date:'2026-11-15',payload:{version:1,records:[],observations:[]}});return {...protectedView,records:phase===1?[...protectedView.records,{...protectedView.records[0],gameId:'401900002',playerId:'11',status:'hit',actual:0}]:[],coverage:{...protectedView.coverage,complete:false,errors:['drive:remaining:checking']}};}});try{await f.read('nhl','Month');await f.alarm();await f.alarm();const first=await f.read('nhl','Month');assert.equal(first.records.length,2);f.restart();await f.alarm();assert.equal((await f.read('nhl','Month')).records.length,2);for(let i=0;i<4;i++)await f.alarm();assert.ok(f.stats().state.stalled>=3);assert.ok(f.stats().alarm>=now+15*60000);const alarm=f.stats().alarm;await f.read('nhl','Month');assert.equal(f.stats().alarm,alarm,'interactive polling cannot override backoff');await assert.rejects(()=>f.read('nfl','Month'),/scope_mismatch/);}finally{f.close();}});
+
+test('all five periods use Toronto fixture dates and preserve zero/push/grade summary semantics',async()=>{const f=setup();try{f.view.records=[{...f.row,gameDate:'2026-11-23',gameTime:'2026-11-24T01:00Z',status:'push',actual:0,sportsbookLine:0},{...f.row,playerId:'11',gameDate:'2026-11-22',gameTime:'2026-11-23T01:00Z',status:'hit',actual:0}];const periods={};for(const p of ['Today','Yesterday','Week','Month','Season'])periods[p]=await f.read('nfl',p);assert.equal(periods.Today.records.length,1);assert.equal(periods.Today.summary.pushes,1);assert.equal(periods.Today.summary.hitRate,null);assert.equal(periods.Yesterday.summary.hits,1);assert.equal(periods.Month.records.length,2);assert.equal(f.stats().reads,1);}finally{f.close();}});
+
+
+test('deadline cancellation rejects late archive checkpoint writes and retains the verified view',async()=>{
+ let lateRejected=false;
+ const budget=(options,work,withEnv)=>runJobBudget({...options,deadlineMs:20},work,withEnv);
+ const f=setup({refresh:async(sport,at,cache,protectedView)=>{await new Promise(r=>setTimeout(r,60));try{cache.write('late','v1',{payload:[]});}catch{lateRejected=true;}return protectedView;}},budget);
+ try{await f.read('nba','Month');await f.alarm();await f.alarm();assert.equal(f.stats().state.lastError,'job_wall_deadline');await new Promise(r=>setTimeout(r,90));assert.equal(lateRejected,true);assert.equal(f.db.prepare("SELECT COUNT(*) n FROM documents WHERE stream LIKE 'source:%'").get().n,0);assert.equal((await f.read('nba','Month')).records.length,1);}finally{f.close();}
+});
+
+ test('serialized public responses preserve exact filters and coalesce concurrent aggregation; grades invalidate memo',async()=>{let calls=0;const f=setup({response:(...args)=>{calls++;return base.response(...args)}});try{
+ const values=await Promise.all(Array.from({length:6},()=>f.response('nba','Month')));assert.equal(calls,1);assert.ok(values.every(v=>v===values[0]));const a=JSON.parse(values[0]);assert.equal(a.records.length,1);assert.equal(a.records[0].projection,18);assert.equal(a.records[0].line,20.5);assert.equal(a.researchSummary.awaitingResult,1);
+ assert.equal(JSON.parse(await f.response('nba','Month','rebounds')).records.length,0);assert.equal(calls,2);
+ f.view.records[0]={...f.row,status:'hit',actual:19,verifiedResult:true,resultSource:'official_final_boxscore',gradedAt:'2026-11-24T02:59:00Z'};await f.invalidate('nba');await f.alarm();const next=JSON.parse(await f.response('nba','Month'));assert.equal(next.researchSummary.hits,1);assert.equal(next.records[0].savedAt,f.row.savedAt);
+ }finally{f.close();}});
+
+
+test('dirty receipts coalesce a protected read and an outage has a hard stale limit',async()=>{
+ const f=setup();
+ try{
+  await f.response('nba','Month');
+  f.view.records[0]={...f.row,status:'hit',actual:19,verifiedResult:true,resultSource:'official_final_boxscore'};
+  await f.invalidate('nba');
+  const values=await Promise.all(Array.from({length:6},()=>f.response('nba','Month')));
+  assert.ok(values.every(value=>JSON.parse(value).researchSummary.hits===1));
+  assert.equal(f.stats().reads,2);
+  f.services.protected=async()=>{throw Error('source_offline');};
+  f.clock(now+60000);await f.invalidate('nba');
+  const retained=JSON.parse(await f.response('nba','Month'));
+  assert.equal(retained.dataState,'stale');assert.equal(retained.researchSummary.hits,1);
+  f.clock(now+15*60000+1);
+  await assert.rejects(()=>f.response('nba','Month'),/source_offline/);
+ }finally{f.close();}
+});
+
+test('incomplete zero evidence is unavailable and a verified zero period is empty',async()=>{
+ const f=setup();
+ try{
+  f.view.records=[];
+  const cold=JSON.parse(await f.response('nba','Today'));
+  assert.equal(cold.dataState,'unavailable');assert.equal(cold.success,false);
+  await f.alarm();await f.alarm();
+  const complete=JSON.parse(await f.response('nba','Today'));
+  assert.equal(complete.dataState,'empty');assert.equal(complete.success,true);
+  assert.deepEqual(complete.records,[]);
+ }finally{f.close();}
+});
+
+test('a later invalidation does not consume an in-flight protected read from an older revision',async()=>{
+ const f=setup();
+ try{
+  await f.read('nba','Month');
+  let enter,release,reads=0;
+  const entered=new Promise(resolve=>{enter=resolve;});
+  const waiting=new Promise(resolve=>{release=resolve;});
+  f.services.protected=async()=>{
+   const snapshot=structuredClone(f.view);
+   if(++reads===1){enter();await waiting;}
+   return snapshot;
+  };
+  await f.invalidate('nba');
+  const older=f.response('nba','Month');
+  await entered;
+  f.view.records[0]={...f.row,status:'hit',actual:19,verifiedResult:true,resultSource:'official_final_boxscore'};
+  await f.invalidate('nba');
+  const current=f.response('nba','Month');
+  release();
+  assert.equal(JSON.parse(await older).dataState,'stale');
+  assert.equal(JSON.parse(await current).researchSummary.hits,1);
+  assert.equal(reads,2);
+ }finally{f.close();}
+});

@@ -1,3 +1,4 @@
+import {workerPerformanceView,workerPerformanceSport} from '@/lib/worker-performance';
 import {estimatedEv,estimatedEvText} from '@/lib/estimated-ev';
 import {reportedFeaturedOriginal} from '@/lib/featured-history-corrections';
 import {performanceView} from '@/lib/performance-view';
@@ -15,6 +16,10 @@ const CATEGORIES=['play','value','first','long'] as const;
 export async function GET(req:NextRequest){
  const sport=req.nextUrl.searchParams.get('sport')||'nfl',period=req.nextUrl.searchParams.get('period')||'Today';
  if(!DASHBOARD_SPORTS.includes(sport as any)||!['Today','Yesterday','Week','Month','Season'].includes(period))return NextResponse.json({success:false,error:'Invalid scope'},{status:400});
+ if(workerPerformanceSport(sport)){
+  try{const view=await workerPerformanceView(sport,period);return NextResponse.json({...view.featured,cache:view.cache,refreshing:view.refreshing},{headers:{'Cache-Control':'private, no-store'}});}
+  catch{return NextResponse.json({success:false,error:'Featured history unavailable; no results inferred'},{status:503,headers:{'Cache-Control':'private, no-store'}});}
+ }
  const days=[...historyDays(period)].sort();
  try{
   const [featuredDays,history]=await Promise.all([
@@ -46,6 +51,6 @@ export async function GET(req:NextRequest){
    records.push({estimatedEv:estimatedEv(row),estimatedEvText:estimatedEvText(row),key:card.key,day,playerName:row.playerName,market:row.market,side:row.prediction||null,line:row.sportsbookLine??null,odds:p.price??null,sportsbook:row.sportsbook||null,gameTime,selectedAt:row.featuredSavedAt||row.boardCapturedAt||row.capturedAt||null,selectionIssue,status:selectionIssue?'unverified':result?.status||'pending',actual:result?.actual??null,verifiedResult:!!result,resultSource:observed?.resultSource||null});
   }
   const categories=Object.fromEntries(CATEGORIES.map(key=>{const items=records.filter(r=>r.key===key&&!r.selectionIssue),hits=items.filter(r=>r.status==='hit').length,misses=items.filter(r=>r.status==='miss').length,pushes=items.filter(r=>r.status==='push').length;return [key,{total:items.length,hits,misses,pushes,pending:items.length-hits-misses-pushes-items.filter(r=>r.status==='void').length,hitRate:hits+misses?Math.round(hits/(hits+misses)*1000)/10:null}]}));
-  return NextResponse.json({success:true,sport,period,categories,records,historyComplete:history.coverage.complete&&featuredDays.complete,gradePolicy:'Only matching stored results are graded; recorded odds are hypothetical, not placed bets.'},{headers:{'Cache-Control':'no-store'}});
+  return NextResponse.json({success:true,sport,period,categories,records,historyComplete:history.coverage.complete&&featuredDays.complete,gradePolicy:'Only matching stored results are graded; recorded odds are hypothetical, not placed bets.'},{headers:{'Cache-Control':'private, no-store'}});
  }catch{return NextResponse.json({success:false,error:'Featured history unavailable; no results inferred'},{status:503})}
 }
