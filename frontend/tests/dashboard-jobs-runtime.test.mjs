@@ -22,8 +22,13 @@ async function setup(dir,answer,operatorBindings){const file=join(dir,'worker.mj
 test('independent durable lanes resume over-budget capture, survive restart and preserve original receipts after lost acknowledgements',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'dashboard-runtime-'));let runtime;let histories=0,ackLoss=true;const tables={worker_pregame_originals:new Map(),worker_pregame_picks:new Map()};
  const answer=async req=>{const u=new URL(req.url);
-  if(u.hostname==='fixture.test')return Response.json({histories:u.searchParams.get('market')==='q1_passing_yards'?125:0,rows:[row()]});
-  if(u.hostname==='api-web.nhle.com'){histories++;return Response.json({gameLog:[]});}
+  if(u.hostname==='fixture.test')return Response.json({histories:u.searchParams.get('market')==='q1_passing_yards'?125:0,parallelHistories:true,rows:[row()]});
+  if(u.hostname==='api-web.nhle.com'){
+   histories++;
+   return new Response(new ReadableStream({async start(stream){
+    await new Promise(done=>setTimeout(done,2));stream.enqueue(new TextEncoder().encode('{"gameLog":[]}'));stream.close();
+   }}));
+  }
   if(u.hostname==='db.supabase.co'){const table=tables[u.pathname.split('/').at(-1)];assert.ok(table);
    if(req.method==='POST'){const input=await req.json();for(const r of input)if(!table.has(key(r)))table.set(key(r),{...r,captured_at:new Date().toISOString()});if(ackLoss){ackLoss=false;return new Response('{}',{status:503});}return new Response(null,{status:201});}
    return Response.json([...table.values()].filter(r=>r.sport===u.searchParams.get('sport')?.slice(3)&&r.market===u.searchParams.get('market')?.slice(3)));}
@@ -32,11 +37,14 @@ test('independent durable lanes resume over-budget capture, survive restart and 
   await call('clock',now+300000,'capture:nfl');await call('clock',now+300000);await call('clock',now+300000,'capture:nba');
   await call('enqueue',job('nfl','q1_passing_yards','nfl-budget'),'capture:nfl');await call('enqueue',job('nhl','shots_on_goal','nhl-shot'));await call('enqueue',job('nba','points','nba-points'),'capture:nba');
   const [nfl,foreground]=await Promise.all([call('step',null,'capture:nfl'),mf.dispatchFetch('https://test.local/foreground')]);
-  assert.equal(foreground.status,200);assert.equal(nfl.jobs[0].lastError,'job_subrequest_budget');assert.equal(nfl.jobs[0].phase,'rank');assert.equal(nfl.jobs[0].usage.used,218);assert.equal(histories,108);assert.equal((await call('inspect',null,'capture:nfl')).cache.length,108);
+  assert.equal(foreground.status,200);assert.equal(nfl.jobs[0].lastError,'job_subrequest_budget');assert.equal(nfl.jobs[0].phase,'rank');assert.ok(nfl.jobs[0].usage.used<=220);
+  assert.equal(nfl.jobs[0].usage.maxActive,4);assert.ok(nfl.jobs[0].usage.maxReserved<=12);
+  const savedFirst=histories;assert.ok(savedFirst>100&&savedFirst<125);
+  assert.equal((await call('inspect',null,'capture:nfl')).cache.length,savedFirst);
   await call('step');let s=await call('step');assert.equal(s.jobs[0].lastError,'Cloudflare pregame storage HTTP 503');const original=[...tables.worker_pregame_originals.values()][0];assert.equal(original.market,'shots_on_goal');await call('step',null,'capture:nba');
   const retry=s.jobs[0].retryAt;await mf.dispose();runtime=await setup(dir,answer);({mf,call}=runtime);await call('clock',retry+1);for(let i=0;i<7;i++){await call('clock',retry+1001+i*1001);s=await call('step');}
   assert.equal(s.jobs[0].state,'done');assert.ok((await call('inspect')).events.some(e=>e.outcome==='deferred'));assert.equal(tables.worker_pregame_originals.size,1);assert.equal(tables.worker_pregame_picks.size,1);assert.equal([...tables.worker_pregame_originals.values()][0].checksum,original.checksum);
-  let n=await call('inspect',null,'capture:nfl');await call('clock',n.status.jobs[0].retryAt+1,'capture:nfl');n=await call('step',null,'capture:nfl');assert.equal(n.jobs[0].phase,'originals');assert.ok(n.jobs[0].usage.cacheHits>=108);assert.equal(histories,125);
+  let n=await call('inspect',null,'capture:nfl');await call('clock',n.status.jobs[0].retryAt+1,'capture:nfl');n=await call('step',null,'capture:nfl');assert.equal(n.jobs[0].phase,'originals');assert.equal(n.jobs[0].usage.cacheHits,savedFirst);assert.equal(histories,125);
   await call('enqueue',job('nfl','q1_passing_yards','new-tick'),'capture:nfl');assert.equal((await call('inspect',null,'capture:nfl')).status.jobs.length,1);
   await call('lease',{token:'another-owner',until:now+1000000},'capture:nba');const before=await call('inspect',null,'capture:nba');await Promise.all([call('step',null,'capture:nba'),call('step',null,'capture:nba')]);assert.deepEqual((await call('inspect',null,'capture:nba')).docs,before.docs);
  }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}});
@@ -268,4 +276,48 @@ test('a checkpointed unavailable board cannot write or publish when resumed', as
    {message:'rankings_board_unavailable', blocked:true},
   );
  }
+});
+
+test('grant expiry during an admitted body prevents its SQLite checkpoint and blocks the one-shot',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'nba-acceptance-drain-'));
+ const day='2026-11-27',clock=Date.parse(day+'T23:15:00Z');
+ const lockAt='2026-11-28T00:00:00.000Z',expiresAt=day+'T23:55:00.000Z';
+ const fixtures={'1234':lockAt},token='fixture-expiry-operator-only-12345';
+ const grant={day,lockAt,expiresAt,scheduleSha256:checksum(fixtures)};
+ const lane='capture:nba',control='control:nba-acceptance';
+ let runtime,entered,finishBody,outboundWrites=0;
+ const headersSent=new Promise(resolve=>{entered=resolve;});
+ try{
+  runtime=await setup(dir,req=>{
+   const url=new URL(req.url);
+   if(req.method!=='GET')outboundWrites++;
+   if(url.hostname==='db.supabase.co')return Response.json(fixtures);
+   if(url.hostname==='fixture.test')return Response.json({histories:1});
+   assert.equal(url.hostname,'api-web.nhle.com');
+   return new Response(new ReadableStream({start(s){
+    finishBody=()=>{try{s.enqueue(new TextEncoder().encode('{"gameLog":[]}'));s.close();}catch{}};
+    entered();
+   }}));
+  },{SACH_NBA_ACCEPTANCE_OPERATOR_TOKEN:token,SACH_NBA_ACCEPTANCE_GRANT:JSON.stringify(grant)});
+  const {call,mf}=runtime;
+  await call('clock',clock,control);
+  await call('clock',clock,lane);
+  const operator=await mf.getWorker('operator-fixture');
+  const accepted=await operator.fetch('https://fixture.local/',{method:'POST',body:JSON.stringify({sport:'nba',market:'points',day,token})});
+  assert.deepEqual(await accepted.json(),{id:'acceptance:nba:points:'+day,queued:true});
+  const step=call('step',null,lane);
+  try{
+   await headersSent;
+   await call('clock',Date.parse(expiresAt),lane);
+  }finally{finishBody?.();}
+  const outcome=(await step).jobs[0];
+  assert.equal(outcome.state,'blocked');
+  assert.equal(outcome.lastError,'acceptance_closed');
+  assert.equal(outcome.usage.cacheWrites,0);
+  const after=await call('inspect',null,lane);
+  assert.deepEqual(after.cache,[]);
+  assert.deepEqual(after.docs,[]);
+  assert.equal(after.status.lease,null);
+  assert.equal(outboundWrites,0);
+ }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
 });

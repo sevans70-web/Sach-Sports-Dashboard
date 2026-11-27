@@ -7,7 +7,9 @@ const dashboard={async fetch(request,env,ctx){const u=new URL(request.url);
  if(u.pathname.endsWith('/rankings')){
   const market=u.searchParams.get('market'),sport=u.pathname.split('/')[2];
   const source=await fetch('https://fixture.test/config?market='+market+'&sport='+sport).then(r=>r.json());
-  for(let i=0;i<(source.histories||0);i++)await fetch('https://api-web.nhle.com/v1/player/'+(1000+i)+'/game-log/20262027/2').then(r=>r.json());
+  const history=i=>fetch('https://api-web.nhle.com/v1/player/'+(1000+i)+'/game-log/20262027/2').then(r=>r.json());
+  if(source.parallelHistories)await Promise.all(Array.from({length:source.histories},(_,index)=>history(index)));
+  else for(let i=0;i<(source.histories||0);i++)await history(i);
   await importedEnv.VINEXT_KV_CACHE.get('probe');
   if(source.defer)ctx.waitUntil(fetch('https://api-web.nhle.com/v1/player/9999/game-log/20262027/2').then(r=>r.json()));
   return Response.json(source.board??{success:true,rows:source.rows||[]});
