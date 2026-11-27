@@ -21,6 +21,9 @@ export class DashboardJobQueue extends Base{
   if(action==='step'){const due=this.rows("SELECT MIN(due) AS due FROM jobs WHERE state='active'")[0]?.due||0;this.setMeta('testNow',Math.max(this.now()+1001,due+1));await this.alarm();return this.status();}
   if(action==='alarm'){await this.alarm();return this.status();}
   if(action==='readiness')return this.captureReadiness();
+  if(action==='capture-tick')return this.captureTick(value.cron,value.time);
+  if(action==='hold')return {hold:this.meta('captureHold'),interrupted:this.meta('unconfirmedCaptureTicks')};
+  if(action==='receipt'){this.document('fixture-original','protected',value);return this.documents('fixture-original');}
   if(action==='seed'){
    for(const job of value)this.sql.exec('INSERT INTO jobs VALUES(?,?,?,?,?,?,?)',
     job.id,job.kind,job.sport,job.state,job.touched,job.touched,encode(job));

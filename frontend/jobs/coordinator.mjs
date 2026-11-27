@@ -4,7 +4,8 @@ import {runPhase} from './tasks.mjs';
 import {PREGAME_MARKETS,marketsForCaptureTick,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON} from '../scripts/worker-pregame-capture.mjs';
 import {gradingSportForTick} from '../scripts/worker-pregame-grade.mjs';
 import {workerHistoryBackupScope} from '../scripts/worker-history-backup.mjs';
-import {acceptanceGrant,acceptanceQueue,requireApprovedSchedule} from './nba-acceptance.mjs';
+import {acceptanceGrant,acceptanceQueue,requireApprovedSchedule,acceptanceWindow,activeAcceptanceWindow,oneShotJobError} from './nba-acceptance.mjs';
+import {allowRoutineJob,freshCaptureTick} from './capture-restoration.mjs';
 const sports=['nba','nfl','nhl'];
 const safeError=e=>/^[a-z0-9_ .:-]{1,160}$/i.test(e?.message||'')?e.message:'dashboard_job_failed';
 /** Independent objects provide independent invocation budgets, persistent cursors,
@@ -40,13 +41,14 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
  async enqueue(job){
   if(!sports.includes(job.sport)||!['capture','grade','replay'].includes(job.kind)||!Number.isFinite(job.created))throw Error('invalid_job');
   if(job.kind==='capture'&&!PREGAME_MARKETS[job.sport].includes(job.market))throw Error('invalid_market');
+  if(!job.acceptance&&!allowRoutineJob(job))return {id:job.id,queued:false,reason:'nba_routine_held'};
   const id=job.id;const value={...job,state:'active',phase:job.kind==='capture'?'rank':'scan',cursor:job.kind==='replay'?'':0,attempts:0};
   // Coalesce ticks while the same market/day is already pending. Original reserved
   // picks retain their exact first bytes; no tick replaces them with fresh quotes.
   const pending=this.rows('SELECT data FROM jobs WHERE state=?','active').map(r=>decode(r.data));
   const duplicate=pending.some(p=>p.kind===job.kind&&(job.kind==='capture'?p.market===job.market:job.kind==='replay'?p.day===job.day:true));
   if(job.acceptance){
-   if(this.now()>=job.acceptance.expires)throw Error('acceptance_closed');
+   const error=oneShotJobError(job,this.env,this.now());if(error)throw Error(error);
    if(this.rows('SELECT 1 FROM jobs WHERE id=?',id).length)return {id,queued:false};
    if(this.captureReadiness().busy)throw Error('acceptance_queue_busy');
   }
@@ -59,17 +61,35 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   return {active,leased,busy:active>0||leased};
  }
  async captureTick(cron,scheduledTime){
-  if(this.env.SACH_NBA_ACCEPTANCE_GRANT!==undefined||this.acceptanceInFlight)return {queued:[],held:true};
+  const now=this.now(),grant=acceptanceWindow(this.env);
+  if(activeAcceptanceWindow(grant,now)){
+   this.rememberCaptureHold(grant);
+   return {queued:[],held:true,heldSports:sports,until:grant.expires};
+  }
+  const last=this.meta('captureHold');
+  // Revocation releases other sports at their next fresh slot. Never replay
+  // a scheduled slot from the previous hold, even after isolate restart.
+  if(last&&last.expires>now){last.expires=now;this.setMeta('captureHold',last);}
+  const inHold=[last,grant].some(window=>window&&window.starts<=scheduledTime&&scheduledTime<window.expires);
+  if(inHold||!freshCaptureTick(cron,scheduledTime,now))
+   return {queued:[],heldSports:['nba'],reason:'capture_tick_elapsed'};
+
   this.setMeta('unconfirmedCaptureTicks',(this.meta('unconfirmedCaptureTicks')??0)+1);
   // An interrupted or ambiguous fan-out remains fenced across eviction. Routine
   // ticks can still run, but an operator must reconcile before one-shot use.
   const result=await enqueueScheduledJobs({cron,scheduledTime},this.env);
   this.setMeta('unconfirmedCaptureTicks',this.meta('unconfirmedCaptureTicks')-1);
-  return result;
+  return {...result,heldSports:['nba']};
+ }
+ rememberCaptureHold(grant){
+  const last=this.meta('captureHold');
+  if(last?.starts!==grant.starts||last.expires!==grant.expires)
+   this.setMeta('captureHold',{starts:grant.starts,expires:grant.expires});
  }
  async acceptNbaPoints(request){
   const grant=acceptanceGrant(this.env,request,this.now());
   if(this.meta('unconfirmedCaptureTicks')||this.acceptanceInFlight)throw Error('acceptance_concurrent_work');
+  this.rememberCaptureHold(grant);
   this.acceptanceInFlight=true;
   try{
    const queues=sports.flatMap(sport=>['capture','replay'].map(kind=>this.env.DASHBOARD_JOBS.getByName(kind+':'+sport)));
@@ -98,9 +118,8 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   const pending=new Set();const ctx={waitUntil:p=>{const promise=Promise.resolve(p);pending.add(promise);promise.finally(()=>pending.delete(promise)).catch(()=>{});},passThroughOnException(){},props:{}};
   let next=job,due=this.now()+1000;
   try{
-   if(job.acceptance&&this.now()>=job.acceptance.expires){
-    const error=new JobDeferred('acceptance_closed');error.blocked=true;throw error;
-   }
+   const holdReason=job.acceptance?oneShotJobError(job,this.env,this.now()):allowRoutineJob(job)?null:'nba_routine_held';
+   if(holdReason){const error=new JobDeferred(holdReason);error.blocked=true;throw error;}
    const execution=await runJobBudget({env:this.env,store:fencedStore,now:()=>this.now(),acceptance:job.acceptance,cacheSources:job.kind==='capture',gate:(origin,until)=>this.env.DASHBOARD_JOBS.getByName('provider:'+origin).gate(origin,until)},async env=>{
     const value=await runPhase(job,{...services,env,store:fencedStore,now:()=>this.now(),route:path=>services.dashboard.fetch(new Request((job.kind==='capture'?'https://sach-capture.internal':'https://sach-grading.internal')+path,{headers:{Accept:'application/json'}}),env,ctx)});
     // Drain framework after()/waitUntil work before closing this request's budget.
@@ -115,7 +134,7 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   }catch(error){
    const attempts=(job.attempts||0)+1;due=Math.max(this.now()+Math.min(15*60000,1000*2**Math.min(attempts,10)),error.retryAt||0);
    // A later scheduled tick can capture a new board without retrying this one.
-   const blocked=job.kind==='capture'&&error.blocked===true;
+   const blocked=(job.kind==='capture'||job.kind==='replay')&&error.blocked===true;
    next={...job,attempts,state:blocked?'blocked':job.state,lastError:safeError(error),usage:error.usage||null};
    console.warn(blocked?'[dashboard-job-blocked]':'[dashboard-job-deferred]',JSON.stringify({id:job.id,kind:job.kind,sport:job.sport,market:job.market,phase:job.phase,reason:next.lastError,retryAt:blocked?null:due,usage:next.usage}));
   }finally{
@@ -143,6 +162,7 @@ async function enqueueScheduledJobs(controller,env){
   for(const {sport,market} of marketsForCaptureTick(created,controller.cron!==PREGAME_CAPTURE_CRON))jobs.push({id:`capture:${sport}:${market}:${slot}`,kind:'capture',sport,market,created});
   if(controller.cron===PREGAME_CAPTURE_CRON){const scope=workerHistoryBackupScope(created,true);jobs.push({id:`replay:${scope.sport}:${slot}`,kind:'replay',...scope,created});}
  }else if(controller.cron===PREGAME_GRADE_CRON){const sport=gradingSportForTick(created);if(sport)jobs.push({id:`grade:${sport}:${slot}`,kind:'grade',sport,created});}
- for(const job of jobs)await env.DASHBOARD_JOBS.getByName(job.kind+':'+job.sport).enqueue(job);
- return {queued:jobs.map(({id})=>id)};
+ const eligible=jobs.filter(allowRoutineJob);
+ for(const job of eligible)await env.DASHBOARD_JOBS.getByName(job.kind+':'+job.sport).enqueue(job);
+ return {queued:eligible.map(({id})=>id)};
 }

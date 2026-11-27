@@ -35,7 +35,7 @@ test('independent durable lanes resume over-budget capture, survive restart and 
   throw Error('unexpected host '+u.hostname);};
  try{runtime=await setup(dir,answer);let {mf,call}=runtime;const job=(sport,market,id)=>({kind:'capture',sport,market,id,created:now});
   await call('clock',now+300000,'capture:nfl');await call('clock',now+300000);await call('clock',now+300000,'capture:nba');
-  await call('enqueue',job('nfl','q1_passing_yards','nfl-budget'),'capture:nfl');await call('enqueue',job('nhl','shots_on_goal','nhl-shot'));await call('enqueue',job('nba','points','nba-points'),'capture:nba');
+  await call('enqueue',job('nfl','q1_passing_yards','nfl-budget'),'capture:nfl');await call('enqueue',job('nhl','shots_on_goal','nhl-shot'));assert.equal((await call('enqueue',job('nba','points','nba-points'),'capture:nba')).reason,'nba_routine_held');
   const [nfl,foreground]=await Promise.all([call('step',null,'capture:nfl'),mf.dispatchFetch('https://test.local/foreground')]);
   assert.equal(foreground.status,200);assert.equal(nfl.jobs[0].lastError,'job_subrequest_budget');assert.equal(nfl.jobs[0].phase,'rank');assert.ok(nfl.jobs[0].usage.used<=220);
   assert.equal(nfl.jobs[0].usage.maxActive,4);assert.ok(nfl.jobs[0].usage.maxReserved<=12);
@@ -82,9 +82,10 @@ test('grading scans beyond 250 picks and ignores unrelated grades without starvi
 });
 test('scheduled delivery is idempotent and does no ranking or grading work in the cron invocation',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'dashboard-tick-'));let runtime,hits=0;
- try{runtime=await setup(dir,()=>{hits++;return Response.json({});});const worker=await runtime.mf.getWorker(),time=now+600000;
+ try{runtime=await setup(dir,()=>{hits++;return Response.json({});});const worker=await runtime.mf.getWorker(),time=Date.parse('2026-11-27T23:10:00Z');
+  await runtime.call('clock',time,'control:nba-acceptance');
   await worker.scheduled({cron:'*/2 * * * *',scheduledTime:time});await worker.scheduled({cron:'*/2 * * * *',scheduledTime:time});assert.equal(hits,0);
-  const {CAPTURE_MARKETS,marketsForCaptureTick}=await import('../scripts/worker-pregame-capture.mjs');const markets=marketsForCaptureTick(time);assert.equal(markets.length,2);
+  const {marketsForCaptureTick}=await import('../scripts/worker-pregame-capture.mjs');const markets=marketsForCaptureTick(time).filter(m=>m.sport!=='nba');assert.ok(markets.length>0);
   for(const {sport,market} of markets){const s=await runtime.call('inspect',null,'capture:'+sport);assert.equal(s.status.jobs.filter(j=>j.market===market).length,1);}
  }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
 });
@@ -94,7 +95,7 @@ test('protected NBA Points acceptance drains all queues and excludes scheduler a
  const clock=Date.parse('2026-11-27T23:15:00Z'),day='2026-11-27';
  const lockAt='2026-11-28T00:00:00.000Z',expiresAt='2026-11-27T23:55:00.000Z';
  const fixtures={'1234':lockAt,'5678':'2026-11-28T01:00:00.000Z'};
- const grant={day,lockAt,expiresAt,scheduleSha256:checksum(fixtures)};
+ const grant={day,holdStartsAt:new Date(clock-60000).toISOString(),lockAt,expiresAt,scheduleSha256:checksum(fixtures)};
  const token='fixture-operator-credential-only-12345',lane='control:nba-acceptance';
  const scope={sport:'nba',market:'points',day,token};
  const otherLanes=['capture:nfl','capture:nhl','replay:nba','replay:nfl','replay:nhl'];
@@ -177,7 +178,7 @@ const unavailableBoard = JSON.parse(await readFile(
  'utf8',
 ));
 
-test('capture blocks the retained unavailable NBA board and preserves healthy empty and populated outcomes', async () => {
+test('capture blocks the retained unavailable board in an eligible routine lane and preserves healthy empty and populated outcomes', async () => {
  const dir = await mkdtemp(join(tmpdir(), 'dashboard-board-state-'));
  const tables = {worker_pregame_originals:new Map(), worker_pregame_picks:new Map()};
  const capturedAt = new Date(now).toISOString();
@@ -185,8 +186,8 @@ test('capture blocks the retained unavailable NBA board and preserves healthy em
  let board = unavailableBoard;
  let reads = 0;
  let writes = 0;
- const lane = 'capture:nba';
- const cacheKey = 'board:nba:points';
+ const lane = 'capture:nhl';
+ const cacheKey = 'board:nhl:points';
  const answer = async request => {
   const url = new URL(request.url);
   if (url.hostname === 'fixture.test') return Response.json({board});
@@ -210,7 +211,7 @@ test('capture blocks the retained unavailable NBA board and preserves healthy em
   const {call, mf} = runtime;
   const kv = await mf.getKVNamespace('VINEXT_KV_CACHE');
   const step = () => call('step', null, lane);
-  const enqueue = id => call('enqueue', {id, sport:'nba', market:'points', kind:'capture', created:now}, lane);
+  const enqueue = id => call('enqueue', {id, sport:'nhl', market:'points', kind:'capture', created:now}, lane);
   const job = (status, id) => status.jobs.find(entry => entry.id === id);
   await kv.put(cacheKey, 'previous-board');
   await call('clock', now + 300000, lane);
@@ -283,7 +284,7 @@ test('grant expiry during an admitted body prevents its SQLite checkpoint and bl
  const day='2026-11-27',clock=Date.parse(day+'T23:15:00Z');
  const lockAt='2026-11-28T00:00:00.000Z',expiresAt=day+'T23:55:00.000Z';
  const fixtures={'1234':lockAt},token='fixture-expiry-operator-only-12345';
- const grant={day,lockAt,expiresAt,scheduleSha256:checksum(fixtures)};
+ const grant={day,holdStartsAt:new Date(clock-60000).toISOString(),lockAt,expiresAt,scheduleSha256:checksum(fixtures)};
  const lane='capture:nba',control='control:nba-acceptance';
  let runtime,entered,finishBody,outboundWrites=0;
  const headersSent=new Promise(resolve=>{entered=resolve;});
@@ -319,5 +320,104 @@ test('grant expiry during an admitted body prevents its SQLite checkpoint and bl
   assert.deepEqual(after.docs,[]);
   assert.equal(after.status.lease,null);
   assert.equal(outboundWrites,0);
+ }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
+});
+
+test('completed window resumes fresh NFL/NHL schedules after restart, holds NBA and preserves interrupted fan-out',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'dashboard-restoration-'));
+ const control='control:nba-acceptance',day='2026-11-27';
+ const from=Date.parse(day+'T22:30:00Z'),expires=Date.parse(day+'T23:50:00Z');
+ const grant=JSON.stringify({day,holdStartsAt:new Date(from).toISOString(),expiresAt:new Date(expires).toISOString(),
+  lockAt:'2026-11-28T00:00:00.000Z',scheduleSha256:'a'.repeat(64)});
+ const {marketsForCaptureTick}=await import('../scripts/worker-pregame-capture.mjs');
+ const {workerHistoryBackupScope}=await import('../scripts/worker-history-backup.mjs');
+ const cron='*/2 * * * *';
+ let runtime,calls=0;
+ const outbound=()=>{calls++;throw Error('scheduled dispatch must only enqueue');};
+ try{
+  runtime=await setup(dir,outbound,{SACH_NBA_ACCEPTANCE_GRANT:grant});
+  let {call}=runtime;
+  await call('clock',expires-60000,control);
+  const held=await call('capture-tick',{cron,time:expires-120000},control);
+  assert.deepEqual(held,{queued:[],held:true,heldSports:['nba','nfl','nhl'],until:expires});
+  const marker={quoteId:'original',grade:'first',capturedAt:from};
+  await call('receipt',marker,'capture:nba');
+  await call('in-flight-tick',1,control);
+  await runtime.mf.dispose();
+  runtime=await setup(dir,outbound,{SACH_NBA_ACCEPTANCE_GRANT:grant});
+  ({call}=runtime);
+  await call('clock',expires,control);
+  assert.equal((await call('capture-tick',{cron,time:expires-120000},control)).reason,'capture_tick_elapsed');
+  const scheduledSports=new Set(),replaySports=new Set();
+  for(let time=expires;time<expires+38*60000;time+=120000){
+   await call('clock',time,control);
+   const tick=await call('capture-tick',{cron,time},control);
+   const expectedMarkets=marketsForCaptureTick(time).filter(job=>job.sport!=='nba');
+   assert.deepEqual(tick.heldSports,['nba']);
+   for(const {sport,market} of expectedMarkets){
+    assert.ok(tick.queued.some(id=>id.startsWith(`capture:${sport}:${market}:`)));
+    scheduledSports.add(sport);
+   }
+   const replay=workerHistoryBackupScope(time,true).sport;
+   if(replay!=='nba'){assert.ok(tick.queued.some(id=>id.startsWith('replay:'+replay+':')));replaySports.add(replay);}
+   assert.ok(tick.queued.every(id=>!id.includes(':nba:')));
+  }
+  assert.deepEqual([...scheduledSports].sort(),['nfl','nhl']);
+  assert.deepEqual([...replaySports].sort(),['nfl','nhl']);
+  assert.equal((await call('hold',null,control)).interrupted,1);
+  assert.equal((await call('inspect',null,'replay:nba')).status.jobs.length,0);
+  assert.equal((await call('receipt',{...marker,grade:'changed'},'capture:nba'))[0].grade,'first');
+  assert.equal(calls,0);
+ }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
+});
+
+test('revocation and invalid or excessive grants release other sports and fence old NBA work',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'dashboard-restoration-revoked-'));
+ const control='control:nba-acceptance',day='2026-11-27',lane='capture:nba';
+ const starts=Date.parse(day+'T22:45:00Z'),expires=Date.parse(day+'T23:50:00Z');
+ const clock=Date.parse(day+'T23:00:00Z'),lock=Date.parse('2026-11-28T00:00:00Z');
+ const hash='b'.repeat(64);
+ const grant={day,holdStartsAt:new Date(starts).toISOString(),expiresAt:new Date(expires).toISOString(),
+  lockAt:new Date(lock).toISOString(),scheduleSha256:hash};
+ const acceptance={day,starts,lock,expires,scheduleSha256:hash};
+ const cron='*/2 * * * *';
+ let runtime,nbaCalls=0;
+ const outbound=request=>{
+  const url=new URL(request.url);
+  if(url.searchParams.get('sport')==='nba'||url.searchParams.get('sport')==='eq.nba')nbaCalls++;
+  assert.equal(request.method,'GET');
+  return Response.json(url.hostname==='fixture.test'?{rows:[]}:[]);
+ };
+ try{
+  runtime=await setup(dir,outbound,{SACH_NBA_ACCEPTANCE_GRANT:JSON.stringify(grant)});
+  let {call}=runtime;
+  await call('clock',clock,control);
+  assert.equal((await call('capture-tick',{cron,time:clock},control)).held,true);
+  const common={sport:'nba',market:'points',kind:'capture',created:clock,touched:clock,state:'active',phase:'rank'};
+  await call('seed',[{...common,id:'acceptance:nba:points:'+day,acceptance}],lane);
+  await call('seed',[{...common,kind:'replay',id:'old-replay'}],'replay:nba');
+  await runtime.mf.dispose();
+  runtime=await setup(dir,outbound);
+  ({call}=runtime);
+  await call('clock',clock+120000,control);
+  assert.equal((await call('capture-tick',{cron,time:clock},control)).reason,'capture_tick_elapsed');
+  assert.equal((await call('hold',null,control)).hold.expires,clock+120000);
+  assert.equal((await call('capture-tick',{cron,time:clock+120000},control)).held,undefined);
+  await call('clock',clock+120000,lane);
+  await call('clock',clock+120000,'replay:nba');
+  const revoked=(await call('step',null,lane)).jobs[0];
+  assert.deepEqual([revoked.state,revoked.lastError,revoked.retryAt],['blocked','acceptance_revoked',null]);
+  const old=(await call('step',null,'replay:nba')).jobs[0];
+  assert.deepEqual([old.state,old.lastError,old.retryAt],['blocked','nba_routine_held',null]);
+  for(const value of ['invalid',JSON.stringify({...grant,holdStartsAt:day+'T20:00:00Z'})]){
+   await runtime.mf.dispose();runtime=await setup(dir,outbound,{SACH_NBA_ACCEPTANCE_GRANT:value});
+   ({call}=runtime);
+   await call('clock',clock+240000,control);
+   const tick=await call('capture-tick',{cron,time:clock+240000},control);
+   assert.equal(tick.held,undefined);
+   assert.deepEqual(tick.heldSports,['nba']);
+   assert.ok(tick.queued.every(id=>!id.includes(':nba:')));
+  }
+  assert.equal(nbaCalls,0);
  }finally{await runtime?.mf.dispose();await rm(dir,{recursive:true,force:true});}
 });
