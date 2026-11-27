@@ -1,5 +1,6 @@
 "use client";
 import {rankingRowIsPick} from '@/lib/ranking-pick-count';
+import {nhlQuoteContextMarket,nhlRankingVisible} from '@/lib/nhl-ranking-visibility';
 import {NbaEvMetric} from './nba-ev-metric';
 import {nbaRankingEv,nbaEvMarket} from '@/lib/nba-ranking-ev';
 import {NBA_DISPLAY_MARKETS} from "@/lib/nba";
@@ -987,12 +988,13 @@ function PlayerCard({
   const scorerQuote=firstBasketQuote(card.raw);
   const footballForecast=footballForecastDisplay(card.raw);
   const complete=completeRankingProp(card.raw);
+  const nhlQuoteOnly=sport==='nhl'&&nhlQuoteContextMarket(card.market)&&complete==null;
   const nbaPositiveEv=sport!=='nba'||(complete?.percent??0)>0;
   const projectionComparison=!complete&&!modelSelection&&footballForecast.side!=null;
-  const displayedPick=complete?.side||(quarterCard?null:modelSelection?.side||footballForecast?.side||(footballScorer||researchOnly?null:card.prediction));
+  const displayedPick=nhlQuoteOnly?null:complete?.side||(quarterCard?null:modelSelection?.side||footballForecast?.side||(footballScorer||researchOnly?null:card.prediction));
   const targetPick = quarterTarget ? qualifiedQuarterTarget(card.raw) : null;
   const nbaDisplayEv=sport==='nba'&&nbaEvMarket(card.market)?nbaRankingEv(card.raw):null;
-  const evPercent=nbaDisplayEv?nbaDisplayEv.percent:complete?.percent??estimatedEv(card.raw).percent;
+  const evPercent=nhlQuoteOnly?null:nbaDisplayEv?nbaDisplayEv.percent:complete?.percent??estimatedEv(card.raw).percent;
   // A non-positive expected return is an abstention, not an actionable EV card.
   // Retain the original signed value in the underlying record for auditing.
   const evText=typeof evPercent==='number'&&Number.isFinite(evPercent)&&evPercent>0?formatEvPercent(evPercent):'—',evNotice=estimatedEvNotice(card.raw);
@@ -1165,6 +1167,7 @@ function PlayerCard({
         </div>
       ) : null}
 
+      {nhlQuoteOnly?<div className={styles.faceFooter}><p>Verified sportsbook quote. A qualified prediction and EV are unavailable.</p></div>:null}
       {fittedForecast ? <div className={styles.faceFooter}><p>{forecastDetailText(fittedForecast,modelSelection,shortNumber)}</p></div> : null}
 
       {state === "pregame" && !card.raw?.integrityVersion ? (
@@ -1450,7 +1453,9 @@ async function networkJson(url: string) {
 
   const payload = await response.json();
   if(!payload||payload.success===false)throw new Error(payload?.error||'Ranking data is unavailable');
-  rankingJsonCache.set(url, { at: Date.now(), payload });
+  const nhlRankings=url.startsWith('/api/nhl/rankings?');
+  const observedAt=nhlRankings&&payload.dataState==='stale'?Date.parse(payload.observedAt):Date.now();
+  if(Number.isFinite(observedAt)&&!(nhlRankings&&payload.dataState==='partial'))rankingJsonCache.set(url, { at: observedAt, payload });
   // Warm the visible preview while the user is still on the prior category.
   for (const row of (payload?.rows || []).slice(0,15)) {
     if (row.headshot) void prepareRankingImage(row.headshot);
@@ -1467,7 +1472,7 @@ async function fetchJson(url: string, signal: AbortSignal) {
     return cached.payload;
   }
 
-  if (cached && age < JSON_STALE_MS) {
+  if (cached && age < (url.startsWith('/api/nhl/rankings?')?60_000:JSON_STALE_MS)) {
     if (!rankingJsonInflight.has(url)) {
       const refresh = networkJson(url)
         .catch(() => cached.payload)
@@ -2321,7 +2326,9 @@ export function PlayerRankingsPanel({
         // Keep the last good board on screen. A background refresh failure
         // should never turn the ranking section into a blank panel.
         setError(
-          cause instanceof Error
+          sport==='nhl'&&cause instanceof Error&&/^The NHL sportsbook feed (denied access|is temporarily unavailable)\.$/.test(cause.message)
+            ? cause.message
+            : cause instanceof Error
             ? /abort|timeout|timed out/i.test(cause.message) ? "Rankings are taking longer than expected. Retrying…" : "Player rankings are temporarily unavailable. Retrying…"
             : "Player rankings are temporarily unavailable."
         );
@@ -2477,7 +2484,8 @@ export function PlayerRankingsPanel({
         }
         if(sport==='nba'&&nbaEvMarket(card.market)){if(excludeUnavailableRanking(card.raw))return false;}
         else if(sport==='nba'&&card.market==='first_basket'){if(!firstBasketQuote(card.raw))return false;}
-        else if(['nba','nfl','nhl'].includes(sport)&&(excludeUnavailableRanking(card.raw)||!completeRankingProp(card.raw)))return false;
+        else if(sport==='nhl'){if(!nhlRankingVisible(card.raw))return false;}
+        else if(['nba','nfl'].includes(sport)&&(excludeUnavailableRanking(card.raw)||!completeRankingProp(card.raw)))return false;
         // Previous and Tomorrow were already date-scoped by scopedNbaBoard.
         // Do not compare these slates with TODAY's shared game schedule:
         // yesterday's games disappear from that feed after midnight.
@@ -2731,7 +2739,7 @@ export function PlayerRankingsPanel({
 
       {!loading && !error && !displayCards.length ? (
         <div className={styles.state}>
-          {['nba','nfl','nhl'].includes(sport)?`No ${market.label} rankings with a verified line, projection, prediction and EV are available for this slate.`:`No eligible ${market.label} rankings are available for the current slate.`}
+          {sport==='nhl'&&nhlQuoteContextMarket(market.key)?`No ${market.label} rankings with verified sportsbook quotes are available for this slate.`:['nba','nfl','nhl'].includes(sport)?`No ${market.label} rankings with a verified line, projection, prediction and EV are available for this slate.`:`No eligible ${market.label} rankings are available for the current slate.`}
         </div>
       ) : null}
 
