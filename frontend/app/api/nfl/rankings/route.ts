@@ -1,3 +1,5 @@
+import {nflOfficialPlayerHistory} from '@/lib/nfl-final-history';
+import {dashboardJobContext} from '@/lib/dashboard-job-context';
 import {eligibleFootballPregameRows} from '@/lib/football-pregame-availability';
 import {withVerifiedFirstTouchdownResults} from '@/lib/first-td-scoring-order';
 import {retainedNflRankingPayload} from '@/lib/retained-nfl-response';
@@ -25,7 +27,6 @@ export const dynamic="force-dynamic";
 export const revalidate=0;
 
 const OWLS_URL="https://api.owlsinsight.com/api/v1/nfl/props";
-const ATHLETE_BASE="https://site.web.api.espn.com/apis/common/v3/sports/football/nfl/athletes";
 const CACHE_TTL_MS=10*60_000;
 type CacheEntry<T>={expires:number;value:T};
 const rosterCache=new Map<string,CacheEntry<any>>();
@@ -155,16 +156,16 @@ async function modelOnlyRows(market:NflMarketKey,schedule:any[]){
   }));
  }))).flat();
 }
-async function fetchLog(id:string,season:number){const r=await fetch(`${ATHLETE_BASE}/${encodeURIComponent(id)}/gamelog?season=${season}`,{cache:"no-store",headers:{"User-Agent":"Mozilla/5.0","Accept":"application/json, text/plain, */*","Origin":"https://www.espn.com","Referer":"https://www.espn.com/"}});if(!r.ok)throw 0;return r.json()}
-async function model(id:string,market:NflMarketKey,asOf:string){
+async function model(id:string,market:NflMarketKey,asOf:string,teamId:string){
  if(!id||market==="first_td"||market.startsWith("q1_"))return {projection:null,games:0};
  const cutoff=Number.isFinite(Date.parse(asOf))?asOf:new Date().toISOString();
- const season=Number(cutoff.slice(0,4));
+ const kickoff=new Date(cutoff);
+ const season=kickoff.getUTCFullYear()-(kickoff.getUTCMonth()<7?1:0);
  try{
-  const payload=await fetchLog(id,season);
+  const payload=await nflOfficialPlayerHistory(id,teamId,season);
   const combined:Record<string,string[][]>={passing_rushing_yards:[["passingyards","passyards"],["rushingyards","rushyards"]],rushing_receiving_yards:[["rushingyards","rushyards"],["receivingyards","receptionyards"]],anytime_td:[["rushingtouchdowns","rushingtds"],["receivingtouchdowns","receivingtds"]]};
   return footballResearchSample(payload,combined[market]||HISTORY_KEYS[market]||[],market,cutoff,season);
- }catch{return {projection:null,games:0}}
+ }catch(error){dashboardJobContext()?.assertActive();if((error as any)?.deferred)throw error;return {projection:null,games:0}}
 }
 
 function teamLogo(profile:any,row:any,schedule:any[]){
@@ -340,7 +341,7 @@ async function rankings(req:NextRequest,refresh=false):Promise<Response>{
    if(qbOnly&&pos&&pos!=="QB")return null;
    if(market==="passing_interceptions"&&pos!=="QB")return null;
    if(nonQbRush&&pos==="QB")return null;
-   const m=await model(profile.id,market,row.gameTime||new Date().toISOString());
+   const m=await model(profile.id,market,row.gameTime||new Date().toISOString(),profile.teamId);
    if(row.earlyModel&&(m.projection==null||m.games<2))return null;
    const probability=nflPredictionProbability(market,m.projection,row.line,row.prob);
    const rankingProbability=probability??row.prob??50;
