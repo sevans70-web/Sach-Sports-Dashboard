@@ -18,6 +18,7 @@ import {espnOpportunityGames,nhlOpportunityGames,type OpportunityGame} from '@/l
 import {providerFetch} from '@/lib/provider-fetch';
 import {attachRecordedProgressLines} from '@/lib/recorded-progress';
 import {forecastInputReceipt} from '@/lib/forecast-input-receipt';
+import {nbaSupportingHistory} from '@/lib/nba-supporting-history';
 import {nbaCombinationHistory,NBA_COMBINATION_MARKETS} from '@/lib/nba-combination-history';
 import {firstBasketBookOnly} from '@/lib/nba-slate-scope';
 import {NHL_COUNT_POLICY,nhlCountMarket,nhlCountDistribution,evaluateNhlCountPrice} from '@/lib/nhl-count-model';
@@ -124,13 +125,15 @@ export function fittedResearchForecast(row:any,sport:string,market:string,data:R
   quoteUpdatedAt:row.quoteUpdatedAt,calculatedAt:new Date(now).toISOString(),
   basis:'fitted_distribution_and_exact_quote',validatedForBetting:false,
  }:null;
+ const inputReceipt=forecastInputReceipt(key,data.digest,new Date(now).toISOString(),f.inputFeatures);
  return {status:'available',projection:Math.round(f.projection*10)/10,expectedWorkload:Math.round(f.expectedWorkload*10)/10,
   workloadUnit:market==='sacks'?'defensive snaps':['nba','wnba','cbb'].includes(sport)?'minutes':['passing_yards','passing_tds'].includes(market)?'pass attempts':market==='rushing_yards'?'carries':sport==='nhl'?'minutes':'targets',
   interval80:{lower:Math.round(values[Math.floor((values.length-1)*.1)]*10)/10,upper:Math.round(values[Math.floor((values.length-1)*.9)]*10)/10},
   modelId:countMarket?NHL_COUNT_POLICY:model.featurePolicy==='basketball_context'?'basketball-context-distribution-candidate-v1':'workload-distribution-candidate-v2',modelGroup:key,
   ...(countMarket?{countModelValidation:{selectionApproved:false,reason:'nhl_count_revalidation_required',pointModel:'existing_workload_rate',probabilityModel:'poisson',distributionSamples:1001}}:{}),
   trainedThrough:model.trainedThrough,calibratedThrough:model.calibratedThrough,latestHistoryAt:latest.gameTime,calculatedAt:new Date(now).toISOString(),snapshotAsOf:data.asOf,snapshotSha256:data.digest,
-  inputReceipt:forecastInputReceipt(key,data.digest,new Date(now).toISOString(),f.inputFeatures),
+  inputReceipt,
+  ...(sport==='nba'?{supportingHistory:nbaSupportingHistory(row,market,history,inputReceipt)}:{}),
   giScore:gi?.score??null,giEstimatedUnitReturn:gi?.estimatedUnitReturn??null,giReason:countMarket?'price_validation_failed':gi?.reason||data.giStatus?.[key]?.reason||(!pricing?'verified_quote_unavailable':'GI_exact_price_calibration_missing'),
   candidateSide:selectionSide&&gi?.score>0&&gi?.estimatedUnitReturn!=null&&gi.estimatedUnitReturn>=.03?selectionSide:null,
   modelSelection,

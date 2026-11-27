@@ -1,6 +1,7 @@
 import {DurableObject,withEnv} from 'cloudflare:workers';
 import {encode,decode,runJobBudget,JobDeferred} from './budget.mjs';
 import {runPhase} from './tasks.mjs';
+import {nbaEvidenceStore} from './nba-evidence-store.mjs';
 import {PREGAME_MARKETS,marketsForCaptureTick,PREGAME_CAPTURE_CRON,PREGAME_GRADE_CRON} from '../scripts/worker-pregame-capture.mjs';
 import {gradingSportForTick} from '../scripts/worker-pregame-grade.mjs';
 import {workerHistoryBackupScope} from '../scripts/worker-history-backup.mjs';
@@ -19,6 +20,7 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   this.sql.exec('CREATE TABLE IF NOT EXISTS documents(job TEXT,stream TEXT,body TEXT,PRIMARY KEY(job,stream))');
  }
  now(){return Date.now();}
+ readNbaHistoryEvidence(source){return nbaEvidenceStore(this.sql,()=>this.now()).read(source);}
  rows(sql,...args){return [...this.sql.exec(sql,...args)];}
  meta(key){const row=this.rows('SELECT value FROM metadata WHERE key=?',key)[0];return row?JSON.parse(row.value):null;}
  setMeta(key,value){this.sql.exec('INSERT OR REPLACE INTO metadata VALUES(?,?)',key,JSON.stringify(value));}
@@ -95,6 +97,14 @@ export function dashboardJobClass(services){return class DashboardJobQueue exten
   const job=decode(row.data),token=crypto.randomUUID();this.setMeta('lease',{token,until:this.now()+90000});
   const owns=()=>this.meta('lease')?.token===token;
   const fencedStore={cacheRead:u=>this.cacheRead(u),cacheWrite:(u,v)=>{if(!owns())throw Error('job_lease_lost');this.cacheWrite(u,v);},document:(...args)=>{if(!owns())throw Error('job_lease_lost');this.document(...args);},documents:id=>this.documents(id)};
+  if(job.kind==='capture'&&job.sport==='nba'&&job.phase==='rank'){
+   const evidence=nbaEvidenceStore(this.sql,()=>this.now());
+   fencedStore.readNbaEvidence=source=>evidence.read(source);
+   fencedStore.writeNbaEvidence=value=>{
+    if(!owns())throw Error('job_lease_lost');
+    return this.ctx.storage.transactionSync(()=>evidence.write(value));
+   };
+  }
   const pending=new Set();const ctx={waitUntil:p=>{const promise=Promise.resolve(p);pending.add(promise);promise.finally(()=>pending.delete(promise)).catch(()=>{});},passThroughOnException(){},props:{}};
   let next=job,due=this.now()+1000;
   try{

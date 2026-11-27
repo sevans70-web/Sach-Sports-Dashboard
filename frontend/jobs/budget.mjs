@@ -58,7 +58,9 @@ export function budgetBinding(binding,scope,kind='kv'){
  return new Proxy(binding,{get(target,key){const value=Reflect.get(target,key,target);if(typeof value!=='function')return value;return (...args)=>{charge(scope,kind,Array.isArray(args[0])?Math.max(1,args[0].length):1);return value.apply(target,args);};}});
 }
 export function installJobFetch(){
- globalThis.__sachDashboardJobContext=()=>{const scope=context.getStore();return scope?{id:scope.id,acceptance:scope.acceptance,assertActive:()=>{active(scope);if(scope.paused)throw scope.paused;}}:undefined;};
+ globalThis.__sachDashboardJobContext=()=>{const scope=context.getStore();return scope?{id:scope.id,acceptance:scope.acceptance,assertActive:()=>{active(scope);if(scope.paused)throw scope.paused;},
+  readNbaEvidence:scope.store.readNbaEvidence?source=>{active(scope);return scope.store.readNbaEvidence(source);}:undefined,
+  writeNbaEvidence:scope.store.writeNbaEvidence?value=>{active(scope);if(scope.paused)throw scope.paused;return scope.store.writeNbaEvidence(value);}:undefined}:undefined;};
  if(globalThis.fetch===globalThis[nativeKey])return;
  const native=globalThis.fetch.bind(globalThis);
  const wrapped=(input,init)=>{const scope=context.getStore();return scope?jobFetch(scope,native,input,init):native(input,init);};

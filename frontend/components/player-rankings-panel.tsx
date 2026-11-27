@@ -1,4 +1,5 @@
 "use client";
+import {validatedNbaSupportingHistory} from '@/lib/nba-supporting-history';
 import {rankingRowIsPick} from '@/lib/ranking-pick-count';
 import {nflRankingDisplay} from '@/lib/nfl-ranking-display';
 import {nhlQuoteContextMarket,nhlRankingVisible} from '@/lib/nhl-ranking-visibility';
@@ -816,6 +817,11 @@ const NATIVE_HISTORY_SPORTS = new Set<RankingsSport>([
 type RecentPoint={value:number;date?:string;opponent?:string;gameId?:string};
 type CardHistory={analysis:RecentPoint[];chart:RecentPoint[]};
 const recentFormCache = new Map<string, CardHistory>();
+function rememberRecentForm(key:string,history:CardHistory){
+  recentFormCache.delete(key);
+  recentFormCache.set(key,history);
+  while(recentFormCache.size>128)recentFormCache.delete(recentFormCache.keys().next().value!);
+}
 
 function recentFormUrl(card: RankingCard, sport: RankingsSport, league: string) {
   if (NATIVE_HISTORY_SPORTS.has(sport)) {
@@ -834,7 +840,13 @@ async function loadRecentFormForCard(
   league: string,
   signal: AbortSignal
 ):Promise<CardHistory> {
-  const key = `${sport}|${league}|${card.playerId}|${card.market}|${card.gameTime}|${card.raw?.gameId||""}`;
+  const key = `${sport}|${league}|${card.playerId}|${card.raw?.teamId||""}|${card.market}|${card.gameTime}|${card.raw?.gameId||""}|${card.raw?.researchForecast?.inputReceipt?.sha256||""}`;
+  if(sport==='nba'&&card.raw?.researchForecast?.supportingHistory!=null){
+    const evidence=validatedNbaSupportingHistory(card.raw,card.market);
+    if(!evidence)return {analysis:[],chart:[]};
+    return {analysis:playerCardHistory(evidence,sport,card.market,card.gameTime,card.raw?.gameId),
+      chart:playerCardHistory(evidence,sport,card.market,card.gameTime,card.raw?.gameId,true)};
+  }
   const cached = recentFormCache.get(key);
   if (cached) return cached;
 
@@ -851,7 +863,7 @@ async function loadRecentFormForCard(
   const analysis=playerCardHistory(payload,sport,card.market,card.gameTime,card.raw?.gameId);
   const chart=playerCardHistory(payload,sport,card.market,card.gameTime,card.raw?.gameId,true);
   const history={analysis,chart};
-  if(chart.length)recentFormCache.set(key,history);
+  if(chart.length)rememberRecentForm(key,history);
   return history;
 }
 
@@ -880,7 +892,7 @@ function PlayerCard({
     setHistoryPoints([]);
     setChartPoints([]);
     setHistoryLoaded(false);
-  }, [card.playerId, card.market, card.gameTime]);
+  }, [card.playerId, card.market, card.gameTime, card.raw?.gameId, card.raw?.teamId, card.raw?.researchForecast?.inputReceipt?.sha256]);
 
   useEffect(() => {
     if (historyLoaded) return;
@@ -913,6 +925,9 @@ function PlayerCard({
     card.teamName,
     card.market,
     card.gameTime,
+    card.raw?.gameId,
+    card.raw?.teamId,
+    card.raw?.researchForecast?.inputReceipt?.sha256,
   ]);
 
   const state = deriveState(card.raw, {
@@ -1348,6 +1363,11 @@ function PlayerCard({
             </div>
 
             {(chartContext?.rookie||chartContext?.draftYear)&&<p>{[chartContext.rookie?'Rookie':'',chartContext.draftYear?`Drafted ${chartContext.draftYear}`:''].filter(Boolean).join(' · ')}</p>}
+            {sport==='nba'&&card.raw?.researchForecast?.supportingHistory!=null&&formSpan!=='head-to-head'&&<p>
+              {validatedNbaSupportingHistory(card.raw,card.market)
+                ?'Official model-input history. A 48-hour availability lag applies. Up to ten eligible team appearances feed the model.'
+                :'Verified history for this forecast is unavailable.'}
+            </p>}
             {formSpan === "head-to-head" ? <HeadToHeadChart
               key={`${sport}|${card.playerId}|${card.market}|${card.gameTime}|${card.raw?.gameId||""}`}
               sport={sport} league={league} playerId={card.playerId} gameId={String(card.raw?.gameId||"")}

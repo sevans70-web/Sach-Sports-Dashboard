@@ -1,3 +1,7 @@
+import {validatedNbaSupportingHistory} from '@/lib/nba-supporting-history';
+import {readPregameBoard} from '@/lib/ranking-board-cache';
+import {workerRuntimeBinding} from '@/lib/worker-runtime-secret';
+import {dashboardDay} from '@/lib/dashboard-contract';
 import {basketballQ1Actual} from '@/lib/basketball-period-settlement';
 import {retainPlayerHistory} from '@/lib/player-history-cloud';
 import {basketballHistorySeasons,basketballHistoryWindow,basketballRegularSeasonGroups} from '@/lib/basketball-history-window';
@@ -27,7 +31,27 @@ async function loadHistory(req:NextRequest,{params}:{params:Promise<{id:string}>
  }if(market==="first_basket")return NextResponse.json({success:true,supported:false,points:[],statLabel:LABELS[market],message:"Period/event-specific history is not available from the full-game log. Full-game totals are never substituted.",updatedAt:new Date().toISOString()});const before=req.nextUrl.searchParams.get("before");const blocks=await Promise.all(basketballHistorySeasons("nba",before).map(async s=>{try{return parse(await fetchLog(id,s),s,market)}catch{return[]}}));const points=basketballHistoryWindow(blocks.flat(),before,Date.now(),req.nextUrl.searchParams.get('view')==='head-to-head'?200:20);return NextResponse.json({success:true,supported:true,points,statLabel:LABELS[market]||"Player History",message:points.length?"":"No verified game-by-game history was returned.",updatedAt:new Date().toISOString()})}
 
 export async function GET(req:NextRequest,context:{params:Promise<{id:string}>}){
- const {id}=await context.params;const response=await loadHistory(req,context);
+ const {id}=await context.params;
+ const market=req.nextUrl.searchParams.get('market')||'points',before=req.nextUrl.searchParams.get('before');
+ const receipt=req.nextUrl.searchParams.get('inputReceipt'),gameId=req.nextUrl.searchParams.get('gameId');
+ if(before&&Number.isFinite(Date.parse(before))&&req.nextUrl.searchParams.get('view')!=='head-to-head'){
+  const cached=await readPregameBoard(workerRuntimeBinding('VINEXT_KV_CACHE'),'nba',market,dashboardDay(before)).catch(()=>null);
+  const matching=(cached?.board?.rows||[]).filter((r:any)=>String(r.playerId)===id&&r.market===market&&
+   Date.parse(r.gameTime)===Date.parse(before)&&(!gameId||String(r.gameId)===gameId)&&
+   (!receipt||r.researchForecast?.inputReceipt?.sha256===receipt));
+  const row=matching.length===1?matching[0]:null;
+  const history=validatedNbaSupportingHistory(row,market);
+  const headers={'Cache-Control':'no-store'};
+  const statLabel=LABELS[market as NbaMarketKey]||'Player History';
+  if(history)return NextResponse.json({...history,historySource:'forecast_input_receipt',historyState:'available',statLabel,
+   updatedAt:row.researchForecast.calculatedAt},{headers});
+  if(receipt||matching.length>1||row?.researchForecast?.supportingHistory!=null){
+   const invalid=row?.researchForecast?.supportingHistory!=null||matching.length>1;
+   return NextResponse.json({success:true,supported:true,historyState:invalid?'invalid':'absent',
+    points:[],statLabel,message:'Verified history for this forecast is unavailable.'},{headers});
+  }
+ }
+ const response=await loadHistory(req,context);
  if(req.nextUrl.searchParams.get('view')==='head-to-head')return response;
  return retainPlayerHistory('nba',id,req.nextUrl.searchParams.get('market')||'points',response,req.nextUrl.searchParams.get('before'));
 }
