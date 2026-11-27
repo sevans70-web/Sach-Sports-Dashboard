@@ -5,9 +5,64 @@ import {readDurableHistory,writeDurableHistory} from '@/lib/durable-history';
 import {visitHistorySnapshots,torontoHistoryDay} from '@/lib/history-archive';
 import {withHistoryLock} from '@/lib/history-lock';
 import {verifiedPropQuote} from '@/lib/prop-integrity';
+import {createNbaSlateBoardIfAbsent} from '../scripts/history-cloud.mjs';
+import {publicNbaRanking} from '@/lib/public-card-metrics';
 
 export type NbaSlateBoard={version:1;day:string;market:string;capturedAt:string;lockAt:string;rows:any[];recoveredAt?:string};
 const stream=(market:string)=>'slate_board_'+market;
+type SlateFixture={gameId:string;tipoff:string|null;state?:string};
+
+export async function persistCapturedNbaSlateBoard(payload:any,games:SlateFixture[],day:string,market:string){
+ const now=Date.now(),boundary=nbaSlateBoundary(games,now,day);
+ const lock=boundary.lockAt;
+ if(lock===null||payload?.success!==true||payload.market!==market||payload.boardDay!==day||
+    payload.boardUnavailable||payload.boardFrozen||payload.cached||
+    payload.dataState==='stale'||payload.dataState==='unavailable'||
+    payload.publicRankingCount!==payload.rows?.length)throw Error('nba_capture_board_unverified');
+ if(now>=lock)throw Error('nba_capture_board_locked');
+ if(boundary.games.some(game=>game.state==='in'||game.state==='post'))throw Error('nba_capture_board_locked');
+ const fixtures=new Map<string,number>(boundary.games.map(game=>[String(game.gameId),Date.parse(game.tipoff)]));
+ const hasCompleteRows=(rows:any[],captured:number)=>{
+  if(!Array.isArray(rows)||!rows.length||rows.length>25)return false;
+  const identities=new Set<string>();
+  const quotePeriod=market.startsWith('q1_')?'q1':'game';
+  return rows.every((row,index)=>{
+   const tipoff=Date.parse(row?.gameTime),quoteTime=Date.parse(row?.quoteUpdatedAt);
+   const identity=String(row?.gameId)+'|'+String(row?.playerId);
+   if(!row||row.sport!=='nba'||row.market!==market||row.rank!==index+1||
+      !row.quoteId||row.quoteVerified!==true||row.boardFrozen||row.frozen||row.lockedAtKickoff||
+      (row.quoteMarket&&row.quoteMarket!==market)||(row.quotePeriod&&row.quotePeriod!==quotePeriod)||
+      fixtures.get(String(row.gameId))!==tipoff||quoteTime>captured||
+      identities.has(identity)||!verifiedPropQuote(row,captured)||!publicNbaRanking(row,captured))return false;
+   const forecast=row.researchForecast;
+   if(forecast?.status==='available'||forecast?.modelSelection){
+    const times=[forecast.calculatedAt,forecast.modelSelection?.calculatedAt].filter(value=>value!=null);
+    if(!times.length||times.some(value=>{
+     const decided=Date.parse(value);
+     return !Number.isFinite(decided)||decided>captured||decided>=lock;
+    }))return false;
+   }
+   identities.add(identity);
+   return true;
+  });
+ };
+ if(!hasCompleteRows(payload.rows,now))throw Error('nba_capture_board_unverified');
+ const candidate:NbaSlateBoard={version:1,day,market,capturedAt:new Date(now).toISOString(),
+  lockAt:new Date(lock).toISOString(),rows:payload.rows};
+ let stored:unknown;
+ try{stored=await createNbaSlateBoardIfAbsent(candidate);}
+ catch(error){
+  if(error instanceof Error&&error.message==='nba_capture_board_locked')throw error;
+  throw Error('nba_capture_board_storage_unverified');
+ }
+ const original=Array.isArray(stored)&&stored.length===1?stored[0]:null;
+ const captured=Date.parse(original?.capturedAt);
+ if(original?.version!==1||original.day!==day||original.market!==market||Date.parse(original.lockAt)!==lock||
+    !Number.isFinite(captured)||captured>=lock||captured>Date.now()||
+    !hasCompleteRows(original.rows,captured))throw Error('nba_capture_board_storage_unverified');
+ return {...payload,rows:original.rows,publicRankingCount:original.rows.length,boardSaved:true,
+  boardCapturedAt:original.capturedAt,boardLockAt:original.lockAt,updatedAt:original.capturedAt};
+}
 export function nextNbaBoardDay(day=torontoHistoryDay()){
  const date=new Date(day+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+1);return date.toISOString().slice(0,10);
 }
@@ -48,9 +103,12 @@ export async function frozenNbaSlateBoard(market:string,games:any[],now=Date.now
   }
   const rows=nbaSlateRows(board?.day===boundary.day&&board?.market===market?board.rows:[],market,boundary.day).map(saved=>{
    const game=boundary.games.find(g=>String(g.gameId||g.id)===String(saved.gameId));
+   const evidence=saved.boardCapturedAt||saved.savedAt||saved.capturedAt
+    ?saved:{...saved,boardCapturedAt:board!.capturedAt};
+   const quoteVerified=verifiedPropQuote(evidence,now,true);
    return {...saved,rank:saved.rank,movement:'same',boardFrozen:true,frozen:true,lockedAtKickoff:true,boardCapturedAt:board!.capturedAt,boardDay:boundary.day,
     gameState:game?.state||saved.gameState,gameStatus:game?.status||saved.gameStatus,
-    quoteVerified:verifiedPropQuote(saved,now,true),sportsbookLine:verifiedPropQuote(saved,now,true)?saved.sportsbookLine:null};
+    quoteVerified,sportsbookLine:quoteVerified?saved.sportsbookLine:null};
   });
   return {success:true,market,rows,boardFrozen:true,boardDay:boundary.day,boardCapturedAt:board?.capturedAt||null,verifiedQuoteCount:rows.filter(r=>r.quoteVerified).length,modelSelectionCount:rows.filter(r=>r.researchForecast?.modelSelection).length,
    boardUnavailable:!board,source:board?`Saved pregame ${sport.toUpperCase()} daily board`:'No pregame board was recorded',updatedAt:new Date(now).toISOString()};

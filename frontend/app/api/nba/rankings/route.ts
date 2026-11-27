@@ -11,6 +11,7 @@ import {type NbaMarketKey,NBA_MARKETS,loadNbaGames} from "@/lib/nba";
 import {buildNbaMarketRankings} from "@/lib/nba-rankings-server";
 import {readDurableHistory} from '@/lib/durable-history';
 import {nbaBoardDates} from '@/lib/nba-board-window';
+import {dashboardJobContext} from '@/lib/dashboard-job-context';
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
@@ -23,7 +24,8 @@ export async function GET(req:NextRequest){
  const day=requested&&requested in dates?dates[requested as keyof typeof dates]:requested;
  if(day&&!Object.values(dates).includes(day))return NextResponse.json({success:false,rows:[],error:'Choose the previous slate, today or tomorrow.'},{status:400});
  const cachedDay=day||dates.today;
- const recent=currentNbaPregameSnapshot(await readNbaSlateBoard(market,cachedDay).catch(()=>null),market,cachedDay);
+ const captureOriginal=!requested&&req.nextUrl.hostname==='sach-capture.internal'&&Boolean(dashboardJobContext());
+ const recent=captureOriginal?null:currentNbaPregameSnapshot(await readNbaSlateBoard(market,cachedDay).catch(()=>null),market,cachedDay);
  // Do not block a live combination board while a new fitted model is
  // recalculated: the synchronous build can time out and return a 503 despite
  // a verifiably captured slate. The normal after() refresh below can update
@@ -77,8 +79,13 @@ export async function GET(req:NextRequest){
   }
  }
  let result,timer:ReturnType<typeof setTimeout>|undefined;
- try{result=await Promise.race([buildNbaMarketRankings(market,undefined,{day,deferHistory:work=>after(async()=>{try{await work()}catch(e){console.error('[nba history replication]',e)}})}),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Props timeout')),45000)})]);}
- catch{
+ try{result=await Promise.race([buildNbaMarketRankings(market,undefined,{day,captureOriginal,deferHistory:work=>after(async()=>{try{await work()}catch(e){console.error('[nba history replication]',e)}})}),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Props timeout')),45000)})]);}
+ catch(error){
+  if(captureOriginal){
+   const reason=error instanceof Error&&/^nba_capture_board_(locked|unverified|storage_unverified)$/.test(error.message)
+    ?error.message:'nba_capture_board_unverified';
+   return NextResponse.json({success:false,rows:[],reason},{status:503,headers:{'Cache-Control':'no-store'}});
+  }
   const fallbackDay=day||activeNbaBoardDay(await loadNbaGames(false).catch(()=>[]));
   if(market==='first_basket'){
    const board=(await readDurableHistory<any>('nba','featured_first_basket',fallbackDay,true))[0];
@@ -91,5 +98,7 @@ export async function GET(req:NextRequest){
   result={success:true,market,boardFrozen:true,boardDay:fallbackDay,boardCapturedAt:saved.capturedAt,source:'saved_pregame_board',warning:'Live updates are temporarily unavailable. Showing the saved pregame board.',rows:saved.rows.map((row:any)=>({...row,boardFrozen:true,boardCapturedAt:saved.capturedAt,boardDay:fallbackDay,gameStatus:'Live status unavailable'}))};
  }
  finally{if(timer)clearTimeout(timer);}
+ if(captureOriginal&&result?.success===true&&result.rows?.length&&!result.boardFrozen&&result.boardSaved!==true)
+  return NextResponse.json({success:false,rows:[],reason:'nba_capture_board_unverified'},{status:503,headers:{'Cache-Control':'no-store'}});
  return NextResponse.json(scopedNbaBoard(result,market,day||result?.boardDay||dates.today),{status:200,headers:{"Cache-Control":"no-store, no-cache, must-revalidate, max-age=0"}});
 }

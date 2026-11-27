@@ -4,7 +4,7 @@ import {updateTopPlayMarket} from '@/lib/top-plays-store';
 import {basketballMarketCoverage} from '@/lib/basketball-market-coverage';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {activeNbaBoardDay} from '@/lib/nba-board-window';
-import {frozenNbaSlateBoard,savePregameNbaSlateBoard,nextNbaBoardDay} from '@/lib/nba-slate-board';
+import {frozenNbaSlateBoard,persistCapturedNbaSlateBoard,savePregameNbaSlateBoard,nextNbaBoardDay} from '@/lib/nba-slate-board';
 import {prioritizeModelPicks,cardModelPick} from '@/lib/saved-model-pick';
 import {availablePregameRankings} from '@/lib/ranking-availability';
 import {selectNbaCandidates,recordedNbaCandidates} from '@/lib/nba-ranking-candidates';
@@ -72,7 +72,7 @@ async function fetchOwlsPayload(){
  if(!primary&&!extra?.data?.length)throw new Error("NBA odds feeds are unavailable.");
  const primaryWarning=owls.status==='rejected'?String(owls.reason?.message||'Primary NBA feed unavailable'):null;
  if(primary&&Date.now()-coverageLoggedAt>=5*60_000){coverageLoggedAt=Date.now();console.info('[nba-market-coverage]',JSON.stringify(basketballMarketCoverage(primary)));}
- return {data:[...(primary?.data||[]),...sgoNbaGames(extra)],feedWarning:[primaryWarning,extra?.warning].filter(Boolean).join('; ')||null};
+ return {data:[...(primary?.data||[]),...sgoNbaGames(extra)],primaryAvailable:Boolean(primary),feedWarning:[primaryWarning,extra?.warning].filter(Boolean).join('; ')||null};
 }
 
 function boardForMarket(payload:any,market:NbaMarketKey){return mainMarketQuotes(payload,market,p=>basketballMarketMatches(p,market))}
@@ -93,6 +93,7 @@ type SlateContext={
  games:any[];
  byName:Map<string,SlateRosterEntry[]>;
  entries:SlateRosterEntry[];
+ rostersComplete:boolean;
 };
 
 const g=globalThis as typeof globalThis&{
@@ -112,7 +113,7 @@ async function loadSlateContext(overview:any):Promise<SlateContext>{
  const games=rankingSlateGames(overview);
  const key=games.map((x:any)=>String(x.gameId||"")).join("|");
 
- if(!key)return {games:[],byName:new Map(),entries:[]};
+ if(!key)return {games:[],byName:new Map(),entries:[],rostersComplete:false};
 
  const hit=slateCache.get(key);
  if(hit&&Date.now()-hit.at<5*60*1000)return hit.value;
@@ -147,7 +148,8 @@ async function loadSlateContext(overview:any):Promise<SlateContext>{
    }
   }
 
-  const value={games,byName,entries};
+  const rostersComplete=blocks.every(({rosters})=>rosters.length===2&&rosters.every(roster=>roster.players.length>0));
+  const value={games,byName,entries,rostersComplete};
   slateCache.set(key,{at:Date.now(),value});
   return value;
  })().finally(()=>slateInflight.delete(key));
@@ -180,6 +182,7 @@ async function rowsForMarket(
  const board=boardForMarket(payload,market);
  const context=await loadSlateContext(overview);
  payload.quoteMatchAudit={quotes:board.length,fixtures:context.games.length,rosterPlayers:context.entries.length,matchedQuotes:board.filter((b:any)=>chooseRosterEntry(context.byName.get(cleanNbaName(b.playerName))||[],b)).length};
+ payload.rostersComplete=context.rostersComplete;
 
  if(!context.games.length)return [];
 
@@ -408,7 +411,8 @@ async function rowsForMarket(
 
 async function buildNbaMarketRankingsRaw(
  market:NbaMarketKey,
- shared?:{payload?:any;overview:any}
+ shared?:{payload?:any;overview:any},
+ captureOriginal=false,
 ){
  let fallbackDays=[torontoNbaDay(new Date())];
 
@@ -431,10 +435,15 @@ async function buildNbaMarketRankingsRaw(
   if(market==='first_basket'||market.startsWith('q1_'))try{
    const native=await getNbaFirstBasketSource();
    const futureGames=(overview.games||[]).filter((game:any)=>Date.parse(game.tipoff)>Date.now());
-   const currentRosters=await Promise.all(futureGames.map((game:any)=>loadNbaGameRosters(String(game.gameId)).catch(()=>[])));
+   const currentRosters=await Promise.all(
+    (futureGames as {gameId:string}[]).map(game=>loadNbaGameRosters(String(game.gameId)).catch(()=>[])),
+   );
    const players=currentRosters.flatMap(rosters=>rosters.flatMap((roster:any)=>roster.players.filter((p:any)=>p.active!==false).map((player:any)=>({...player,team:roster.teamAbbr,teamId:roster.teamId,teamLogo:roster.teamLogo}))));
    const rows=market==='first_basket'?nativeFirstBasketRows(native.payload,native.readAt,{...overview,players}):nativeNbaQuarterRows(native.payload,native.readAt,{...overview,players},market);
-   if(rows.length)return {success:true,market,rows,saved:false,verifiedPredictions:0,updatedAt:new Date().toISOString(),source:market==='first_basket'?'Current FanDuel first-basket prices':'Current FanDuel first-quarter prices',warning:market==='first_basket'?'Probabilities are sportsbook-implied, not an independent first-basket model.':'Authentic first-quarter quotes; quarter model will evaluate eligible players.'};
+   if(rows.length){
+    const rostersComplete=currentRosters.every(rosters=>rosters.length===2&&rosters.every(roster=>roster.players.length>0));
+    return {success:true,market,rows,saved:false,verifiedPredictions:0,updatedAt:new Date().toISOString(),source:market==='first_basket'?'Current FanDuel first-basket prices':'Current FanDuel first-quarter prices',warning:market==='first_basket'?'Probabilities are sportsbook-implied, not an independent first-basket model.':'Authentic first-quarter quotes; quarter model will evaluate eligible players.',...(captureOriginal?{captureSourceComplete:rostersComplete}:{})};
+   }
   }catch{}
 
   let payload:any=shared?.payload??{data:[]};
@@ -469,6 +478,7 @@ async function buildNbaMarketRankingsRaw(
     rows:ranked,
     saved,
     feedWarning:payload?.feedWarning||null,
+    ...(captureOriginal?{captureSourceComplete:payload.primaryAvailable===true&&payload.rostersComplete===true}:{}),
     quoteMatchAudit:payload?.quoteMatchAudit||null,
     verifiedPredictions:marketBacked.length,
     warning:market.startsWith("q1_")?"No quarter-trained projection is available. Q1 bookmaker quotes are shown as market evidence, not Sasha picks.":market==="first_basket"?"Probabilities are sportsbook-implied, not an independent first-basket model.":undefined,
@@ -481,7 +491,7 @@ async function buildNbaMarketRankingsRaw(
   }
 
   const empty=nbaEmptyMarket(market,owlsOk);
-  if(empty)return empty;
+  if(empty)return {...empty,captureSourceComplete:false};
   throw new Error(
    owlsOk
     ?`No eligible ${market} rows are available for the today/next NBA slate.`
@@ -529,6 +539,7 @@ async function buildNbaMarketRankingsRaw(
    success:fallback.length>0,
    market,
    rows:fallback,
+   captureSourceComplete:false,
    cached:fallback.length>0,
    source:
     fallback.length
@@ -608,14 +619,17 @@ import {basketballMarketMatches,verifiedNbaPrediction} from "@/lib/basketball-ma
 import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
 
 const recoveredCandidates=new Map<string,Promise<any[]>>();
-async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string;deferHistory?:(work:()=>Promise<any>)=>void}){
+type RankingOptions={day?:string;captureOriginal?:boolean;deferHistory?:(work:()=>Promise<any>)=>void};
+async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:RankingOptions){
  const persist=async(work:()=>Promise<any>)=>{if(options?.deferHistory){options.deferHistory(work);return;}await work();};
  const loaded=shared?.overview||await loadNbaOverview();
+ if(options?.captureOriginal&&(loaded.scheduleAvailable!==true||loaded.games.some((game:any)=>!Number.isFinite(Date.parse(game.tipoff)))))
+  throw Error('nba_capture_board_unverified');
  const activeDay=activeNbaBoardDay(loaded.games||[]);
  const day=options?.day||activeDay;
  const overview=day?{...loaded,games:(loaded.games||[]).filter((g:any)=>torontoNbaDay(g.tipoff||'')===day)}:loaded;
  const frozen=await frozenNbaSlateBoard(market,overview.games||[],Date.now(),day,'nba',options?.deferHistory);
- if(frozen&&market==='first_basket'){
+ if(frozen&&market==='first_basket'&&!options?.captureOriginal){
   // Fresh scorer prices for games that have not started are distinct from the
   // immutable daily model board. Never rewrite that board or backdate a price.
   const current=await buildNbaMarketRankingsRaw(market,{overview});
@@ -659,7 +673,8 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
   }])));
   return visible;
  }
- let raw=await buildNbaMarketRankingsRaw(market,{payload:shared?.payload,overview});
+ const {captureSourceComplete,...originalRankings}=await buildNbaMarketRankingsRaw(market,{payload:shared?.payload,overview},options?.captureOriginal);
+ let raw=originalRankings;
  if(day)raw={...raw,rows:(raw.rows||[]).filter((r:any)=>torontoNbaDay(r.gameTime)===day)};
  const eligible=availablePregameRankings(await attachBasketballPregameContext(raw,'nba'));
  const payload=await attachFittedResearchForecasts(guardRankingPayload(eligible,'nba'),'nba');
@@ -685,10 +700,16 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
  // An unpriced quarter has no saved betting evidence. Do not let an empty
  // featured archive write delay navigation or replace a prior quoted board.
  if(unpricedNbaQuarter(payload))return publicNbaBoard({...payload,boardDay:day});
- // Archive the complete candidate pool, including honest abstentions, then
- // choose the supported Top 25 and persist exactly that public pregame board.
- await persist(()=>archiveResearchBoards('nba',[payload]));
  const selected=publicNbaBoard({...payload,boardDay:day,rows:prioritizeModelPicks(payload.rows||[])});
+ if(options?.captureOriginal){
+  if(!selected.rows.length)return selected;
+  if(!captureSourceComplete)throw Error('nba_capture_board_unverified');
+  const original=await persistCapturedNbaSlateBoard(selected,overview.games,day,market);
+  await persist(()=>archiveResearchBoards('nba',[payload]));
+  return original;
+ }
+ // Preserve the complete research pool for foreground/legacy archive readers.
+ await persist(()=>archiveResearchBoards('nba',[payload]));
  return savePregameNbaSlateBoard(selected,overview.games||[],Date.now(),day,'nba',options?.deferHistory);
 }
 
@@ -698,7 +719,7 @@ function publicNbaBoard(payload:any){
   verifiedQuoteCount:rows.filter((r:any)=>r.quoteVerified===true).length,modelSelectionCount:rows.filter((r:any)=>cardModelPick(r)).length};
 }
 
-export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:{day?:string;deferHistory?:(work:()=>Promise<any>)=>void}){
+export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:RankingOptions){
  const result=await rankingResponse('nba|'+market+'|'+(options?.day||''),()=>buildNbaMarketRankingsUncached(market,shared,options),Boolean(shared));
  if(result?.boardFrozen){updateTopPlayMarket('nba',result);const work=()=>withHistoryLock('featured-nba-'+market,()=>writeDurableHistory('nba','featured_'+market,torontoNbaDay(new Date()),[{...result,featuredCapturedAt:new Date().toISOString()}]));if(options?.deferHistory)options.deferHistory(work);else await work();}
  return result;

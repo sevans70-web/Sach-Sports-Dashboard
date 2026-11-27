@@ -8,6 +8,9 @@ export function cloudHistoryReadOnly(){
 }
 export async function cloudRequest(route,options={}){
  if(cloudHistoryReadOnly()&&!['GET','HEAD'].includes((options.method??'GET').toUpperCase()))throw Error('Worker history storage is read-only');
+ return requestCloud(route,options);
+}
+async function requestCloud(route,options={}){
  const base=(process.env.SUPABASE_URL||process.env.NEXT_PUBLIC_SUPABASE_URL||'').replace(/\/$/,''),key=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY||process.env.SUPABASE_KEY;
  if(!base||!key)throw Error('Cloud history is not configured');
  const headers={apikey:key,'Content-Type':'application/json',...options.headers};if(!key.startsWith('sb_secret_'))headers.Authorization='Bearer '+key;
@@ -74,6 +77,24 @@ export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceU
  }
 }
 export async function readCloudDocument(sport,stream,day){const rows=await cloudRequest(`history_documents?select=payload,checksum&sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`,{signal:AbortSignal.timeout(2500)});const row=rows?.[0];if(!row)return null;if(checksum(row.payload)!==row.checksum)throw Error('Cloud history checksum mismatch');return row.payload;}
+
+// The scoped capture writer is insert-only even when shared Worker history is read-only.
+export async function createNbaSlateBoardIfAbsent(board){
+ const {day,market,capturedAt,lockAt}=board;
+ const captured=Date.parse(capturedAt),lock=Date.parse(lockAt);
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!/^[a-z0-9_]+$/.test(market)||
+    !Number.isFinite(captured)||!Number.isFinite(lock)||captured>=lock)throw Error('nba_capture_board_unverified');
+ const stream='slate_board_'+market,payload=[board];
+ const body=JSON.stringify({sport:'nba',stream,game_date:day,checksum:checksum(payload),payload,
+  source_bytes:Buffer.byteLength(JSON.stringify(payload)),source_updated_at:capturedAt});
+ const now=Date.now();
+ if(captured>now||now>=lock)throw Error('nba_capture_board_locked');
+ await requestCloud('history_documents?on_conflict=sport,stream,game_date',{
+  method:'POST',headers:{Prefer:'resolution=ignore-duplicates,return=minimal'},body,
+  signal:AbortSignal.timeout(Math.min(lock-now,2500)),sachNotAfter:lock,
+ });
+ return readCloudDocument('nba',stream,day);
+}
 /** Protected receipts use first-write-wins, even across Worker instances. */
 export async function createProtectedCloudReceipt(sport,stream,day,payload){
  if(!/^[a-z0-9_-]+$/i.test(sport)||!/^protected_[a-z0-9_-]+$/i.test(stream)||!/^\d{4}-\d{2}-\d{2}$/.test(day))throw Error('Invalid protected history scope');

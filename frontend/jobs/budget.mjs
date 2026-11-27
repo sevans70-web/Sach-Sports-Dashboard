@@ -23,6 +23,7 @@ export function installJobFetch(){
  globalThis[nativeKey]=wrapped;globalThis.fetch=wrapped;
 }
 async function jobFetch(scope,native,input,init={}){
+ const {sachNotAfter,...requestInit}=init;
  const url=input instanceof Request?input.url:String(input),u=new URL(url),method=String(init.method||(input instanceof Request?input.method:'GET')).toUpperCase();
  const headers=new Headers(init.headers||(input instanceof Request?input.headers:undefined));
  const cacheable=method==='GET'&&!headers.has('Authorization')&&!headers.has('x-api-key')&&!headers.has('cookie')&&!/key|token|auth/i.test(u.search)&&cacheTtl(url)>0&&scope.cacheSources;
@@ -36,7 +37,8 @@ async function jobFetch(scope,native,input,init={}){
    charge(scope,'provider_gate');const gate=await scope.gate(new URL(current).origin);if(gate>scope.now())fail(scope,'provider_cooldown',gate);
    charge(scope,official.has(new URL(current).hostname)?'official_http':new URL(current).hostname.endsWith('.supabase.co')?'history_http':'odds_or_other_http');
    const signal=AbortSignal.any([scope.abort.signal,...(init.signal?[init.signal]:input instanceof Request?[input.signal]:[])]);
-   response=await native(input instanceof Request&&current===url?new Request(input,{...init,method,headers,signal,redirect:'manual'}):current,{...init,method,headers,signal,redirect:'manual'});
+   if(sachNotAfter!==undefined&&Date.now()>=sachNotAfter)throw Error('nba_capture_board_locked');
+   response=await native(input instanceof Request&&current===url?new Request(input,{...requestInit,method,headers,signal,redirect:'manual'}):current,{...requestInit,method,headers,signal,redirect:'manual'});
    if(response.status===429){const until=retryTime(response.headers.get('Retry-After'),scope.now());await response.body?.cancel();charge(scope,'provider_gate');await scope.gate(new URL(current).origin,until);fail(scope,'provider_http_429',until);}
    if([301,302,303,307,308].includes(response.status)){
     const location=response.headers.get('Location');await response.body?.cancel();

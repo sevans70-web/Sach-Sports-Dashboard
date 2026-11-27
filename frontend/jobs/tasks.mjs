@@ -16,7 +16,12 @@ export async function capturePhase(job,services){
  requireCaptureBoard(job.board);
  if(job.phase==='rank'){
   const response=await route('/api/'+job.sport+'/rankings?market='+encodeURIComponent(job.market));
-  if(!response.ok)throw new JobDeferred('rankings_http_'+response.status);
+  if(!response.ok){
+   const failure=job.sport==='nba'?await response.json().catch(()=>null):null;
+   const code=failure?.reason;
+   throw new JobDeferred(typeof code==='string'&&/^nba_capture_board_(locked|unverified|storage_unverified)$/.test(code)
+    ?code:'rankings_http_'+response.status);
+  }
   const board=await response.json();
   requireCaptureBoard(board);
   if(board?.success===false||!Array.isArray(board?.rows))throw new JobDeferred('rankings_unavailable');
