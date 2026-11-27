@@ -41,6 +41,7 @@ async function jobFetch(scope,native,input,init={}){
    response=await native(input instanceof Request&&current===url?new Request(input,{...requestInit,method,headers,signal,redirect:'manual'}):current,{...requestInit,method,headers,signal,redirect:'manual'});
    if(response.status===429){const until=retryTime(response.headers.get('Retry-After'),scope.now());await response.body?.cancel();charge(scope,'provider_gate');await scope.gate(new URL(current).origin,until);fail(scope,'provider_http_429',until);}
    if([301,302,303,307,308].includes(response.status)){
+    if(init.redirect==='manual'||input instanceof Request&&input.redirect==='manual')return response;
     const location=response.headers.get('Location');await response.body?.cancel();
     if(!cacheable||!location||redirects>=3)throw Error('job_source_redirect_rejected');
     const next=new URL(location,current);if(!official.has(next.hostname)||next.username||next.password)throw Error('job_source_redirect_rejected');current=next.href;continue;

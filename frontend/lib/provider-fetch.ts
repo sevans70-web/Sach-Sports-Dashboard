@@ -11,6 +11,7 @@ export function providerCacheStatus(){return {entries:cache.size,bytes:state.byt
 export async function providerFetch(input:string | URL | Request, init?:RequestInit):Promise<Response> {
   const job=(globalThis as typeof globalThis&{__sachDashboardJobContext?:()=>{id:string;assertActive:()=>void}|undefined}).__sachDashboardJobContext?.();job?.assertActive();
   const url = String(input),pendingKey=(job?'dashboard-job:'+job.id+'|':'')+url;
+  const isolatedNbaJob=Boolean(job&&url.includes('/sports/basketball/nba/'));
   const host = new URL(url).hostname;
   const nhlStarted=state.nhlStarted??=new Map<string,number>();
   const publicProvider = ["site.api.espn.com", "site.web.api.espn.com", "api-web.nhle.com", "api.nhle.com"].includes(host);
@@ -18,7 +19,7 @@ export async function providerFetch(input:string | URL | Request, init?:RequestI
     return globalThis.fetch(input, {...init, signal:init?.signal ?? AbortSignal.timeout(10_000)});
   }
   for(const [key,value] of cache)if(value.expires<=Date.now())removeCached(key);
-  const hit=cache.get(url);
+  const hit=isolatedNbaJob?undefined:cache.get(url);
   if(hit && hit.expires>Date.now()) return responseFrom(hit);
   const hockey=host==='api-web.nhle.com'||host==='api.nhle.com';
   if(hockey&&pending.has(pendingKey)&&Date.now()-(nhlStarted.get(pendingKey)||0)>=8500){pending.delete(pendingKey);nhlStarted.delete(pendingKey);}
@@ -44,8 +45,9 @@ export async function providerFetch(input:string | URL | Request, init?:RequestI
       if(retry.ok){await response.body?.cancel().catch(()=>{});response=retry;}else await retry.body?.cancel().catch(()=>{});
     }
     const body=await response.text();
+    options.signal.throwIfAborted();
     const value={body,status:response.status,headers:response.headers};
-    if(response.ok&&(!hockey||pending.get(pendingKey)===work)){
+    if(response.ok&&!isolatedNbaJob&&(!hockey||pending.get(pendingKey)===work)){
       const ttl=/statistics|\/stats[/?]|\/roster|byathlete/.test(url)||host==='api-web.nhle.com'&&/\/player\/\d+\/game-log\//.test(url)?15*60_000:30_000;
       // Bound disposable response memory, not the durable prediction store.
       const bytes=body.length*2;

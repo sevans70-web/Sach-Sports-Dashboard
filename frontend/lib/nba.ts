@@ -1,4 +1,6 @@
-import {providerFetch as fetch} from "@/lib/provider-fetch";
+import {nbaSourceFetch} from "@/lib/nba-source-fetch";
+import {dashboardJobContext} from '@/lib/dashboard-job-context';
+import {nbaRankingSignal} from '@/lib/nba-ranking-work';
 import {schedulePayloads} from "@/lib/schedule-payloads";
 import {statNumber} from "@/lib/provider-fetch";
 export const NBA_SEASON = "2026"; // 2025-26 completed regular-season baseline
@@ -37,30 +39,66 @@ function categoryLabels(payload:JsonRecord):string[][]{return list(payload.categ
 function flattenStats(entry:JsonRecord,fallback:string[][]):Map<string,number>{const out=new Map<string,number>();list(entry.categories).forEach((v,i)=>{const c=record(v);const own=list(c.names??c.labels);const labels=own.length?own.map(text):(fallback[i]??[]);const totals=c.values??c.totals;if(totals&&typeof totals==="object"&&!Array.isArray(totals)){Object.entries(totals as JsonRecord).forEach(([label,value])=>{const n=number(value);if(n!==null)out.set(normalized(label),n)});return}list(totals).forEach((value,index)=>{const n=number(value);if(n!==null&&labels[index])out.set(normalized(labels[index]),n)})});return out}
 function parsePlayers(payloads:JsonRecord[]):NbaPlayer[]{const players=new Map<number,NbaPlayer>();payloads.forEach(payload=>{const labels=categoryLabels(payload);list(payload.athletes).forEach(v=>{const entry=record(v),athlete=record(entry.athlete);const id=number(text(athlete.id??athlete.uid).split(":").at(-1)?.split("~").at(-1));const name=text(athlete.displayName??athlete.fullName);if(id===null||!name)return;const team=record(athlete.team),stats=flattenStats(entry,labels),games=firstStat(stats,["gamesplayed","games","gp"]);players.set(id,{playerId:id,playerName:name,team:text(athlete.teamShortName??athlete.teamAbbreviation??team.abbreviation)||"—",gamesPlayed:games,minutesPerGame:perGame(stats,"minutesPerGame",games),pointsPerGame:perGame(stats,"pointsPerGame",games),reboundsPerGame:perGame(stats,"reboundsPerGame",games),assistsPerGame:perGame(stats,"assistsPerGame",games),threesPerGame:perGame(stats,"threesPerGame",games),stealsPerGame:perGame(stats,"stealsPerGame",games),blocksPerGame:perGame(stats,"blocksPerGame",games)})})});return [...players.values()]}
 const jsonCache=new Map<string,{at:number;value:JsonRecord}>(),jsonPending=new Map<string,Promise<JsonRecord>>();
-async function fetchJson(url:string,revalidate:number):Promise<JsonRecord>{
- const hit=jsonCache.get(url);if(hit&&Date.now()-hit.at<revalidate*1000)return hit.value;
- let work=jsonPending.get(url);if(!work){work=(async()=>{const response=await fetch(url,{headers:{Accept:"application/json","User-Agent":"Sach-Sports/1.0"},cache:"no-store"});if(!response.ok)throw new Error(`Provider returned ${response.status}`);const value=record(await response.json());if(jsonCache.size>=512)jsonCache.delete(jsonCache.keys().next().value!);jsonCache.set(url,{at:Date.now(),value});return value;})().finally(()=>jsonPending.delete(url));jsonPending.set(url,work)}
+async function fetchJson(url:string,revalidate:number,caller?:AbortSignal):Promise<JsonRecord>{
+ const job=dashboardJobContext(),signal=nbaRankingSignal(caller);
+ job?.assertActive();
+ signal?.throwIfAborted();
+ const hit=!job?jsonCache.get(url):undefined;
+ if(hit&&Date.now()-hit.at<revalidate*1000)return hit.value;
+ const read=async()=>{
+  const value:JsonRecord=await nbaSourceFetch(url,input=>{
+   const payload=record(input);
+   if(new URL(url).pathname.endsWith('/scoreboard')){
+    if(!Array.isArray(payload.events))throw Error('NBA schedule source returned an invalid scoreboard');
+    for(const event of payload.events)nbaScoreboardGame(event);
+   }
+   return payload;
+  },signal);
+  if(!job){
+   if(jsonCache.size>=512)jsonCache.delete(jsonCache.keys().next().value!);
+   jsonCache.set(url,{at:Date.now(),value});
+  }
+  return value;
+ };
+ // A caller-owned abort cannot end another reader's pending request.
+ if(job||signal)return read();
+ const pending=jsonPending.get(url);if(pending)return pending;
+ const work=read().finally(()=>jsonPending.delete(url));
+ jsonPending.set(url,work);
  return work;
 }
 async function loadPlayers():Promise<NbaPlayer[]>{const base={region:"us",lang:"en",contentorigin:"espn",isqualified:"false",limit:"500",sort:"offensive.avgPoints:desc",season:NBA_SEASON,seasontype:"2"};const first=await fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:"1"})}`,21600);const pages=Math.min(number(record(first.pagination).pages)??1,8);const remaining=await Promise.all(Array.from({length:Math.max(0,pages-1)},(_,i)=>fetchJson(`${STATS_URL}?${new URLSearchParams({...base,page:String(i+2)})}`,21600)));return parsePlayers([first,...remaining])}
 function dateKey(date:Date):string{return date.toISOString().slice(0,10).replaceAll("-","")}
 function competitor(c:JsonRecord,side:"home"|"away"):JsonRecord{return record(list(c.competitors).find(v=>text(record(v).homeAway)===side))}
-export async function loadNbaGames(fullCalendar=true):Promise<NbaGame[]>{
+function nbaScoreboardGame(value:unknown):NbaGame{
+ const event=record(value),id=text(event.id),tipoff=text(event.date),c=record(list(event.competitions)[0]);
+ const away=competitor(c,"away"),home=competitor(c,"home"),at=record(away.team),ht=record(home.team);
+ const awayAbbr=text(at.abbreviation),homeAbbr=text(ht.abbreviation),status=record(record(event.status).type);
+ if(!/^\d+$/.test(id)||!Number.isFinite(Date.parse(tipoff))||!awayAbbr||!homeAbbr||awayAbbr===homeAbbr)
+  throw Error('NBA schedule source returned an invalid fixture');
+ return {gameId:id,tipoff,awayTeam:text(at.displayName)||awayAbbr,awayAbbr,awayLogo:text(at.logo)||null,awayScore:number(away.score),
+  homeTeam:text(ht.displayName)||homeAbbr,homeAbbr,homeLogo:text(ht.logo)||null,homeScore:number(home.score),
+  status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(event.status).displayClock)};
+}
+export async function loadNbaGames(fullCalendar=true,signal?:AbortSignal):Promise<NbaGame[]>{
  // A 48-request fan-out overran the provider during iPhone Game Slate
  // navigation, intermittently emptying the entire calendar. Keep a rolling
  // two-week schedule (previous two days plus next 14 days); one day at a time
  // remains the provider's supported unit. Current boards use the shorter span.
  const now=new Date();
  const dates=Array.from({length:fullCalendar?16:8},(_,i)=>{const d=new Date(now);d.setUTCDate(d.getUTCDate()-2+i);return dateKey(d)});
- const payloads=await schedulePayloads(dates.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&limit=100`,60)),"NBA",p=>Array.isArray(p.events));
- const seen=new Set<string>();const games:NbaGame[]=[];
- for(const payload of payloads)for(const v of list(payload.events)){
-  const e=record(v),id=text(e.id);if(!id||seen.has(id))continue;
-  const c=record(list(e.competitions)[0]);if(!Object.keys(c).length)continue;
-  const away=competitor(c,"away"),home=competitor(c,"home"),at=record(away.team),ht=record(home.team),status=record(record(e.status).type);
-  seen.add(id);games.push({gameId:id,tipoff:text(e.date)||null,awayTeam:text(at.displayName)||"Away",awayAbbr:text(at.abbreviation),awayLogo:text(at.logo)||null,awayScore:number(away.score),homeTeam:text(ht.displayName)||"Home",homeAbbr:text(ht.abbreviation),homeLogo:text(ht.logo)||null,homeScore:number(home.score),status:text(status.shortDetail??status.description)||"Scheduled",state:text(status.state)||"pre",detail:text(record(e.status).displayClock)});
+ const payloads=await schedulePayloads(dates.map(d=>fetchJson(`${SCOREBOARD_URL}?dates=${d}&limit=100`,30,signal)),"NBA",p=>Array.isArray(p.events));
+ const fixtures=new Map<string,NbaGame>();
+ for(const payload of payloads)for(const value of list(payload.events)){
+  const game=nbaScoreboardGame(value),prior=fixtures.get(game.gameId);
+  if(prior&&(Date.parse(prior.tipoff!)!==Date.parse(game.tipoff!)||prior.awayAbbr!==game.awayAbbr||prior.homeAbbr!==game.homeAbbr)){
+   for(const d of dates)jsonCache.delete(`${SCOREBOARD_URL}?dates=${d}&limit=100`);
+   throw Error('NBA schedule source returned conflicting fixtures');
+  }
+  if(!prior)fixtures.set(game.gameId,game);
  }
- if(!fullCalendar&&!games.some(g=>g.state!=='post'&&Date.parse(g.tipoff||'')>Date.now()))return loadNbaGames(true);
+ const games=[...fixtures.values()];
+ if(!fullCalendar&&!games.some(g=>g.state!=='post'&&Date.parse(g.tipoff||'')>Date.now()))return loadNbaGames(true,signal);
  return games.sort((a,b)=>new Date(a.tipoff||0).getTime()-new Date(b.tipoff||0).getTime());
 }
 export async function loadNbaOverview():Promise<NbaOverview>{const warnings:string[]=[];const [pr,gr]=await Promise.allSettled([loadPlayers(),loadNbaGames(false)]);const players=pr.status==="fulfilled"?pr.value:[],games=gr.status==="fulfilled"?gr.value:[];if(pr.status==="rejected")warnings.push("NBA player statistics are temporarily unavailable.");if(gr.status==="rejected")warnings.push("The NBA schedule is temporarily unavailable.");return{scheduleAvailable:gr.status==='fulfilled',season:NBA_SEASON,updatedAt:new Date().toISOString(),players,games,warnings}}

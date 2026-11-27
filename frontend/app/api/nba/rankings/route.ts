@@ -12,6 +12,7 @@ import {buildNbaMarketRankings} from "@/lib/nba-rankings-server";
 import {readDurableHistory} from '@/lib/durable-history';
 import {nbaBoardDates} from '@/lib/nba-board-window';
 import {dashboardJobContext} from '@/lib/dashboard-job-context';
+import {runNbaRankingWork} from '@/lib/nba-ranking-work';
 
 export const dynamic="force-dynamic";
 export const revalidate=0;
@@ -24,7 +25,8 @@ export async function GET(req:NextRequest){
  const day=requested&&requested in dates?dates[requested as keyof typeof dates]:requested;
  if(day&&!Object.values(dates).includes(day))return NextResponse.json({success:false,rows:[],error:'Choose the previous slate, today or tomorrow.'},{status:400});
  const cachedDay=day||dates.today;
- const captureOriginal=!requested&&req.nextUrl.hostname==='sach-capture.internal'&&Boolean(dashboardJobContext());
+ const job=dashboardJobContext();
+ const captureOriginal=!requested&&req.nextUrl.hostname==='sach-capture.internal'&&Boolean(job);
  const recent=captureOriginal?null:currentNbaPregameSnapshot(await readNbaSlateBoard(market,cachedDay).catch(()=>null),market,cachedDay);
  // Do not block a live combination board while a new fitted model is
  // recalculated: the synchronous build can time out and return a 503 despite
@@ -35,7 +37,7 @@ export async function GET(req:NextRequest){
   return forecast?.status==='available'&&
    ['overProbability','underProbability','pushProbability'].every(key=>typeof prices?.[key]==='number'&&Number.isFinite(prices[key]));
  }));
- if(recent&&!needsForecastRefresh&&(day||activeNbaBoardDay(await loadNbaGames(false).catch(()=>[]))===cachedDay)){
+ if(recent&&!needsForecastRefresh&&(day||activeNbaBoardDay(await loadNbaGames(false,req.signal).catch(()=>[]))===cachedDay)){
   let visible=await attachBasketballAvailability(recent,'nba');
   if(visible.rows.length){
    // On Cloudflare staging, legacy history documents are deliberately
@@ -73,29 +75,36 @@ export async function GET(req:NextRequest){
    // The capture Worker already rotates this market on its own schedule.
    // A second refresh would consume the same scheduled invocation's budget.
    if(req.nextUrl.hostname!=='sach-capture.internal'&&!(combination&&cloudHistoryReadOnly())){
-    after(async()=>{try{await buildNbaMarketRankings(market,undefined,{day})}catch(e){console.error('[nba background refresh]',e)}});
+    after(async()=>{try{await runNbaRankingWork(()=>buildNbaMarketRankings(market,undefined,{day}))}catch(e){console.error('[nba background refresh]',e)}});
    }
    return NextResponse.json(scopedNbaBoard(visible,market,cachedDay),{headers:{'Cache-Control':'no-store'}});
   }
  }
  let result,timer:ReturnType<typeof setTimeout>|undefined;
- try{result=await Promise.race([buildNbaMarketRankings(market,undefined,{day,captureOriginal,deferHistory:work=>after(async()=>{try{await work()}catch(e){console.error('[nba history replication]',e)}})}),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Props timeout')),45000)})]);}
+ const build=()=>buildNbaMarketRankings(market,undefined,{day,captureOriginal,deferHistory:work=>after(async()=>{try{await work()}catch(e){console.error('[nba history replication]',e)}})});
+ try{
+  result=job
+   ?await Promise.race([build(),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Props timeout')),45000)})])
+   :await runNbaRankingWork(build,req.signal);
+ }
  catch(error){
   if(captureOriginal){
    const reason=error instanceof Error&&/^nba_capture_board_(locked|unverified|storage_unverified)$/.test(error.message)
     ?error.message:'nba_capture_board_unverified';
    return NextResponse.json({success:false,rows:[],reason},{status:503,headers:{'Cache-Control':'no-store'}});
   }
-  const fallbackDay=day||activeNbaBoardDay(await loadNbaGames(false).catch(()=>[]));
+  const unavailable=()=>NextResponse.json({success:false,market,rows:[],dataState:'unavailable',error:'NBA player props are temporarily unavailable.'},{status:503,headers:{'Cache-Control':'no-store'}});
+  if(req.signal?.aborted)return unavailable();
+  const fallbackDay=day||activeNbaBoardDay(await loadNbaGames(false,req.signal).catch(()=>[]));
   if(market==='first_basket'){
    const board=(await readDurableHistory<any>('nba','featured_first_basket',fallbackDay,true))[0];
    const rows=nbaSlateRows(board?.rows||[],market,fallbackDay).filter((row:any)=>row.market==='first_basket'&&row.lineType==='scorer'&&Date.parse(row.gameTime)>Date.now()&&verifiedPropQuote(row));
-   if(rows.length)return NextResponse.json(scopedNbaBoard({success:true,market,boardDay:fallbackDay,rows,boardFrozen:false,source:'Recent verified first-basket prices',warning:'Refreshing scorer prices; showing recent verified quotes.'},market,fallbackDay),{headers:{'Cache-Control':'no-store'}});
+   if(rows.length)return NextResponse.json(scopedNbaBoard({success:true,market,boardDay:fallbackDay,rows,boardFrozen:false,dataState:'stale',source:'Recent verified first-basket prices',warning:'Refreshing scorer prices; showing recent verified quotes.'},market,fallbackDay),{headers:{'Cache-Control':'no-store'}});
   }
   const saved=(await readDurableHistory<any>('nba','slate_board_'+market,fallbackDay,true))[0];
   const captured=Date.parse(saved?.capturedAt||''),lock=Date.parse(saved?.lockAt||'');
-  if(saved?.day!==(fallbackDay)||saved?.market!==market||!saved?.rows?.length||captured>Date.now()||!Number.isFinite(captured)||!Number.isFinite(lock)||captured>=lock||Date.now()<lock)return NextResponse.json({success:false,rows:[],error:'Player props are temporarily unavailable. Please retry.'},{status:503,headers:{'Cache-Control':'no-store'}});
-  result={success:true,market,boardFrozen:true,boardDay:fallbackDay,boardCapturedAt:saved.capturedAt,source:'saved_pregame_board',warning:'Live updates are temporarily unavailable. Showing the saved pregame board.',rows:saved.rows.map((row:any)=>({...row,boardFrozen:true,boardCapturedAt:saved.capturedAt,boardDay:fallbackDay,gameStatus:'Live status unavailable'}))};
+  if(saved?.day!==(fallbackDay)||saved?.market!==market||!saved?.rows?.length||captured>Date.now()||!Number.isFinite(captured)||!Number.isFinite(lock)||captured>=lock||Date.now()<lock)return unavailable();
+  result={success:true,market,boardFrozen:true,boardDay:fallbackDay,boardCapturedAt:saved.capturedAt,dataState:'stale',source:'saved_pregame_board',warning:'Live updates are temporarily unavailable. Showing the saved pregame board.',rows:saved.rows.map((row:any)=>({...row,boardFrozen:true,boardCapturedAt:saved.capturedAt,boardDay:fallbackDay,gameStatus:'Live status unavailable'}))};
  }
  finally{if(timer)clearTimeout(timer);}
  if(captureOriginal&&result?.success===true&&result.rows?.length&&!result.boardFrozen&&result.boardSaved!==true)

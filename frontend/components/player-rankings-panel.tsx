@@ -1450,7 +1450,14 @@ async function networkJson(url: string) {
 
   const payload = await response.json();
   if(!payload||payload.success===false)throw new Error(payload?.error||'Ranking data is unavailable');
-  rankingJsonCache.set(url, { at: Date.now(), payload });
+  const nba=url.startsWith('/api/nba/rankings?');
+  if(nba&&(payload.boardUnavailable===true||payload.dataState==='unavailable')){
+    throw new Error('The original NBA ranking board is unavailable.');
+  }
+  if(nba&&payload.market!==new URLSearchParams(url.split('?')[1]).get('market')){
+    throw new Error('The NBA ranking response belongs to another market.');
+  }
+  if(!nba||payload.dataState!=='stale')rankingJsonCache.set(url, { at: Date.now(), payload });
   // Warm the visible preview while the user is still on the prior category.
   for (const row of (payload?.rows || []).slice(0,15)) {
     if (row.headshot) void prepareRankingImage(row.headshot);
@@ -1792,6 +1799,7 @@ export function PlayerRankingsPanel({
   const cardsRegionRef=useRef<HTMLDivElement|null>(null);
   const [error, setError] = useState("");
   const [nhlCoverage,setNhlCoverage]=useState<{market:string;slate:string;message:string}|null>(null);
+  const [nbaCoverage,setNbaCoverage]=useState<{market:string;slate:string;message:string}|null>(null);
   const [league, setLeague] = useState("eng.1");
   const [cfbSlate, setCfbSlate] = useState<CfbSlateKey>("all");
   const [nbaSlate,setNbaSlate]=useState("active");
@@ -2143,7 +2151,10 @@ export function PlayerRankingsPanel({
           const requestedDay=new URL(rankingUrl,window.location.origin).searchParams.get('day');
           const scoped=sport==='nba'?scopedNbaBoard(rankingPayload,requestedMarket,requestedDay||rankingPayload?.boardDay||nbaFixtureDay(new Date())):rankingPayload;
           rawRows = scoped?.rows || [];
-          if(sport==="nba")setNbaBoardLabel(scoped?.boardDay||"");
+          if(sport==="nba"){
+            setNbaBoardLabel(scoped?.boardDay||"");
+            setNbaCoverage({market:requestedMarket,slate:nbaSlate,message:scoped?.dataState==='stale'?'Live updates are unavailable. Showing the last verified NBA board.':''});
+          }
           rawDropped = scoped?.dropped || [];
 
           const performanceUrl =
@@ -2320,12 +2331,13 @@ export function PlayerRankingsPanel({
         if (!alive || controller.signal.aborted || requestId!==rankingRequestSeq.current) return;
         // Keep the last good board on screen. A background refresh failure
         // should never turn the ranking section into a blank panel.
+        const nbaBoardError=sport==='nba'&&cause instanceof Error&&/^The (original NBA ranking board is unavailable|NBA ranking response belongs to another market)\.$/.test(cause.message);
         setError(
-          cause instanceof Error
+          nbaBoardError ? cause.message : cause instanceof Error
             ? /abort|timeout|timed out/i.test(cause.message) ? "Rankings are taking longer than expected. Retrying…" : "Player rankings are temporarily unavailable. Retrying…"
             : "Player rankings are temporarily unavailable."
         );
-        retryTimer=setTimeout(run,5000);
+        if(!nbaBoardError)retryTimer=setTimeout(run,5000);
       } finally {
         running=false;
         if (
@@ -2702,6 +2714,7 @@ export function PlayerRankingsPanel({
       ) : null}
 
       {sport==='nhl'&&!loading&&!error&&nhlCoverage?.market===market.key&&nhlCoverage.slate===nhlSlate&&nhlCoverage.message?<p role="status">{nhlCoverage.message}</p>:null}
+      {sport==='nba'&&!loading&&!error&&nbaCoverage?.market===market.key&&nbaCoverage.slate===nbaSlate&&nbaCoverage.message?<p role="status">{nbaCoverage.message}</p>:null}
       <div className={styles.cards} ref={cardsRegionRef} style={loading&&pendingHeight?{minHeight:pendingHeight}:undefined} aria-busy={loading}>
         {loading&&!displayCards.length?<div className={styles.skeletonStack} aria-label={`Loading ${market.label} rankings`}>
           {[0,1,2].map(item=><div className={styles.skeletonCard} key={item}><i/><span/><b/><em/></div>)}

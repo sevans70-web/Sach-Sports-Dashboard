@@ -5,6 +5,7 @@ import {basketballMarketCoverage} from '@/lib/basketball-market-coverage';
 import {attachFittedResearchForecasts} from '@/lib/live-model-forecast';
 import {activeNbaBoardDay} from '@/lib/nba-board-window';
 import {frozenNbaSlateBoard,persistCapturedNbaSlateBoard,savePregameNbaSlateBoard,nextNbaBoardDay} from '@/lib/nba-slate-board';
+import {assertNbaRankingActive} from '@/lib/nba-ranking-work';
 import {prioritizeModelPicks,cardModelPick} from '@/lib/saved-model-pick';
 import {availablePregameRankings} from '@/lib/ranking-availability';
 import {selectNbaCandidates,recordedNbaCandidates} from '@/lib/nba-ranking-candidates';
@@ -621,7 +622,7 @@ import {getSgoSupplement,sgoNbaGames} from "@/lib/sgo-supplement";
 const recoveredCandidates=new Map<string,Promise<any[]>>();
 type RankingOptions={day?:string;captureOriginal?:boolean;deferHistory?:(work:()=>Promise<any>)=>void};
 async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:RankingOptions){
- const persist=async(work:()=>Promise<any>)=>{if(options?.deferHistory){options.deferHistory(work);return;}await work();};
+ const persist=async(work:()=>Promise<any>)=>{assertNbaRankingActive();if(options?.deferHistory){options.deferHistory(work);return;}await work();};
  const loaded=shared?.overview||await loadNbaOverview();
  if(options?.captureOriginal&&(loaded.scheduleAvailable!==true||loaded.games.some((game:any)=>!Number.isFinite(Date.parse(game.tipoff)))))
   throw Error('nba_capture_board_unverified');
@@ -701,6 +702,7 @@ async function buildNbaMarketRankingsUncached(market:NbaMarketKey,shared?:{paylo
  // featured archive write delay navigation or replace a prior quoted board.
  if(unpricedNbaQuarter(payload))return publicNbaBoard({...payload,boardDay:day});
  const selected=publicNbaBoard({...payload,boardDay:day,rows:prioritizeModelPicks(payload.rows||[])});
+ assertNbaRankingActive();
  if(options?.captureOriginal){
   if(!selected.rows.length)return selected;
   if(!captureSourceComplete)throw Error('nba_capture_board_unverified');
@@ -721,6 +723,7 @@ function publicNbaBoard(payload:any){
 
 export async function buildNbaMarketRankings(market:NbaMarketKey,shared?:{payload?:any;overview:any},options?:RankingOptions){
  const result=await rankingResponse('nba|'+market+'|'+(options?.day||''),()=>buildNbaMarketRankingsUncached(market,shared,options),Boolean(shared));
+ assertNbaRankingActive();
  if(result?.boardFrozen){updateTopPlayMarket('nba',result);const work=()=>withHistoryLock('featured-nba-'+market,()=>writeDurableHistory('nba','featured_'+market,torontoNbaDay(new Date()),[{...result,featuredCapturedAt:new Date().toISOString()}]));if(options?.deferHistory)options.deferHistory(work);else await work();}
  return result;
 }
