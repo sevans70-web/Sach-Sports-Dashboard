@@ -75,7 +75,9 @@ function storage() {
    assert.equal(document.checksum, checksum(document.payload));
    assert.equal(document.source_updated_at, document.payload[0].capturedAt);
    if (failures.post) return new Response(null,{status:503});
-   if (!documents.has(identity)) documents.set(identity,document);
+   if (!documents.has(identity)) {
+    documents.set(identity,{...document,updated_at:failures.recordedAt??new Date().toISOString()});
+   }
    if (failures.ack) throw Error('Simulated acknowledgement loss after insert');
    if (failures.corrupt) documents.get(identity).checksum = '0'.repeat(64);
    return new Response(null,{status:201});
@@ -183,6 +185,22 @@ test('storage errors and uncertain writes do not succeed, and retries verify the
    assert.deepEqual(db.documents.get(key),saved);
   }
  }
+});
+
+test('late database timestamps fail publication and a cold reader rejects the same original', async () => {
+ const db=storage();
+ db.failures.recordedAt=tipoff;
+ const input=board();
+ // Use a separate market to avoid a previously warmed local display cache.
+ const market='assists';
+ input.market=market;
+ for(const row of input.rows)row.market=market;
+ await assert.rejects(persistCapturedNbaSlateBoard(input,games,day,market),
+  {message:'nba_capture_board_storage_unverified'});
+ clock=Date.parse(afterTipoff);
+ await assert.rejects(frozenNbaSlateBoard(market,games,clock,day),
+  {message:'NBA capture board database timestamp unverified'});
+ assert.equal(db.calls.filter(([method])=>method==='POST').length,1);
 });
 
 test('a durable-publication error defers the ranking phase before any receipt or cache write', async () => {

@@ -76,7 +76,23 @@ export async function saveCloudDocument(sport,stream,day,payload,bytes=0,sourceU
   if(documentWrites.get(documentKey)===work)documentWrites.delete(documentKey);
  }
 }
-export async function readCloudDocument(sport,stream,day){const rows=await cloudRequest(`history_documents?select=payload,checksum&sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`,{signal:AbortSignal.timeout(2500)});const row=rows?.[0];if(!row)return null;if(checksum(row.payload)!==row.checksum)throw Error('Cloud history checksum mismatch');return row.payload;}
+export async function readCloudDocument(sport,stream,day){
+ const nbaSlate=sport==='nba'&&stream.startsWith('slate_board_');
+ const columns=nbaSlate?'payload,checksum,updated_at':'payload,checksum';
+ const rows=await cloudRequest(`history_documents?select=${columns}&sport=eq.${encodeURIComponent(sport)}&stream=eq.${encodeURIComponent(stream)}&game_date=eq.${day}`,{signal:AbortSignal.timeout(2500)});
+ const row=rows?.[0];
+ if(!row)return null;
+ if(checksum(row.payload)!==row.checksum)throw Error('Cloud history checksum mismatch');
+ const board=nbaSlate&&row.payload?.[0];
+ if(board?.captureSource==='dashboard_worker'){
+  const recorded=Date.parse(row.updated_at);
+  const captured=Date.parse(board.capturedAt), lock=Date.parse(board.lockAt);
+  // This catches late database timestamps. The default now() is not a commit-time guard.
+  if(!Number.isFinite(recorded)||!Number.isFinite(captured)||!Number.isFinite(lock)||
+     captured>=lock||recorded>=lock)throw Error('NBA capture board database timestamp unverified');
+ }
+ return row.payload;
+}
 
 // The scoped capture writer is insert-only even when shared Worker history is read-only.
 export async function createNbaSlateBoardIfAbsent(board){
@@ -84,7 +100,7 @@ export async function createNbaSlateBoardIfAbsent(board){
  const captured=Date.parse(capturedAt),lock=Date.parse(lockAt);
  if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!/^[a-z0-9_]+$/.test(market)||
     !Number.isFinite(captured)||!Number.isFinite(lock)||captured>=lock)throw Error('nba_capture_board_unverified');
- const stream='slate_board_'+market,payload=[board];
+ const stream='slate_board_'+market,payload=[{...board,captureSource:'dashboard_worker'}];
  const body=JSON.stringify({sport:'nba',stream,game_date:day,checksum:checksum(payload),payload,
   source_bytes:Buffer.byteLength(JSON.stringify(payload)),source_updated_at:capturedAt});
  const now=Date.now();
