@@ -22,6 +22,7 @@ import {guardRankingPayload} from "@/lib/prop-integrity";
 import {nativeFirstBasketRows} from '@/lib/native-first-basket';
 import {getNbaFirstBasketSource} from '@/lib/owls-provider';
 import {getOwlsPayload} from "@/lib/owls-provider";
+import {dashboardJobContext} from "@/lib/dashboard-job-context";
 import {nbaQuoteMatchesGame,nbaQuoteMatchesRosterTeam} from "@/lib/nba-game-match";
 import {dedupeNbaFixtureQuotes,nbaOfficialPlayerFixtureKey} from "@/lib/nba-fixture-identity";
 import {activeRankingSlate} from "@/lib/active-ranking-slate";
@@ -67,8 +68,8 @@ export function torontoNbaDay(v:Date|string){
 }
 
 let coverageLoggedAt=0;
-async function fetchOwlsPayload(){
- const [owls,sgo]=await Promise.allSettled([getOwlsPayload("nba"),getSgoSupplement("NBA")]);
+async function fetchOwlsPayload(owlOnly=false){
+ const [owls,sgo]=await Promise.allSettled([getOwlsPayload("nba"),owlOnly?Promise.resolve(null):getSgoSupplement("NBA")]);
  const primary=owls.status==="fulfilled"?owls.value:null,extra=sgo.status==="fulfilled"?sgo.value:null;
  if(!primary&&!extra?.data?.length)throw new Error("NBA odds feeds are unavailable.");
  const primaryWarning=owls.status==='rejected'?String(owls.reason?.message||'Primary NBA feed unavailable'):null;
@@ -452,7 +453,8 @@ async function buildNbaMarketRankingsRaw(
 
   if(!shared?.payload){
    try{
-    payload=await fetchOwlsPayload();
+    const owlOnly=captureOriginal&&market==='points'&&dashboardJobContext()?.acceptance?.providerMode==='owl-only';
+    payload=await fetchOwlsPayload(owlOnly);
     owlsOk=true;
    }catch{
     owlsOk=false;

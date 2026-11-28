@@ -17,10 +17,12 @@ export function acceptanceWindow(env){
  let grant;
  try{grant=JSON.parse(env.SACH_NBA_ACCEPTANCE_GRANT);}catch{return null;}
  if(!grant||!/^\d{4}-\d{2}-\d{2}$/.test(grant.day)||!(/^[a-f0-9]{64}$/.test(grant.scheduleSha256)))return null;
+ if(grant.providerMode!==undefined&&grant.providerMode!=='owl-only')return null;
  const starts=Date.parse(grant.holdStartsAt),expires=Date.parse(grant.expiresAt),lock=Date.parse(grant.lockAt);
  if(![starts,expires,lock].every(Number.isFinite)||starts>=expires||expires>lock||
     expires-starts>maxCaptureHoldMs||torontoCaptureDay(starts)!==grant.day||torontoCaptureDay(lock)!==grant.day)return null;
- return {day:grant.day,starts,lock,expires,scheduleSha256:grant.scheduleSha256};
+ return {day:grant.day,starts,lock,expires,scheduleSha256:grant.scheduleSha256,
+  ...(grant.providerMode===undefined?{}:{providerMode:grant.providerMode})};
 }
 
 export function activeAcceptanceWindow(grant,now){
@@ -33,7 +35,7 @@ export function oneShotJobError(job,env,now){
  const current=acceptanceWindow(env);
  if(!activeAcceptanceWindow(current,now)||job.sport!=='nba'||job.kind!=='capture'||job.market!=='points'||
     job.id!=='acceptance:nba:points:'+saved.day||
-    ['day','starts','lock','expires','scheduleSha256'].some(key=>current[key]!==saved[key]))return 'acceptance_revoked';
+    ['day','starts','lock','expires','scheduleSha256','providerMode'].some(key=>current[key]!==saved[key]))return 'acceptance_revoked';
  return null;
 }
 
